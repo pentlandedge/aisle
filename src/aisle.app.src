@@ -1,0 +1,14 @@
+{application, aisle,
+ [
+  {description, "An Erlang aisle library"},
+  {vsn, "1"},
+  {modules, [
+             aisle
+            ]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {env, []}
+ ]}.
