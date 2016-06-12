@@ -25,5 +25,8 @@
 %% API
 
 decode(Sentence) when is_list(Sentence) ->
-    ok.
+    case string:sub_string(Sentence, 1, 7) of 
+        "!AIVDM," -> ok;
+        _         -> {error, bad_identifier}
+    end.
 

@@ -20,11 +20,19 @@
 
 %% Define a test generator for the aisle decoder. 
 aisle_test_() ->
-    [decode_checks()].
+    [decode_sample1(), decode_bad_id()].
 
-decode_checks() ->
-    Sentence = sample_sentence(),
+decode_sample1() ->
+    Sentence = sample_sentence1(),
     Result = aisle:decode(Sentence),
     [?_assertEqual(ok, Result)].
 
-sample_sentence() -> "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
+decode_bad_id() ->
+    Sentence = bad_identifier(),
+    Result = aisle:decode(Sentence),
+    [?_assertEqual({error, bad_identifier}, Result)].
+
+sample_sentence1() -> "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
+
+bad_identifier() -> "!AIDVM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
+
