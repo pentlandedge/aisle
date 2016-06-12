@@ -13,17 +13,18 @@
 %% License for the specific language governing permissions and limitations 
 %% under the License.
 %%
-%% @doc Top level API for the AIS library. 
 
--module(aisle).
+-module(aisle_tests).
 
-%% aisle: aisle library's entry point.
+-include_lib("eunit/include/eunit.hrl").
 
--export([decode/1]).
+%% Define a test generator for the aisle decoder. 
+aisle_test_() ->
+    [decode_checks()].
 
+decode_checks() ->
+    Sentence = sample_sentence(),
+    Result = aisle:decode(Sentence),
+    [?_assertEqual(ok, Result)].
 
-%% API
-
-decode(Sentence) when is_list(Sentence) ->
-    ok.
-
+sample_sentence() -> "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
