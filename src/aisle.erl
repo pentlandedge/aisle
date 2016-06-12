@@ -19,14 +19,39 @@
 
 %% aisle: aisle library's entry point.
 
--export([decode/1]).
+-export([
+    decode/1, 
+    get_id/1,
+    get_frag_count/1,
+    get_frag_num/1,
+    get_msg_id/1,
+    get_data/1,
+    get_fill_bits/1]).
 
+-record(ais, {id, frag_count, frag_num, msg_id, data, fill_bits}).
 
 %% API
 
+%% @doc Decode an AIS sentence.
 decode(Sentence) when is_list(Sentence) ->
-    case string:sub_string(Sentence, 1, 7) of 
-        "!AIVDM," -> ok;
-        _         -> {error, bad_identifier}
+    Tokens = string:tokens(Sentence, ",*"),
+    [Id, FragCount, FragNum|_Rest] = Tokens,
+    case Id of 
+        "!AIVDM" -> 
+            AisRec = #ais{
+                id = aivdm,
+                frag_count = list_to_integer(FragCount),
+                frag_num = list_to_integer(FragNum)},
+            {ok, AisRec};
+        _ -> 
+            {error, bad_identifier}
     end.
+
+%% Accessor functions for the AIS records.
+get_id(#ais{id = X}) -> X. 
+get_frag_count(#ais{frag_count = X}) -> X. 
+get_frag_num(#ais{frag_num = X}) -> X. 
+get_msg_id(#ais{msg_id = X}) -> X. 
+get_data(#ais{data = X}) -> X. 
+get_fill_bits(#ais{fill_bits = X}) -> X. 
 

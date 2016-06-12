@@ -24,8 +24,14 @@ aisle_test_() ->
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
-    Result = aisle:decode(Sentence),
-    [?_assertEqual(ok, Result)].
+    {Code, AisRec} = aisle:decode(Sentence),
+    Id = aisle:get_id(AisRec),
+    FragCount = aisle:get_frag_count(AisRec),
+    FragNum = aisle:get_frag_num(AisRec),
+    [?_assertEqual(ok, Code),
+     ?_assertEqual(aivdm, Id),
+     ?_assertEqual(1, FragCount),
+     ?_assertEqual(1, FragNum)].
 
 decode_bad_id() ->
     Sentence = bad_identifier(),
