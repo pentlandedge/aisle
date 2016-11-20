@@ -35,16 +35,23 @@
 %% @doc Decode an AIS sentence.
 decode(Sentence) when is_list(Sentence) ->
     Tokens = string:tokens(Sentence, ",*"),
-    [Id, FragCount, FragNum|_Rest] = Tokens,
+    [Id, FragCount, FragNum, MsgID|_Rest] = Tokens,
     case Id of 
         "!AIVDM" -> 
             AisRec = #ais{
                 id = aivdm,
                 frag_count = list_to_integer(FragCount),
-                frag_num = list_to_integer(FragNum)},
+                frag_num = list_to_integer(FragNum),
+                msg_id = decode_msg_id(MsgID)},
             {ok, AisRec};
         _ -> 
             {error, bad_identifier}
+    end.
+
+decode_msg_id(MsgID)  ->
+    case string:to_integer(MsgID) of
+        {error, _} -> undefined;
+        {X, _}     -> X
     end.
 
 %% Accessor functions for the AIS records.
