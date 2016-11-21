@@ -47,7 +47,10 @@
         message_type,
         repeat_indicator,
         mmsi,
-        nav_status}).
+        nav_status,
+        true_heading,
+        timestamp,
+        raim_flag}).
  
 %% API
 
@@ -167,13 +170,16 @@ decode_message_type(_) -> unknown_message_type.
 
 %% @doc Decode the 168-bit Common Navigation Block (CNB).
 decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,_ROT:8,_SOG:10,PA:1,Lon:28,Lat:27,COG:12,
-             HDG:9,TS:6,MI:2,Sp:3,RAIM:1,RS:19>>) ->
+             HDG:9,TS:6,MI:2,Sp:3,RAIM:1,_RS:19>>) ->
 
     #cnb{
         message_type = decode_message_type(MT),
         repeat_indicator = RI,
         mmsi = MMSI,
-        nav_status = decode_nav_status(NS)};
+        nav_status = decode_nav_status(NS),
+        true_heading = decode_true_heading(HDG),
+        timestamp = TS,
+        raim_flag = decode_raim(RAIM)};
 
 decode_cnb(_) ->
     {error, failed_to_decode_cnb}.
@@ -195,6 +201,14 @@ decode_nav_status(12) -> reserved;
 decode_nav_status(13) -> reserved;
 decode_nav_status(14) -> ais_sart_is_active;
 decode_nav_status(15) -> not_defined. 
+
+%% @doc Decode the true heading field.
+decode_true_heading(511) -> not_available;
+decode_true_heading(X)   -> X.
+
+%% @doc RAIM (Receiver Autonomous Integrity Monitoring) flag mapping.
+decode_raim(0) -> raim_not_in_use; 
+decode_raim(1) -> raim_in_use. 
 
 %% Accessor functions for the AIS records.
 get_id(#ais{id = X}) -> X. 
