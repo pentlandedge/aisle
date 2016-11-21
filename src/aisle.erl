@@ -21,6 +21,7 @@
 
 -export([
     decode/1, 
+    parse_file/1,
     decode_message_type/1,
     payload_to_binary/1,
     int_to_bits/1,
@@ -62,6 +63,22 @@ decode(Sentence) when is_list(Sentence) ->
             {ok, AisRec};
         _ -> 
             {error, bad_identifier}
+    end.
+
+%% @ Parse a log file constructed of AIS sentences, one per line.
+parse_file(Filename) ->
+    {ok, S} = file:open(Filename, read),
+    Acc = parse_lines(S, fun decode/1, []),
+    file:close(S),
+    Acc.
+
+parse_lines(S, ProcFn, Acc) ->
+    case io:get_line(S, "") of
+        eof  -> 
+            lists:reverse(Acc);
+        Line -> 
+            NewRec = ProcFn(Line),
+            parse_lines(S, ProcFn, [NewRec|Acc])
     end.
 
 %% @doc Decode the message ID field. This is often not set, so we need to trap
