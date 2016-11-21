@@ -48,6 +48,7 @@
         repeat_indicator,
         mmsi,
         nav_status,
+        rate_of_turn,
         true_heading,
         timestamp,
         raim_flag}).
@@ -169,14 +170,15 @@ decode_message_type(27) -> pos_report_for_long_range_applications;
 decode_message_type(_) -> unknown_message_type.
 
 %% @doc Decode the 168-bit Common Navigation Block (CNB).
-decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,_ROT:8,_SOG:10,PA:1,Lon:28,Lat:27,COG:12,
-             HDG:9,TS:6,MI:2,Sp:3,RAIM:1,_RS:19>>) ->
+decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,_SOG:10,_PA:1,_Lon:28,_Lat:27,_COG:12,
+             HDG:9,TS:6,_MI:2,_Sp:3,RAIM:1,_RS:19>>) ->
 
     #cnb{
         message_type = decode_message_type(MT),
         repeat_indicator = RI,
         mmsi = MMSI,
         nav_status = decode_nav_status(NS),
+        rate_of_turn = decode_rate_of_turn(ROT),
         true_heading = decode_true_heading(HDG),
         timestamp = TS,
         raim_flag = decode_raim(RAIM)};
@@ -201,6 +203,18 @@ decode_nav_status(12) -> reserved;
 decode_nav_status(13) -> reserved;
 decode_nav_status(14) -> ais_sart_is_active;
 decode_nav_status(15) -> not_defined. 
+
+%% @doc Decode the rate of turn field.
+decode_rate_of_turn(0)    -> not_turning;
+decode_rate_of_turn(127)  -> turning_right_more_than_5deg_30sec;
+decode_rate_of_turn(-127) -> turning_left_more_than_5deg_30sec;
+decode_rate_of_turn(-128) -> no_turn_information_available;
+decode_rate_of_turn(R) when R >= 1, R =< 126 -> 
+    V = R / 4.733,
+    V * V;
+decode_rate_of_turn(R) when R >= -126, R =< -1 -> 
+    V = R / 4.733,
+    -(V * V).
 
 %% @doc Decode the true heading field.
 decode_true_heading(511) -> not_available;
