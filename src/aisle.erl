@@ -57,7 +57,7 @@ decode(Sentence) when is_list(Sentence) ->
                 frag_num = list_to_integer(FragNum),
                 msg_id = decode_msg_id(MsgID),
                 radio_chan = decode_radio_chan(Chan),
-                data = payload_to_binary(list_to_binary(Payload)),
+                data = decode_payload(Payload),
                 fill_bits = Fill,
                 checksum = CS},
             {ok, AisRec};
@@ -88,6 +88,13 @@ decode_msg_id(MsgID)  ->
         {error, _} -> undefined;
         {X, _}     -> X
     end.
+
+%% @doc Decode the data payload.
+decode_payload(Payload) ->
+    PayBin = payload_to_binary(list_to_binary(Payload)),
+    <<MT:6,_Rest/bitstring>> = PayBin,
+    %% Simply return the message type for now.
+    decode_message_type(MT).
 
 %% @doc Decode the radio channel, either 'A' at 161.975 MHz or 'B' at 
 %% 162.025 MHz. Sometimes mapped as '1' or '2'.
