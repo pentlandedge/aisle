@@ -21,6 +21,7 @@
 
 -export([
     decode/1, 
+    payload_to_binary/1,
     get_id/1,
     get_frag_count/1,
     get_frag_num/1,
@@ -75,6 +76,19 @@ decode_radio_chan("A") -> radio_chan_a;
 decode_radio_chan("B") -> radio_chan_b;
 decode_radio_chan("1") -> radio_chan_a;
 decode_radio_chan("2") -> radio_chan_b.
+
+%% Convert encoded characters in the the data payload to raw binary.
+payload_to_binary(Payload) ->
+    CharList = binary_to_list(Payload),
+    BitList = lists:map(fun int_to_bits/1, CharList).
+
+%% Reverse the ASCII mapping of 6 bit values.
+int_to_bits(X) ->
+    Y = X - 48,
+    case Y >= 40 of
+        true  -> Y - 8;
+        false -> Y
+    end.
 
 %% Accessor functions for the AIS records.
 get_id(#ais{id = X}) -> X. 
