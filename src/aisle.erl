@@ -46,7 +46,8 @@
 -record(cnb, {
         message_type,
         repeat_indicator,
-        mmsi}).
+        mmsi,
+        nav_status}).
  
 %% API
 
@@ -165,15 +166,35 @@ decode_message_type(27) -> pos_report_for_long_range_applications;
 decode_message_type(_) -> unknown_message_type.
 
 %% @doc Decode the 168-bit Common Navigation Block (CNB).
-decode_cnb(<<MT:6,RI:2,MMSI:30,_NS:4,_ROT:8,_SOG:10,PA:1,Lon:28,Lat:27,COG:12,
+decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,_ROT:8,_SOG:10,PA:1,Lon:28,Lat:27,COG:12,
              HDG:9,TS:6,MI:2,Sp:3,RAIM:1,RS:19>>) ->
 
     #cnb{
         message_type = decode_message_type(MT),
         repeat_indicator = RI,
-        mmsi = MMSI};
+        mmsi = MMSI,
+        nav_status = decode_nav_status(NS)};
+
 decode_cnb(_) ->
     {error, failed_to_decode_cnb}.
+
+%% @doc Decode the navigation status bits.
+decode_nav_status(0) -> under_way_using_engine;
+decode_nav_status(1) -> at_anchor;
+decode_nav_status(2) -> not_under_command;
+decode_nav_status(3) -> restricted_manoeuverability;
+decode_nav_status(4) -> constrained_by_her_draught;
+decode_nav_status(5) -> moored;
+decode_nav_status(6) -> aground;
+decode_nav_status(7) -> engaged_in_fishing;
+decode_nav_status(8) -> under_way_sailing;
+decode_nav_status(9) -> reserved_for_hsg;
+decode_nav_status(10) -> reserved_for_wig;
+decode_nav_status(11) -> reserved;
+decode_nav_status(12) -> reserved;
+decode_nav_status(13) -> reserved;
+decode_nav_status(14) -> ais_sart_is_active;
+decode_nav_status(15) -> not_defined. 
 
 %% Accessor functions for the AIS records.
 get_id(#ais{id = X}) -> X. 
