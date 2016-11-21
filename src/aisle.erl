@@ -101,7 +101,6 @@ decode_payload(Payload) ->
     %% Decode the message types we know how to decode, or simply return the
     %% message type.
     DMT = decode_message_type(MT),
-    io:format("DMT, length ~p ~p~n", [DMT, byte_size(PayBin)]),
     case DMT of
         pos_report_class_a -> 
             decode_cnb(PayBin);
