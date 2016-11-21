@@ -21,6 +21,7 @@
 
 -export([
     decode/1, 
+    decode_message_type/1,
     payload_to_binary/1,
     int_to_bits/1,
     get_id/1,
@@ -92,6 +93,36 @@ int_to_bits(X) ->
         true  -> Y - 8;
         false -> Y
     end.
+
+%% @doc Decode the message type in the data payload.
+decode_message_type(1) -> pos_report_class_a;
+decode_message_type(2) -> pos_report_class_a_assigned_schedule;
+decode_message_type(3) -> pos_report_class_a_response_to_interrogation;
+decode_message_type(4) -> base_station_report;
+decode_message_type(5) -> static_and_voyage_data;
+decode_message_type(6) -> binary_addressed_message;
+decode_message_type(7) -> binary_acknowledge;
+decode_message_type(8) -> binary_broadcast_message;
+decode_message_type(9) -> standard_sar_aircraft_pos_report;
+decode_message_type(10) -> utc_and_date_inquiry;
+decode_message_type(11) -> utc_and_date_response;
+decode_message_type(12) -> addressed_safety_related_message;
+decode_message_type(13) -> safety_related_ack;
+decode_message_type(14) -> safety_related_broadcast;
+decode_message_type(15) -> interrogation;
+decode_message_type(16) -> assignment_mode_command;
+decode_message_type(17) -> dgnss_binary_broadcast_message;
+decode_message_type(18) -> standard_class_b_cs_pos_report;
+decode_message_type(19) -> extended_class_b_equipment_pos_report;
+decode_message_type(20) -> data_link_management;
+decode_message_type(21) -> aid_to_navigation_report;
+decode_message_type(22) -> channel_management;
+decode_message_type(23) -> group_assignment_command;
+decode_message_type(24) -> static_data_report;
+decode_message_type(25) -> single_slot_binary_message;
+decode_message_type(26) -> multiple_slot_binary_message_with_comms_state;
+decode_message_type(27) -> pos_report_for_long_range_applications;
+decode_message_type(_) -> unknown_message_type.
 
 %% Accessor functions for the AIS records.
 get_id(#ais{id = X}) -> X. 
