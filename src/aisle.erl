@@ -22,6 +22,7 @@
 -export([
     decode/1, 
     payload_to_binary/1,
+    int_to_bits/1,
     get_id/1,
     get_frag_count/1,
     get_frag_num/1,
@@ -54,7 +55,7 @@ decode(Sentence) when is_list(Sentence) ->
                 frag_num = list_to_integer(FragNum),
                 msg_id = decode_msg_id(MsgID),
                 radio_chan = decode_radio_chan(Chan),
-                data = Payload,
+                data = payload_to_binary(list_to_binary(Payload)),
                 fill_bits = Fill,
                 checksum = CS},
             {ok, AisRec};
@@ -77,10 +78,12 @@ decode_radio_chan("B") -> radio_chan_b;
 decode_radio_chan("1") -> radio_chan_a;
 decode_radio_chan("2") -> radio_chan_b.
 
-%% Convert encoded characters in the the data payload to raw binary.
-payload_to_binary(Payload) ->
-    CharList = binary_to_list(Payload),
-    BitList = lists:map(fun int_to_bits/1, CharList).
+%% @doc Convert encoded characters in the the data payload to raw binary.
+%% Uses a binary comprehension to compress the 8-bit ASCII characters to 
+%% 6-bit values, remapping as described in the section on "Payload Armoring"
+%% in the online notes.
+payload_to_binary(PayloadData) when is_binary(PayloadData) ->
+    << <<(aisle:int_to_bits(X)):6>> || <<X:8>> <= PayloadData >>.
 
 %% Reverse the ASCII mapping of 6 bit values.
 int_to_bits(X) ->
