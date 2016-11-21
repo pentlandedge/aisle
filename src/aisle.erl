@@ -29,14 +29,22 @@
     get_fill_bits/1,
     to_tokens/2]).
 
--record(ais, {id, frag_count, frag_num, msg_id, radio_chan, data, fill_bits}).
+-record(ais, {
+    id, 
+    frag_count, 
+    frag_num, 
+    msg_id, 
+    radio_chan, 
+    data, 
+    fill_bits, 
+    checksum}).
 
 %% API
 
 %% @doc Decode an AIS sentence.
 decode(Sentence) when is_list(Sentence) ->
     Tokens = to_tokens(Sentence, ",*"),
-    [Id, FragCount, FragNum, MsgID, Chan|_Rest] = Tokens,
+    [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] = Tokens,
     case Id of 
         "!AIVDM" -> 
             AisRec = #ais{
@@ -44,7 +52,10 @@ decode(Sentence) when is_list(Sentence) ->
                 frag_count = list_to_integer(FragCount),
                 frag_num = list_to_integer(FragNum),
                 msg_id = decode_msg_id(MsgID),
-                radio_chan = decode_radio_chan(Chan)},
+                radio_chan = decode_radio_chan(Chan),
+                data = Payload,
+                fill_bits = Fill,
+                checksum = CS},
             {ok, AisRec};
         _ -> 
             {error, bad_identifier}
