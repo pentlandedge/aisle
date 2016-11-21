@@ -42,7 +42,12 @@
     data, 
     fill_bits, 
     checksum}).
-
+    
+-record(cnb, {
+        message_type,
+        repeat_indicator,
+        mmsi}).
+ 
 %% API
 
 %% @doc Decode an AIS sentence.
@@ -93,8 +98,20 @@ decode_msg_id(MsgID)  ->
 decode_payload(Payload) ->
     PayBin = payload_to_binary(list_to_binary(Payload)),
     <<MT:6,_Rest/bitstring>> = PayBin,
-    %% Simply return the message type for now.
-    decode_message_type(MT).
+    %% Decode the message types we know how to decode, or simply return the
+    %% message type.
+    DMT = decode_message_type(MT),
+    io:format("DMT, length ~p ~p~n", [DMT, byte_size(PayBin)]),
+    case DMT of
+        pos_report_class_a -> 
+            decode_cnb(PayBin);
+        pos_report_class_a_assigned_schedule -> 
+            decode_cnb(PayBin);
+        pos_report_class_a_response_to_interrogation -> 
+            decode_cnb(PayBin);
+        _ ->
+            DMT
+    end.
 
 %% @doc Decode the radio channel, either 'A' at 161.975 MHz or 'B' at 
 %% 162.025 MHz. Sometimes mapped as '1' or '2'.
@@ -147,6 +164,17 @@ decode_message_type(25) -> single_slot_binary_message;
 decode_message_type(26) -> multiple_slot_binary_message_with_comms_state;
 decode_message_type(27) -> pos_report_for_long_range_applications;
 decode_message_type(_) -> unknown_message_type.
+
+%% @doc Decode the 168-bit Common Navigation Block (CNB).
+decode_cnb(<<MT:6,RI:2,MMSI:30,_NS:4,_ROT:8,_SOG:10,PA:1,Lon:28,Lat:27,COG:12,
+             HDG:9,TS:6,MI:2,Sp:3,RAIM:1,RS:19>>) ->
+
+    #cnb{
+        message_type = decode_message_type(MT),
+        repeat_indicator = RI,
+        mmsi = MMSI};
+decode_cnb(_) ->
+    {error, failed_to_decode_cnb}.
 
 %% Accessor functions for the AIS records.
 get_id(#ais{id = X}) -> X. 
