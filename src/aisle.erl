@@ -177,8 +177,8 @@ decode_message_type(27) -> pos_report_for_long_range_applications;
 decode_message_type(_) -> unknown_message_type.
 
 %% @doc Decode the 168-bit Common Navigation Block (CNB).
-decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,PA:1,_Lon:28,_Lat:27,_COG:12,
-             HDG:9,TS:6,_MI:2,_Sp:3,RAIM:1,_RS:19>>) ->
+decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,PA:1,Lon:28/signed,
+    Lat:27/signed,_COG:12,HDG:9,TS:6,_MI:2,_Sp:3,RAIM:1,_RS:19>>) ->
 
     #cnb{
         message_type = decode_message_type(MT),
@@ -188,6 +188,8 @@ decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,PA:1,_Lon:28,_Lat:27,_CO
         rate_of_turn = decode_rate_of_turn(ROT),
         speed_over_ground = decode_sog(SOG),
         position_accuracy = decode_position_accuracy(PA),
+        longitude = decode_longitude(Lon),
+        latitude = decode_latitude(Lat),
         true_heading = decode_true_heading(HDG),
         timestamp = TS,
         raim_flag = decode_raim(RAIM)};
@@ -225,12 +227,22 @@ decode_rate_of_turn(R) when R >= -126, R =< -1 ->
     V = R / 4.733,
     -(V * V).
 
+%% @doc Decode the speed over ground field.
 decode_sog(1023) -> speed_not_available;
 decode_sog(1022) -> more_than_102p2_knots;
 decode_sog(X)    -> 0.1 * X.
 
+%% @doc Decode the position accuracy field.
 decode_position_accuracy(1) -> dgps_less_than_10m;
 decode_position_accuracy(0) -> unaugmented_gnss_greater_than_10m. 
+
+%% @doc Decode the Longitude parameter.
+decode_longitude(16#6791AC0) -> not_available;
+decode_longitude(X) -> X / 600000.0.
+
+%% @doc Decode the Longitude parameter.
+decode_latitude(16#3412140) -> not_available;
+decode_latitude(X) -> X / 600000.0.
 
 %% @doc Decode the true heading field.
 decode_true_heading(511) -> not_available;
