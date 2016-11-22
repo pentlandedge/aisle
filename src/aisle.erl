@@ -49,6 +49,7 @@
         mmsi,
         nav_status,
         rate_of_turn,
+        speed_over_ground,
         true_heading,
         timestamp,
         raim_flag}).
@@ -170,7 +171,7 @@ decode_message_type(27) -> pos_report_for_long_range_applications;
 decode_message_type(_) -> unknown_message_type.
 
 %% @doc Decode the 168-bit Common Navigation Block (CNB).
-decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,_SOG:10,_PA:1,_Lon:28,_Lat:27,_COG:12,
+decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,_PA:1,_Lon:28,_Lat:27,_COG:12,
              HDG:9,TS:6,_MI:2,_Sp:3,RAIM:1,_RS:19>>) ->
 
     #cnb{
@@ -179,6 +180,7 @@ decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,_SOG:10,_PA:1,_Lon:28,_Lat:27,_
         mmsi = MMSI,
         nav_status = decode_nav_status(NS),
         rate_of_turn = decode_rate_of_turn(ROT),
+        speed_over_ground = decode_sog(SOG),
         true_heading = decode_true_heading(HDG),
         timestamp = TS,
         raim_flag = decode_raim(RAIM)};
@@ -215,6 +217,10 @@ decode_rate_of_turn(R) when R >= 1, R =< 126 ->
 decode_rate_of_turn(R) when R >= -126, R =< -1 -> 
     V = R / 4.733,
     -(V * V).
+
+decode_sog(1023) -> speed_not_available;
+decode_sog(1022) -> more_than_102p2_knots;
+decode_sog(X)    -> 0.1 * X.
 
 %% @doc Decode the true heading field.
 decode_true_heading(511) -> not_available;
