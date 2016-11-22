@@ -178,7 +178,7 @@ decode_message_type(_) -> unknown_message_type.
 
 %% @doc Decode the 168-bit Common Navigation Block (CNB).
 decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,PA:1,Lon:28/signed,
-    Lat:27/signed,_COG:12,HDG:9,TS:6,_MI:2,_Sp:3,RAIM:1,_RS:19>>) ->
+    Lat:27/signed,COG:12,HDG:9,TS:6,MI:2,_Sp:3,RAIM:1,_RS:19>>) ->
 
     #cnb{
         message_type = decode_message_type(MT),
@@ -190,8 +190,10 @@ decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,PA:1,Lon:28/signed,
         position_accuracy = decode_position_accuracy(PA),
         longitude = decode_longitude(Lon),
         latitude = decode_latitude(Lat),
+        course_over_ground = decode_cog(COG),
         true_heading = decode_true_heading(HDG),
         timestamp = TS,
+        maneuver_indicator = decode_maneuver_indicator(MI),
         raim_flag = decode_raim(RAIM)};
 
 decode_cnb(_) ->
@@ -244,9 +246,18 @@ decode_longitude(X) -> X / 600000.0.
 decode_latitude(16#3412140) -> not_available;
 decode_latitude(X) -> X / 600000.0.
 
+%% @doc Decod the course over ground field.
+decode_cog(3600) -> not_available;
+decode_cog(COG) -> 0.1 * COG.
+
 %% @doc Decode the true heading field.
 decode_true_heading(511) -> not_available;
 decode_true_heading(X)   -> X.
+
+%% @doc Decode the maneuver indicator field.
+decode_maneuver_indicator(0) -> not_available;
+decode_maneuver_indicator(1) -> no_special_maneuver;
+decode_maneuver_indicator(2) -> special_maneuver.
 
 %% @doc RAIM (Receiver Autonomous Integrity Monitoring) flag mapping.
 decode_raim(0) -> raim_not_in_use; 
