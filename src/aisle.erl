@@ -21,6 +21,7 @@
 
 -export([
     decode/1, 
+    display/1, 
     parse_file/1,
     decode_message_type/1,
     payload_to_binary/1,
@@ -29,8 +30,10 @@
     get_frag_count/1,
     get_frag_num/1,
     get_msg_id/1,
+    get_radio_chan/1,
     get_data/1,
     get_fill_bits/1,
+    get_checksum/1,
     to_tokens/2]).
 
 -record(ais, {
@@ -268,8 +271,10 @@ get_id(#ais{id = X}) -> X.
 get_frag_count(#ais{frag_count = X}) -> X. 
 get_frag_num(#ais{frag_num = X}) -> X. 
 get_msg_id(#ais{msg_id = X}) -> X. 
+get_radio_chan(#ais{radio_chan = X}) -> X. 
 get_data(#ais{data = X}) -> X. 
 get_fill_bits(#ais{fill_bits = X}) -> X. 
+get_checksum(#ais{checksum = X}) -> X. 
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
@@ -293,4 +298,17 @@ toks(String, SepList, Toks, Last) ->
             Rem = string:sub_string(String, N+1),
             toks(Rem, SepList, [Tok|Toks], not_sep)
     end.
+
+%% @doc Display the records as text.
+display(AisRecs) when is_list(AisRecs) ->
+    lists:map(fun display/1, AisRecs);
+display({ok, #ais{} = A}) ->
+    io:format("****************************************~n"), 
+    io:format("ID ~p, frag count ~p, frag_num ~p, msg_id ~p~n",
+        [get_id(A), get_frag_count(A), get_frag_num(A), get_msg_id(A)]),
+    io:format("radio chan ~p, fill bits ~p, checksum ~p~n",
+        [get_radio_chan(A), get_fill_bits(A), get_checksum(A)]);
+display(_) ->
+    io:format("****************************************~n"), 
+    io:format("Unrecognised record format.~n").
 
