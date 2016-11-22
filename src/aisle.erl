@@ -50,9 +50,15 @@
         nav_status,
         rate_of_turn,
         speed_over_ground,
+        position_accuracy,
+        longitude,
+        latitude,
+        course_over_ground,
         true_heading,
         timestamp,
-        raim_flag}).
+        maneuver_indicator,
+        raim_flag,
+        radio_status}).
  
 %% API
 
