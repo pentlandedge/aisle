@@ -278,6 +278,20 @@ get_checksum(#ais{checksum = X}) -> X.
 
 %% Accessor functions for the common navigation block.
 get_message_type(#cnb{message_type = X}) -> X.
+get_repeat_indicator(#cnb{repeat_indicator = X}) -> X.
+get_mmsi(#cnb{mmsi = X}) -> X.
+get_nav_status(#cnb{nav_status = X}) -> X.
+get_rate_of_turn(#cnb{rate_of_turn = X}) -> X.
+get_speed_over_ground(#cnb{speed_over_ground = X}) -> X.
+get_position_accuracy(#cnb{position_accuracy = X}) -> X.
+get_longitude(#cnb{longitude = X}) -> X.
+get_latitude(#cnb{latitude = X}) -> X.
+get_course_over_ground(#cnb{course_over_ground = X}) -> X.
+get_true_heading(#cnb{true_heading = X}) -> X.
+get_timestamp(#cnb{timestamp = X}) -> X.
+get_maneuver_indicator(#cnb{maneuver_indicator = X}) -> X.
+get_raim_flag(#cnb{raim_flag = X}) -> X.
+get_radio_status(#cnb{radio_status = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
@@ -326,5 +340,19 @@ display_data(_) -> ok.
 display_cnb(CNB) ->
     io:format("******************************~n"), 
     io:format("Common Navigation Block~n"), 
-    io:format("Message type: ~p~n", [get_message_type(CNB)]).
+    io:format("Message type: ~p~n", [get_message_type(CNB)]),
+    io:format("Repeat indicator: ~p~n", [get_repeat_indicator(CNB)]),
+    io:format("MMSI: ~p~n", [get_mmsi(CNB)]),
+    io:format("Nav status: ~p~n", [get_nav_status(CNB)]),
+    io:format("Rate of turn: ~p~n", [get_rate_of_turn(CNB)]),
+    io:format("Speed over ground: ~p~n", [get_speed_over_ground(CNB)]),
+    io:format("Position accuracy: ~p~n", [get_position_accuracy(CNB)]),
+    io:format("Lon: ~p~n", [get_longitude(CNB)]),
+    io:format("Lat: ~p~n", [get_latitude(CNB)]),
+    io:format("Course over ground: ~p~n", [get_course_over_ground(CNB)]),
+    io:format("True heading: ~p~n", [get_true_heading(CNB)]),
+    io:format("Timestamp: ~p~n", [get_timestamp(CNB)]),
+    io:format("Maneuver indicator: ~p~n", [get_maneuver_indicator(CNB)]),
+    io:format("RAIM flag: ~p~n", [get_raim_flag(CNB)]),
+    io:format("Radio status: ~p~n", [get_radio_status(CNB)]).
 
