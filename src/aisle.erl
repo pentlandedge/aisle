@@ -78,7 +78,7 @@ decode(Sentence) when is_list(Sentence) ->
                 msg_id = decode_msg_id(MsgID),
                 radio_chan = decode_radio_chan(Chan),
                 data = decode_payload(Payload),
-                fill_bits = Fill,
+                fill_bits = decode_fill_bits(Fill),
                 checksum = CS},
             {ok, AisRec};
         _ -> 
@@ -133,6 +133,14 @@ decode_radio_chan("A") -> radio_chan_a;
 decode_radio_chan("B") -> radio_chan_b;
 decode_radio_chan("1") -> radio_chan_a;
 decode_radio_chan("2") -> radio_chan_b.
+
+%% @doc Simple mapping of the fill bits string to the corresponding integer.
+decode_fill_bits("0") -> 0;
+decode_fill_bits("1") -> 1;
+decode_fill_bits("2") -> 2;
+decode_fill_bits("3") -> 3;
+decode_fill_bits("4") -> 4;
+decode_fill_bits("5") -> 5.
 
 %% @doc Convert encoded characters in the the data payload to raw binary.
 %% Uses a binary comprehension to compress the 8-bit ASCII characters to 

@@ -28,10 +28,16 @@ decode_sample1() ->
     Id = aisle:get_id(AisRec),
     FragCount = aisle:get_frag_count(AisRec),
     FragNum = aisle:get_frag_num(AisRec),
+    MsgID = aisle:get_msg_id(AisRec),
+    Chan = aisle:get_radio_chan(AisRec),
+    FB = aisle:get_fill_bits(AisRec),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(1, FragCount),
-     ?_assertEqual(1, FragNum)].
+     ?_assertEqual(1, FragNum),
+     ?_assertEqual(undefined, MsgID),
+     ?_assertEqual(radio_chan_b, Chan),
+     ?_assertEqual(0, FB)].
 
 decode_bad_id() ->
     Sentence = bad_identifier(),
