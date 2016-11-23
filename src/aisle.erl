@@ -276,6 +276,9 @@ get_data(#ais{data = X}) -> X.
 get_fill_bits(#ais{fill_bits = X}) -> X. 
 get_checksum(#ais{checksum = X}) -> X. 
 
+%% Accessor functions for the common navigation block.
+get_message_type(#cnb{message_type = X}) -> X.
+
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
 to_tokens(String, SepList) when is_list(String), is_list(SepList) ->
@@ -307,8 +310,21 @@ display({ok, #ais{} = A}) ->
     io:format("ID ~p, frag count ~p, frag_num ~p, msg_id ~p~n",
         [get_id(A), get_frag_count(A), get_frag_num(A), get_msg_id(A)]),
     io:format("radio chan ~p, fill bits ~p, checksum ~p~n",
-        [get_radio_chan(A), get_fill_bits(A), get_checksum(A)]);
+        [get_radio_chan(A), get_fill_bits(A), get_checksum(A)]),
+    display_data(get_data(A));
 display(_) ->
     io:format("****************************************~n"), 
     io:format("Unrecognised record format.~n").
+
+%% @doc Display the contents of the data fields. Depends upon the message
+%% type.
+display_data(#cnb{} = CNB) -> 
+    display_cnb(CNB);
+display_data(_) -> ok.
+
+%% @doc Display the contents of the Common Navigational Block.
+display_cnb(CNB) ->
+    io:format("******************************~n"), 
+    io:format("Common Navigation Block~n"), 
+    io:format("Message type: ~p~n", [get_message_type(CNB)]).
 
