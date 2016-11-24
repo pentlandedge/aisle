@@ -23,6 +23,7 @@
     decode/1, 
     display/1, 
     parse_file/1,
+    extract_all_mmsi/1,
     decode_message_type/1,
     payload_to_binary/1,
     int_to_bits/1,
@@ -363,4 +364,17 @@ display_cnb(CNB) ->
     io:format("Maneuver indicator: ~p~n", [get_maneuver_indicator(CNB)]),
     io:format("RAIM flag: ~p~n", [get_raim_flag(CNB)]),
     io:format("Radio status: ~p~n", [get_radio_status(CNB)]).
+
+%% Query function to pull out all the MMSI data in a list of AIS records.
+extract_all_mmsi(AisRecs) when is_list(AisRecs) ->
+    MList = lists:foldl(fun extract_mmsi/2, [], AisRecs),
+    % Remove non-unique elements.
+    S = sets:from_list(MList),
+    sets:to_list(S).
+
+extract_mmsi({ok, #ais{} = A}, Acc) ->
+    case get_data(A) of
+        #cnb{mmsi = M} -> [M|Acc];
+        _              -> Acc
+    end.
 
