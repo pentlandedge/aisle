@@ -37,6 +37,7 @@ decode_sample1() ->
     MMSI = aisle:get_mmsi(CNB),
     NS = aisle:get_nav_status(CNB),
     ROT = aisle:get_rate_of_turn(CNB),
+    SOG = aisle:get_speed_over_ground(CNB),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(1, FragCount),
@@ -48,7 +49,8 @@ decode_sample1() ->
      ?_assertEqual(no_repeats, RI),
      ?_assertEqual(477553000, MMSI),
      ?_assertEqual(moored, NS),
-     ?_assertEqual(not_turning, ROT)
+     ?_assertEqual(not_turning, ROT),
+     ?_assertEqual(true, almost_equal(0.0, SOG, 0.00001))
      ].
 
 decode_bad_id() ->
@@ -60,3 +62,7 @@ sample_sentence1() -> "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 
 bad_identifier() -> "!AIDVM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 
+%% Utility function to compare whether floating point values are within a 
+%% specified range.
+almost_equal(V1, V2, Delta) ->
+    abs(V1 - V2) =< Delta.
