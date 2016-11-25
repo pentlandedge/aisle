@@ -34,6 +34,7 @@ decode_sample1() ->
     CNB = aisle:get_data(AisRec),
     MT = aisle:get_message_type(CNB),
     RI = aisle:get_repeat_indicator(CNB),
+    MMSI = aisle:get_mmsi(CNB),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(1, FragCount),
@@ -42,7 +43,8 @@ decode_sample1() ->
      ?_assertEqual(radio_chan_b, Chan),
      ?_assertEqual(0, FB),
      ?_assertEqual(pos_report_class_a, MT),
-     ?_assertEqual(no_repeats, RI)
+     ?_assertEqual(no_repeats, RI),
+     ?_assertEqual(477553000, MMSI)
      ].
 
 decode_bad_id() ->
