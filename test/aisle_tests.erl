@@ -36,6 +36,7 @@ decode_sample1() ->
     RI = aisle:get_repeat_indicator(CNB),
     MMSI = aisle:get_mmsi(CNB),
     NS = aisle:get_nav_status(CNB),
+    ROT = aisle:get_rate_of_turn(CNB),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(1, FragCount),
@@ -46,7 +47,8 @@ decode_sample1() ->
      ?_assertEqual(pos_report_class_a, MT),
      ?_assertEqual(no_repeats, RI),
      ?_assertEqual(477553000, MMSI),
-     ?_assertEqual(moored, NS)
+     ?_assertEqual(moored, NS),
+     ?_assertEqual(not_turning, ROT)
      ].
 
 decode_bad_id() ->
