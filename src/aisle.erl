@@ -410,5 +410,6 @@ extract_all_message_types(AisRecs) when is_list(AisRecs) ->
 extract_message_type({ok, #ais{} = A}, Acc) ->
     case get_data(A) of
         #cnb{message_type = M} -> [M|Acc];
+        {error,_}              -> Acc;
         MT                     -> [MT|Acc]
     end.
