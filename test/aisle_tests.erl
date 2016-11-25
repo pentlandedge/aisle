@@ -33,6 +33,7 @@ decode_sample1() ->
     FB = aisle:get_fill_bits(AisRec),
     CNB = aisle:get_data(AisRec),
     MT = aisle:get_message_type(CNB),
+    RI = aisle:get_repeat_indicator(CNB),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(1, FragCount),
@@ -40,7 +41,9 @@ decode_sample1() ->
      ?_assertEqual(undefined, MsgID),
      ?_assertEqual(radio_chan_b, Chan),
      ?_assertEqual(0, FB),
-     ?_assertEqual(pos_report_class_a, MT)].
+     ?_assertEqual(pos_report_class_a, MT),
+     ?_assertEqual(no_repeats, RI)
+     ].
 
 decode_bad_id() ->
     Sentence = bad_identifier(),

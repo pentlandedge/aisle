@@ -203,13 +203,19 @@ decode_message_type(26) -> multiple_slot_binary_message_with_comms_state;
 decode_message_type(27) -> pos_report_for_long_range_applications;
 decode_message_type(_) -> unknown_message_type.
 
+%% @doc Decode the repeat indicator.
+decode_repeat_indicator(0) -> no_repeats;
+decode_repeat_indicator(1) -> one_repeat;
+decode_repeat_indicator(2) -> two_repeats;
+decode_repeat_indicator(3) -> do_not_repeat.
+
 %% @doc Decode the 168-bit Common Navigation Block (CNB).
 decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,PA:1,Lon:28/signed,
     Lat:27/signed,COG:12,HDG:9,TS:6,MI:2,_Sp:3,RAIM:1,_RS:19>>) ->
 
     #cnb{
         message_type = decode_message_type(MT),
-        repeat_indicator = RI,
+        repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI,
         nav_status = decode_nav_status(NS),
         rate_of_turn = decode_rate_of_turn(ROT),
