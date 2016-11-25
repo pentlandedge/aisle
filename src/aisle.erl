@@ -24,6 +24,7 @@
     display/1, 
     parse_file/1,
     extract_all_mmsi/1,
+    extract_all_message_types/1,
     decode_message_type/1,
     payload_to_binary/1,
     int_to_bits/1,
@@ -399,3 +400,15 @@ extract_mmsi({ok, #ais{} = A}, Acc) ->
         _              -> Acc
     end.
 
+%% Query function to extract all the message types in a list of AIS records.
+extract_all_message_types(AisRecs) when is_list(AisRecs) ->
+    MTList = lists:foldl(fun extract_message_type/2, [], AisRecs),
+    % Remove non-unique elements.
+    S = sets:from_list(MTList),
+    sets:to_list(S).
+
+extract_message_type({ok, #ais{} = A}, Acc) ->
+    case get_data(A) of
+        #cnb{message_type = M} -> [M|Acc];
+        MT                     -> [MT|Acc]
+    end.
