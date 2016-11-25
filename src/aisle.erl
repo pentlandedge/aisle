@@ -35,6 +35,21 @@
     get_data/1,
     get_fill_bits/1,
     get_checksum/1,
+    get_message_type/1,
+    get_repeat_indicator/1,
+    get_mmsi/1,
+    get_nav_status/1,
+    get_rate_of_turn/1,
+    get_speed_over_ground/1,
+    get_position_accuracy/1,
+    get_longitude/1,
+    get_latitude/1,
+    get_course_over_ground/1,
+    get_true_heading/1,
+    get_timestamp/1,
+    get_maneuver_indicator/1,
+    get_raim_flag/1,
+    get_radio_status/1,
     to_tokens/2]).
 
 -record(ais, {
