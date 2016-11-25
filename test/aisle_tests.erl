@@ -58,7 +58,14 @@ decode_bad_id() ->
     Result = aisle:decode(Sentence),
     [?_assertEqual({error, bad_identifier}, Result)].
 
-sample_sentence1() -> "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
+sample_sentence1() -> 
+    "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
+
+base_station_report1() -> 
+    "!AIVDM,1,1,,A,402=ac1v2rAM`OhIijP3BCw028Gm,0*2C".
+
+aid_to_nav_report1() -> 
+    "!AIVDM,1,1,,A,EvjFM;0Q2PVRa@97QUP00000000?p<6v@1NSH?1skh7P10,4*38".
 
 bad_identifier() -> "!AIDVM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 
