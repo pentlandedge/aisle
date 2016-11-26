@@ -40,6 +40,8 @@ decode_sample1() ->
     ROT = aisle:get_rate_of_turn(CNB),
     SOG = aisle:get_speed_over_ground(CNB),
     PA = aisle:get_position_accuracy(CNB),
+    Lon = aisle:get_longitude(CNB),
+    Lat = aisle:get_latitude(CNB),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(1, FragCount),
@@ -53,7 +55,9 @@ decode_sample1() ->
      ?_assertEqual(moored, NS),
      ?_assertEqual(not_turning, ROT),
      ?_assertEqual(true, almost_equal(0.0, SOG, 0.00001)),
-     ?_assertEqual(unaugmented_gnss_greater_than_10m, PA)
+     ?_assertEqual(unaugmented_gnss_greater_than_10m, PA),
+     ?_assertEqual(true, almost_equal(-122.3458333, Lon, 0.00001)),
+     ?_assertEqual(true, almost_equal(47.5828333, Lat, 0.00001))
      ].
 
 decode_bad_id() ->
