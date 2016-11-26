@@ -39,6 +39,7 @@ decode_sample1() ->
     NS = aisle:get_nav_status(CNB),
     ROT = aisle:get_rate_of_turn(CNB),
     SOG = aisle:get_speed_over_ground(CNB),
+    PA = aisle:get_position_accuracy(CNB),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(1, FragCount),
@@ -51,7 +52,8 @@ decode_sample1() ->
      ?_assertEqual(477553000, MMSI),
      ?_assertEqual(moored, NS),
      ?_assertEqual(not_turning, ROT),
-     ?_assertEqual(true, almost_equal(0.0, SOG, 0.00001))
+     ?_assertEqual(true, almost_equal(0.0, SOG, 0.00001)),
+     ?_assertEqual(unaugmented_gnss_greater_than_10m, PA)
      ].
 
 decode_bad_id() ->
