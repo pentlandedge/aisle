@@ -43,6 +43,8 @@ decode_sample1() ->
     Lon = aisle:get_longitude(CNB),
     Lat = aisle:get_latitude(CNB),
     TS = aisle:get_timestamp(CNB),
+    MI = aisle:get_maneuver_indicator(CNB),
+    RF = aisle:get_raim_flag(CNB),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(1, FragCount),
@@ -59,7 +61,9 @@ decode_sample1() ->
      ?_assertEqual(unaugmented_gnss_greater_than_10m, PA),
      ?_assertEqual(true, almost_equal(-122.3458333, Lon, 0.00001)),
      ?_assertEqual(true, almost_equal(47.5828333, Lat, 0.00001)),
-     ?_assertEqual(15, TS)
+     ?_assertEqual(15, TS),
+     ?_assertEqual(not_available, MI),
+     ?_assertEqual(raim_not_in_use, RF)
      ].
 
 decode_bad_id() ->
