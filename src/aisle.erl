@@ -53,6 +53,23 @@
     get_radio_status/1,
     to_tokens/2]).
 
+-export([
+    get_bsr_message_type/1,
+    get_bsr_repeat_indicator/1,
+    get_bsr_mmsi/1,
+    get_bsr_year_utc/1,
+    get_bsr_month_utc/1,
+    get_bsr_day_utc/1,
+    get_bsr_hour_utc/1,
+    get_bsr_minute_utc/1,
+    get_bsr_second_utc/1,
+    get_bsr_fix_quality/1,
+    get_bsr_longitude/1,
+    get_bsr_latitude/1,
+    get_bsr_type_of_epfd/1,
+    get_bsr_raim_flag/1,
+    get_bsr_sotdma_state/1]).
+
 -record(ais, {
     id, 
     frag_count, 
@@ -347,6 +364,22 @@ get_radio_status(#cnb{radio_status = X}) -> X.
 decode_bsr(<<MT:6,_RI:2,_MMSI:30,_Y:14,_M:4,_D:5,_H:5,_Min:6,_Sec:6,_FQ:1, 
     _Lon:28/signed,_Lat:27/signed,_Type:4,_Sp:10,_RAIM:1,_SOTDMA:19>>) ->
     decode_message_type(MT).
+
+get_bsr_message_type(#base_sr{message_type = X}) -> X.
+get_bsr_repeat_indicator(#base_sr{repeat_indicator = X}) -> X.
+get_bsr_mmsi(#base_sr{mmsi = X}) -> X.
+get_bsr_year_utc(#base_sr{year_utc = X}) -> X.
+get_bsr_month_utc(#base_sr{month_utc = X}) -> X.
+get_bsr_day_utc(#base_sr{day_utc = X}) -> X.
+get_bsr_hour_utc(#base_sr{hour_utc = X}) -> X.
+get_bsr_minute_utc(#base_sr{minute_utc = X}) -> X.
+get_bsr_second_utc(#base_sr{second_utc = X}) -> X.
+get_bsr_fix_quality(#base_sr{fix_quality = X}) -> X.
+get_bsr_longitude(#base_sr{longitude = X}) -> X.
+get_bsr_latitude(#base_sr{latitude = X}) -> X.
+get_bsr_type_of_epfd(#base_sr{type_of_epfd = X}) -> X.
+get_bsr_raim_flag(#base_sr{raim_flag = X}) -> X.
+get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
