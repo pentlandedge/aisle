@@ -63,8 +63,7 @@ decode_sample1() ->
      ?_assertEqual(true, almost_equal(47.5828333, Lat, 0.00001)),
      ?_assertEqual(15, TS),
      ?_assertEqual(not_available, MI),
-     ?_assertEqual(raim_not_in_use, RF)
-     ].
+     ?_assertEqual(raim_not_in_use, RF)].
 
 decode_bad_id() ->
     Sentence = bad_identifier(),
