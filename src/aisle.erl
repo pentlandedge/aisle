@@ -80,6 +80,23 @@
         raim_flag,
         radio_status}).
  
+-record(base_sr, {
+        message_type,
+        repeat_indicator,
+        mmsi,
+        year_utc,
+        month_utc,
+        day_utc,
+        hour_utc,
+        minute_utc,
+        second_utc,
+        fix_quality,
+        longitude,
+        latitude,
+        type_of_epfd,
+        raim_flag,
+        sotdma_state}).
+ 
 %% API
 
 %% @doc Decode an AIS sentence.
