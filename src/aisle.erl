@@ -140,6 +140,8 @@ decode_payload(Payload) ->
             decode_cnb(PayBin);
         pos_report_class_a_response_to_interrogation -> 
             decode_cnb(PayBin);
+        base_station_report ->
+            decode_bsr(PayBin);
         _ ->
             DMT
     end.
@@ -323,6 +325,11 @@ get_timestamp(#cnb{timestamp = X}) -> X.
 get_maneuver_indicator(#cnb{maneuver_indicator = X}) -> X.
 get_raim_flag(#cnb{raim_flag = X}) -> X.
 get_radio_status(#cnb{radio_status = X}) -> X.
+
+%% @doc Decode the 168-bit Base Station Report (BSR). 
+decode_bsr(<<MT:6,_RI:2,_MMSI:30,_Y:14,_M:4,_D:5,_H:5,_Min:6,_Sec:6,_FQ:1, 
+    _Lon:28/signed,_Lat:27/signed,_Type:4,_Sp:10,_RAIM:1,_SOTDMA:19>>) ->
+    decode_message_type(MT).
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
