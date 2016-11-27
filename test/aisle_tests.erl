@@ -42,6 +42,7 @@ decode_sample1() ->
     PA = aisle:get_position_accuracy(CNB),
     Lon = aisle:get_longitude(CNB),
     Lat = aisle:get_latitude(CNB),
+    TS = aisle:get_timestamp(CNB),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(1, FragCount),
@@ -57,7 +58,8 @@ decode_sample1() ->
      ?_assertEqual(true, almost_equal(0.0, SOG, 0.00001)),
      ?_assertEqual(unaugmented_gnss_greater_than_10m, PA),
      ?_assertEqual(true, almost_equal(-122.3458333, Lon, 0.00001)),
-     ?_assertEqual(true, almost_equal(47.5828333, Lat, 0.00001))
+     ?_assertEqual(true, almost_equal(47.5828333, Lat, 0.00001)),
+     ?_assertEqual(15, TS)
      ].
 
 decode_bad_id() ->
