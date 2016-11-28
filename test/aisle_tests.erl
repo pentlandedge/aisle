@@ -72,8 +72,12 @@ decode_bad_id() ->
 
 decode_base_station_report1() ->
     Sentence = base_station_report1(),
-    {Code, _AisRec} = aisle:decode(Sentence),
-    [?_assertEqual(ok, Code)].
+    {Code, AisRec} = aisle:decode(Sentence),
+    BSR = aisle:get_data(AisRec),
+    MT = aisle:get_bsr_message_type(BSR),
+    [?_assertEqual(ok, Code),
+     ?_assertEqual(base_station_report, MT)
+    ].
 
 decode_aid_to_nav_report1() ->
     _Sentence = aid_to_nav_report1(),

@@ -363,7 +363,9 @@ get_radio_status(#cnb{radio_status = X}) -> X.
 %% @doc Decode the 168-bit Base Station Report (BSR). 
 decode_bsr(<<MT:6,_RI:2,_MMSI:30,_Y:14,_M:4,_D:5,_H:5,_Min:6,_Sec:6,_FQ:1, 
     _Lon:28/signed,_Lat:27/signed,_Type:4,_Sp:10,_RAIM:1,_SOTDMA:19>>) ->
-    decode_message_type(MT).
+    DMT = decode_message_type(MT),
+    #base_sr{
+        message_type = DMT}.
 
 get_bsr_message_type(#base_sr{message_type = X}) -> X.
 get_bsr_repeat_indicator(#base_sr{repeat_indicator = X}) -> X.
