@@ -71,8 +71,9 @@ decode_bad_id() ->
     [?_assertEqual({error, bad_identifier}, Result)].
 
 decode_base_station_report1() ->
-    _Sentence = base_station_report1(),
-    [].
+    Sentence = base_station_report1(),
+    {Code, _AisRec} = aisle:decode(Sentence),
+    [?_assertEqual(ok, Code)].
 
 decode_aid_to_nav_report1() ->
     _Sentence = aid_to_nav_report1(),
