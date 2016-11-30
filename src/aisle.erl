@@ -361,11 +361,13 @@ get_raim_flag(#cnb{raim_flag = X}) -> X.
 get_radio_status(#cnb{radio_status = X}) -> X.
 
 %% @doc Decode the 168-bit Base Station Report (BSR). 
-decode_bsr(<<MT:6,_RI:2,_MMSI:30,_Y:14,_M:4,_D:5,_H:5,_Min:6,_Sec:6,_FQ:1, 
+decode_bsr(<<MT:6,RI:2,_MMSI:30,_Y:14,_M:4,_D:5,_H:5,_Min:6,_Sec:6,_FQ:1, 
     _Lon:28/signed,_Lat:27/signed,_Type:4,_Sp:10,_RAIM:1,_SOTDMA:19>>) ->
     DMT = decode_message_type(MT),
+    DRI = decode_repeat_indicator(RI),
     #base_sr{
-        message_type = DMT}.
+        message_type = DMT,
+        repeat_indicator = DRI}.
 
 get_bsr_message_type(#base_sr{message_type = X}) -> X.
 get_bsr_repeat_indicator(#base_sr{repeat_indicator = X}) -> X.

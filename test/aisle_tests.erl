@@ -75,8 +75,10 @@ decode_base_station_report1() ->
     {Code, AisRec} = aisle:decode(Sentence),
     BSR = aisle:get_data(AisRec),
     MT = aisle:get_bsr_message_type(BSR),
+    RI = aisle:get_bsr_repeat_indicator(BSR),
     [?_assertEqual(ok, Code),
-     ?_assertEqual(base_station_report, MT)
+     ?_assertEqual(base_station_report, MT),
+     ?_assertEqual(no_repeats, RI)
     ].
 
 decode_aid_to_nav_report1() ->
