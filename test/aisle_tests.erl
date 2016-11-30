@@ -77,10 +77,12 @@ decode_base_station_report1() ->
     MT = aisle:get_bsr_message_type(BSR),
     RI = aisle:get_bsr_repeat_indicator(BSR),
     MMSI = aisle:get_bsr_mmsi(BSR),
+    Yr = aisle:get_bsr_year_utc(BSR),
     [?_assertEqual(ok, Code),
      ?_assertEqual(base_station_report, MT),
      ?_assertEqual(no_repeats, RI),
-     ?_assertEqual(002320812, MMSI)
+     ?_assertEqual(002320812, MMSI),
+     ?_assertEqual(2016, Yr)
     ].
 
 decode_aid_to_nav_report1() ->
