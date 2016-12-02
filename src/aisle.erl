@@ -362,7 +362,7 @@ get_radio_status(#cnb{radio_status = X}) -> X.
 
 %% @doc Decode the 168-bit Base Station Report (BSR). 
 decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1, 
-    _Lon:28/signed,_Lat:27/signed,_Type:4,_Sp:10,_RAIM:1,_SOTDMA:19>>) ->
+    _Lon:28/signed,_Lat:27/signed,_Type:4,_Sp:10,RAIM:1,_SOTDMA:19>>) ->
     #base_sr{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
@@ -373,7 +373,8 @@ decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1,
         hour_utc = H,
         minute_utc = Min,
         second_utc = Sec,
-        position_accuracy = decode_position_accuracy(PA)}.
+        position_accuracy = decode_position_accuracy(PA),
+        raim_flag = decode_raim(RAIM)}.
 
 get_bsr_message_type(#base_sr{message_type = X}) -> X.
 get_bsr_repeat_indicator(#base_sr{repeat_indicator = X}) -> X.
