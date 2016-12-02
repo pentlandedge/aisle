@@ -63,7 +63,7 @@
     get_bsr_hour_utc/1,
     get_bsr_minute_utc/1,
     get_bsr_second_utc/1,
-    get_bsr_fix_quality/1,
+    get_bsr_position_accuracy/1,
     get_bsr_longitude/1,
     get_bsr_latitude/1,
     get_bsr_type_of_epfd/1,
@@ -107,7 +107,7 @@
         hour_utc,
         minute_utc,
         second_utc,
-        fix_quality,
+        position_accuracy,
         longitude,
         latitude,
         type_of_epfd,
@@ -361,7 +361,7 @@ get_raim_flag(#cnb{raim_flag = X}) -> X.
 get_radio_status(#cnb{radio_status = X}) -> X.
 
 %% @doc Decode the 168-bit Base Station Report (BSR). 
-decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,_FQ:1, 
+decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1, 
     _Lon:28/signed,_Lat:27/signed,_Type:4,_Sp:10,_RAIM:1,_SOTDMA:19>>) ->
     #base_sr{
         message_type = decode_message_type(MT),
@@ -372,7 +372,8 @@ decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,_FQ:1,
         day_utc = D,
         hour_utc = H,
         minute_utc = Min,
-        second_utc = Sec}.
+        second_utc = Sec,
+        position_accuracy = decode_position_accuracy(PA)}.
 
 get_bsr_message_type(#base_sr{message_type = X}) -> X.
 get_bsr_repeat_indicator(#base_sr{repeat_indicator = X}) -> X.
@@ -383,7 +384,7 @@ get_bsr_day_utc(#base_sr{day_utc = X}) -> X.
 get_bsr_hour_utc(#base_sr{hour_utc = X}) -> X.
 get_bsr_minute_utc(#base_sr{minute_utc = X}) -> X.
 get_bsr_second_utc(#base_sr{second_utc = X}) -> X.
-get_bsr_fix_quality(#base_sr{fix_quality = X}) -> X.
+get_bsr_position_accuracy(#base_sr{position_accuracy = X}) -> X.
 get_bsr_longitude(#base_sr{longitude = X}) -> X.
 get_bsr_latitude(#base_sr{latitude = X}) -> X.
 get_bsr_type_of_epfd(#base_sr{type_of_epfd = X}) -> X.

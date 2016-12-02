@@ -83,6 +83,7 @@ decode_base_station_report1() ->
     Hours = aisle:get_bsr_hour_utc(BSR),
     Mins = aisle:get_bsr_minute_utc(BSR),
     Secs = aisle:get_bsr_second_utc(BSR),
+    PA = aisle:get_bsr_position_accuracy(BSR),
     [?_assertEqual(ok, Code),
      ?_assertEqual(base_station_report, MT),
      ?_assertEqual(no_repeats, RI),
@@ -92,7 +93,8 @@ decode_base_station_report1() ->
      ?_assertEqual(20, Day),
      ?_assertEqual(17, Hours),
      ?_assertEqual(29, Mins),
-     ?_assertEqual(40, Secs)
+     ?_assertEqual(40, Secs),
+     ?_assertEqual(unaugmented_gnss_greater_than_10m, PA)
     ].
 
 decode_aid_to_nav_report1() ->
