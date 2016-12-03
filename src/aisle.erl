@@ -362,7 +362,7 @@ get_radio_status(#cnb{radio_status = X}) -> X.
 
 %% @doc Decode the 168-bit Base Station Report (BSR). 
 decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1, 
-    Lon:28/signed,Lat:27/signed,_Type:4,_Sp:10,RAIM:1,_SOTDMA:19>>) ->
+    Lon:28/signed,Lat:27/signed,Type:4,_Sp:10,RAIM:1,_SOTDMA:19>>) ->
     #base_sr{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
@@ -376,7 +376,19 @@ decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1,
         position_accuracy = decode_position_accuracy(PA),
         longitude = decode_longitude(Lon),
         latitude = decode_latitude(Lat),
+        type_of_epfd = decode_epfd_fix_type(Type),
         raim_flag = decode_raim(RAIM)}.
+
+decode_epfd_fix_type(0) -> undefined; 
+decode_epfd_fix_type(1) -> gps;
+decode_epfd_fix_type(2) -> glonass;
+decode_epfd_fix_type(3) -> combined_gps_glonass;
+decode_epfd_fix_type(4) -> loran_c;
+decode_epfd_fix_type(5) -> chayka;
+decode_epfd_fix_type(6) -> integrated_navigation_system;
+decode_epfd_fix_type(7) -> surveyed;
+decode_epfd_fix_type(8) -> galileo;
+decode_epfd_fix_type(_) -> not_used.
 
 get_bsr_message_type(#base_sr{message_type = X}) -> X.
 get_bsr_repeat_indicator(#base_sr{repeat_indicator = X}) -> X.

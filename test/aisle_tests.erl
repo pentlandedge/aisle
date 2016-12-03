@@ -87,6 +87,7 @@ decode_base_station_report1() ->
     Lon = aisle:get_bsr_longitude(BSR),
     Lat = aisle:get_bsr_latitude(BSR),
     RF = aisle:get_bsr_raim_flag(BSR),
+    EPFD = aisle:get_bsr_type_of_epfd(BSR),
     [?_assertEqual(ok, Code),
      ?_assertEqual(base_station_report, MT),
      ?_assertEqual(no_repeats, RI),
@@ -100,6 +101,7 @@ decode_base_station_report1() ->
      ?_assertEqual(unaugmented_gnss_greater_than_10m, PA),
      ?_assert(almost_equal(-3.407265, Lon, 0.00001)),
      ?_assert(almost_equal(56.013785, Lat, 0.00001)),
+     ?_assertEqual(not_used, EPFD),
      ?_assertEqual(raim_in_use, RF)
     ].
 
