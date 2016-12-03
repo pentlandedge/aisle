@@ -391,6 +391,20 @@ decode_epfd_fix_type(7) -> surveyed;
 decode_epfd_fix_type(8) -> galileo;
 decode_epfd_fix_type(_) -> not_used.
 
+decode_sotdma_state(<<Sync:2,SlotTimeOut:3,SubMsg:14>>) ->
+    DecSync = decode_sync_state(Sync),
+    DecSlotTimeOut = decode_slot_timeout(SlotTimeOut),
+    DecSubMsg = decode_sub_message(SubMsg),
+    {DecSync, DecSlotTimeOut, DecSubMsg}.
+
+decode_sync_state(0) -> utc_direct;
+decode_sync_state(1) -> utc_indirect;
+decode_sync_state(2) -> sync_to_base;
+decode_sync_state(3) -> sync_to_station.
+
+decode_slot_timeout(_) -> not_decoded.
+
+decode_sub_message(_) -> not_decoded.
 get_bsr_message_type(#base_sr{message_type = X}) -> X.
 get_bsr_repeat_indicator(#base_sr{repeat_indicator = X}) -> X.
 get_bsr_mmsi(#base_sr{mmsi = X}) -> X.
@@ -406,21 +420,6 @@ get_bsr_latitude(#base_sr{latitude = X}) -> X.
 get_bsr_type_of_epfd(#base_sr{type_of_epfd = X}) -> X.
 get_bsr_raim_flag(#base_sr{raim_flag = X}) -> X.
 get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
-
-decode_sotdma_state(<<Sync:2,SlotTimeOut:3,SubMsg:14>>) ->
-    DecSync = decode_sync_state(Sync),
-    DecSlotTimeOut = decode_slot_timeout(SlotTimeOut),
-    DecSubMsg = decode_sub_message(SubMsg),
-    {DecSync, DecSlotTimeOut, DecSubMsg}.
-
-decode_sync_state(0) -> utc_direct;
-decode_sync_state(1) -> utc_indirect;
-decode_sync_state(2) -> sync_to_base;
-decode_sync_state(3) -> sync_to_station.
-
-decode_slot_timeout(_) -> not_decoded.
-
-decode_sub_message(_) -> not_decoded.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
