@@ -84,6 +84,7 @@ decode_base_station_report1() ->
     Mins = aisle:get_bsr_minute_utc(BSR),
     Secs = aisle:get_bsr_second_utc(BSR),
     PA = aisle:get_bsr_position_accuracy(BSR),
+    Lon = aisle:get_bsr_longitude(BSR),
     RF = aisle:get_bsr_raim_flag(BSR),
     [?_assertEqual(ok, Code),
      ?_assertEqual(base_station_report, MT),
@@ -96,6 +97,7 @@ decode_base_station_report1() ->
      ?_assertEqual(29, Mins),
      ?_assertEqual(40, Secs),
      ?_assertEqual(unaugmented_gnss_greater_than_10m, PA),
+     ?_assert(almost_equal(-3.407265, Lon, 0.00001)),
      ?_assertEqual(raim_in_use, RF)
     ].
 
