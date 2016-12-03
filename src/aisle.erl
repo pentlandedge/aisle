@@ -362,7 +362,7 @@ get_radio_status(#cnb{radio_status = X}) -> X.
 
 %% @doc Decode the 168-bit Base Station Report (BSR). 
 decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1, 
-    Lon:28/signed,Lat:27/signed,Type:4,_Sp:10,RAIM:1,_SOTDMA:19>>) ->
+    Lon:28/signed,Lat:27/signed,Type:4,_Sp:10,RAIM:1,SOTDMA:19/bitstring>>) ->
     #base_sr{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
@@ -377,7 +377,8 @@ decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1,
         longitude = decode_longitude(Lon),
         latitude = decode_latitude(Lat),
         type_of_epfd = decode_epfd_fix_type(Type),
-        raim_flag = decode_raim(RAIM)}.
+        raim_flag = decode_raim(RAIM),
+        sotdma_state = decode_sotdma_state(SOTDMA)}.
 
 decode_epfd_fix_type(0) -> undefined; 
 decode_epfd_fix_type(1) -> gps;
@@ -405,6 +406,21 @@ get_bsr_latitude(#base_sr{latitude = X}) -> X.
 get_bsr_type_of_epfd(#base_sr{type_of_epfd = X}) -> X.
 get_bsr_raim_flag(#base_sr{raim_flag = X}) -> X.
 get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
+
+decode_sotdma_state(<<Sync:2,SlotTimeOut:3,SubMsg:14>>) ->
+    DecSync = decode_sync_state(Sync),
+    DecSlotTimeOut = decode_slot_timeout(SlotTimeOut),
+    DecSubMsg = decode_sub_message(SubMsg),
+    {DecSync, DecSlotTimeOut, DecSubMsg}.
+
+decode_sync_state(0) -> utc_direct;
+decode_sync_state(1) -> utc_indirect;
+decode_sync_state(2) -> sync_to_base;
+decode_sync_state(3) -> sync_to_station.
+
+decode_slot_timeout(_) -> not_decoded.
+
+decode_sub_message(_) -> not_decoded.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
