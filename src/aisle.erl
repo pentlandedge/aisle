@@ -402,9 +402,17 @@ decode_sync_state(1) -> utc_indirect;
 decode_sync_state(2) -> sync_to_base;
 decode_sync_state(3) -> sync_to_station.
 
-decode_slot_timeout(_) -> not_decoded.
+decode_slot_timeout(0) -> {0, slot_offset};
+decode_slot_timeout(1) -> {1, utc_hour_and_minute};
+decode_slot_timeout(2) -> {2, slot_number};
+decode_slot_timeout(3) -> {3, received_stations};
+decode_slot_timeout(4) -> {4, slot_number};
+decode_slot_timeout(5) -> {5, received_stations};
+decode_slot_timeout(6) -> {6, slot_number};
+decode_slot_timeout(7) -> {7, received_stations}.
 
 decode_sub_message(_) -> not_decoded.
+
 get_bsr_message_type(#base_sr{message_type = X}) -> X.
 get_bsr_repeat_indicator(#base_sr{repeat_indicator = X}) -> X.
 get_bsr_mmsi(#base_sr{mmsi = X}) -> X.
