@@ -391,10 +391,10 @@ decode_epfd_fix_type(7) -> surveyed;
 decode_epfd_fix_type(8) -> galileo;
 decode_epfd_fix_type(_) -> not_used.
 
-decode_sotdma_state(<<Sync:2,SlotTimeOut:3,SubMsg:14>>) ->
+decode_sotdma_state(<<Sync:2,SlotTimeOut:3,SubMsg:14/bitstring>>) ->
     DecSync = decode_sync_state(Sync),
     DecSlotTimeOut = decode_slot_timeout(SlotTimeOut),
-    DecSubMsg = decode_sub_message(SubMsg),
+    DecSubMsg = decode_sub_message(DecSlotTimeOut, SubMsg),
     {DecSync, DecSlotTimeOut, DecSubMsg}.
 
 decode_sync_state(0) -> utc_direct;
@@ -402,6 +402,8 @@ decode_sync_state(1) -> utc_indirect;
 decode_sync_state(2) -> sync_to_base;
 decode_sync_state(3) -> sync_to_station.
 
+%% @doc Decode the slot timeout field. Different sub messages are indicated 
+%% by the timeout value.
 decode_slot_timeout(0) -> {0, slot_offset};
 decode_slot_timeout(1) -> {1, utc_hour_and_minute};
 decode_slot_timeout(2) -> {2, slot_number};
@@ -411,7 +413,19 @@ decode_slot_timeout(5) -> {5, received_stations};
 decode_slot_timeout(6) -> {6, slot_number};
 decode_slot_timeout(7) -> {7, received_stations}.
 
-decode_sub_message(_) -> not_decoded.
+%% @doc Decoding of the sub message depending upon the type indicated by the 
+%% slot timeout parameter.
+decode_sub_message({0, slot_offset}, <<SubMsg:14>>) -> 
+    {slot_offset, SubMsg}; 
+decode_sub_message({_, utc_hour_and_minute}, <<SubMsg:14>>) -> 
+    decode_utc_hour_and_minute(<<SubMsg:14>>); 
+decode_sub_message({_, slot_number}, <<SubMsg:14>>) -> 
+    {slot_number, SubMsg}; 
+decode_sub_message({_, received_stations}, <<SubMsg:14>>) ->
+    {received_stations, SubMsg}.
+
+decode_utc_hour_and_minute(<<Hour:5,Min:6,_:2>>) -> 
+    {utc_hour_and_minute, Hour, Min}.
 
 get_bsr_message_type(#base_sr{message_type = X}) -> X.
 get_bsr_repeat_indicator(#base_sr{repeat_indicator = X}) -> X.

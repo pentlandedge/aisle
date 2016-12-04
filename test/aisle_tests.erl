@@ -88,6 +88,7 @@ decode_base_station_report1() ->
     Lat = aisle:get_bsr_latitude(BSR),
     RF = aisle:get_bsr_raim_flag(BSR),
     EPFD = aisle:get_bsr_type_of_epfd(BSR),
+    SOTDMA = aisle:get_bsr_sotdma_state(BSR),
     [?_assertEqual(ok, Code),
      ?_assertEqual(base_station_report, MT),
      ?_assertEqual(no_repeats, RI),
@@ -102,7 +103,8 @@ decode_base_station_report1() ->
      ?_assert(almost_equal(-3.407265, Lon, 0.00001)),
      ?_assert(almost_equal(56.013785, Lat, 0.00001)),
      ?_assertEqual(not_used, EPFD),
-     ?_assertEqual(raim_in_use, RF)
+     ?_assertEqual(raim_in_use, RF),
+     ?_assertEqual({utc_direct, {2, slot_number}, {slot_number,1525}}, SOTDMA)
     ].
 
 decode_aid_to_nav_report1() ->
