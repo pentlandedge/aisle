@@ -176,6 +176,8 @@ decode_payload(Payload) ->
             decode_cnb(PayBin);
         base_station_report ->
             decode_bsr(PayBin);
+        aid_to_navigation_report ->
+            decode_aid_to_navigation_report(PayBin);
         _ ->
             DMT
     end.
@@ -442,6 +444,10 @@ get_bsr_latitude(#base_sr{latitude = X}) -> X.
 get_bsr_type_of_epfd(#base_sr{type_of_epfd = X}) -> X.
 get_bsr_raim_flag(#base_sr{raim_flag = X}) -> X.
 get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
+
+%% @doc Decode the aid to navigation report.
+decode_aid_to_navigation_report(<<MT:6,_/bitstring>>) ->
+    decode_message_type(MT).
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
