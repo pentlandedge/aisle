@@ -424,7 +424,7 @@ decode_sub_message({_, slot_number}, <<SubMsg:14>>) ->
 decode_sub_message({_, received_stations}, <<SubMsg:14>>) ->
     {received_stations, SubMsg}.
 
-decode_utc_hour_and_minute(<<Hour:5,Min:6,_:2>>) -> 
+decode_utc_hour_and_minute(<<Hour:5,Min:7,_:2>>) -> 
     {utc_hour_and_minute, Hour, Min}.
 
 get_bsr_message_type(#base_sr{message_type = X}) -> X.

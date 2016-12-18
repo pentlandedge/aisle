@@ -21,7 +21,7 @@
 %% Define a test generator for the aisle decoder. 
 aisle_test_() ->
     [decode_sample1(), decode_bad_id(), decode_base_station_report1(),
-     decode_aid_to_nav_report1()].
+     decode_base_station_report2(), decode_aid_to_nav_report1()].
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
@@ -107,6 +107,14 @@ decode_base_station_report1() ->
      ?_assertEqual({utc_direct, {2, slot_number}, {slot_number,1525}}, SOTDMA)
     ].
 
+%% Check the sentence that showed the bug in the UTC handling of submessages.
+decode_base_station_report2() ->
+    Sentence = base_station_report2(),
+    {_Code, AisRec} = aisle:decode(Sentence),
+    BSR = aisle:get_data(AisRec),
+    SOTDMA = aisle:get_bsr_sotdma_state(BSR),
+    [?_assertEqual({utc_direct, {1, utc_hour_and_minute}, {utc_hour_and_minute, 17, 22}}, SOTDMA)].
+
 decode_aid_to_nav_report1() ->
     _Sentence = aid_to_nav_report1(),
     [].
@@ -116,6 +124,9 @@ sample_sentence1() ->
 
 base_station_report1() -> 
     "!AIVDM,1,1,,A,402=ac1v2rAM`OhIijP3BCw028Gm,0*2C".
+
+base_station_report2() ->
+    "!AIVDM,1,1,,A,402=ac1v2rAF0OhIiTP3BFg0269H,0*09".
 
 aid_to_nav_report1() -> 
     "!AIVDM,1,1,,A,EvjFM;0Q2PVRa@97QUP00000000?p<6v@1NSH?1skh7P10,4*38".
