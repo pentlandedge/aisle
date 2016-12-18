@@ -70,6 +70,9 @@
     get_bsr_raim_flag/1,
     get_bsr_sotdma_state/1]).
 
+-export([
+    get_atnr_message_type/1]).
+
 -record(ais, {
     id, 
     frag_count, 
@@ -114,6 +117,10 @@
         raim_flag,
         sotdma_state}).
  
+-record(atnr, {
+        message_type,
+        repeat_indicator}).
+
 %% API
 
 %% @doc Decode an AIS sentence.
@@ -447,7 +454,10 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,_/bitstring>>) ->
-    decode_message_type(MT).
+    #atnr{
+       message_type = decode_message_type(MT)}.
+
+get_atnr_message_type(#atnr{message_type = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.

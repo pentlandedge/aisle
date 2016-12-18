@@ -116,8 +116,13 @@ decode_base_station_report2() ->
     [?_assertEqual({utc_direct, {1, utc_hour_and_minute}, {utc_hour_and_minute, 17, 22}}, SOTDMA)].
 
 decode_aid_to_nav_report1() ->
-    _Sentence = aid_to_nav_report1(),
-    [].
+    Sentence = aid_to_nav_report1(),
+    {Code, AisRec} = aisle:decode(Sentence),
+    ATNR = aisle:get_data(AisRec),
+    MT = aisle:get_atnr_message_type(ATNR),
+    [?_assertEqual(ok, Code), 
+     ?_assertEqual(aid_to_navigation_report, MT)
+    ].
 
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
