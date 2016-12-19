@@ -122,10 +122,12 @@ decode_aid_to_nav_report1() ->
     MT = aisle:get_atnr_message_type(ATNR),
     RI = aisle:get_atnr_repeat_indicator(ATNR),
     MMSI = aisle:get_atnr_mmsi(ATNR),
+    AT = aisle:get_atnr_aid_type(ATNR),
     [?_assertEqual(ok, Code), 
      ?_assertEqual(aid_to_navigation_report, MT),
      ?_assertEqual(do_not_repeat, RI),
-     ?_assertEqual(992320812, MMSI)
+     ?_assertEqual(992320812, MMSI),
+     ?_assertEqual(reference_point, AT)
     ].
 
 sample_sentence1() -> 

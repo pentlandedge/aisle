@@ -73,7 +73,8 @@
 -export([
     get_atnr_message_type/1,
     get_atnr_repeat_indicator/1,
-    get_atnr_mmsi/1]).
+    get_atnr_mmsi/1,
+    get_atnr_aid_type/1]).
 
 -record(ais, {
     id, 
@@ -122,7 +123,8 @@
 -record(atnr, {
         message_type,
         repeat_indicator,
-        mmsi}).
+        mmsi,
+        aid_type}).
 
 %% API
 
@@ -456,15 +458,51 @@ get_bsr_raim_flag(#base_sr{raim_flag = X}) -> X.
 get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 
 %% @doc Decode the aid to navigation report.
-decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,_/bitstring>>) ->
+decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,_/bitstring>>) ->
     #atnr{
-       message_type = decode_message_type(MT),
-       repeat_indicator = decode_repeat_indicator(RI),
-       mmsi = MMSI}.
+        message_type = decode_message_type(MT),
+        repeat_indicator = decode_repeat_indicator(RI),
+        mmsi = MMSI,
+        aid_type = decode_aid_type(AT)}.
+
+%% @doc Decode the aid type parameter.
+decode_aid_type(0) -> default_not_specified;
+decode_aid_type(1) -> reference_point;
+decode_aid_type(2) -> racon_radar_transponder;
+decode_aid_type(3) -> fixed_structure_off_shore;
+decode_aid_type(4) -> reserved;
+decode_aid_type(5) -> light_without_sectors;
+decode_aid_type(6) -> light_with_sectors;
+decode_aid_type(7) -> leading_light_front;
+decode_aid_type(8) -> leading_light_rear;
+decode_aid_type(9) -> beacon_cardinal_north;
+decode_aid_type(10) -> beacon_cardinal_east;
+decode_aid_type(11) -> beacon_cardinal_south;
+decode_aid_type(12) -> beacon_cardinal_west;
+decode_aid_type(13) -> beacon_port_hand;
+decode_aid_type(14) -> beacon_starboard_hand;
+decode_aid_type(15) -> beacon_preferred_channel_port_hand;
+decode_aid_type(16) -> beacon_preferred_channel_starboard_hand;
+decode_aid_type(17) -> beacon_isolated_danger;
+decode_aid_type(18) -> beacon_safe_water;
+decode_aid_type(19) -> beacon_special_mark;
+decode_aid_type(20) -> cardinal_mark_north;
+decode_aid_type(21) -> cardinal_mark_east;
+decode_aid_type(22) -> cardinal_mark_south;
+decode_aid_type(23) -> cardinal_mark_west;
+decode_aid_type(24) -> port_hand_mark;
+decode_aid_type(25) -> starboard_hand_mark;
+decode_aid_type(26) -> preferred_channel_port_hand;
+decode_aid_type(27) -> preferred_channel_starboard_hand;
+decode_aid_type(28) -> isolated_danger;
+decode_aid_type(29) -> safe_water;
+decode_aid_type(30) -> special_mark;
+decode_aid_type(31) -> light_vessel.
 
 get_atnr_message_type(#atnr{message_type = X}) -> X.
 get_atnr_repeat_indicator(#atnr{repeat_indicator = X}) -> X.
 get_atnr_mmsi(#atnr{mmsi = X}) -> X.
+get_atnr_aid_type(#atnr{aid_type = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
