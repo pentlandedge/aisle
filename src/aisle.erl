@@ -74,7 +74,8 @@
     get_atnr_message_type/1,
     get_atnr_repeat_indicator/1,
     get_atnr_mmsi/1,
-    get_atnr_aid_type/1]).
+    get_atnr_aid_type/1,
+    get_atnr_name/1]).
 
 -record(ais, {
     id, 
@@ -124,7 +125,8 @@
         message_type,
         repeat_indicator,
         mmsi,
-        aid_type}).
+        aid_type,
+        name}).
 
 %% API
 
@@ -222,6 +224,13 @@ int_to_bits(X) ->
     case Y >= 40 of
         true  -> Y - 8;
         false -> Y
+    end.
+
+%% Map the 6 bit encoded characters back to normal ASCII.
+bits_to_ascii(X) ->
+    case X >= 32 of 
+        true  -> X;
+        false -> X + 64 
     end.
 
 %% @doc Decode the message type in the data payload.
@@ -458,12 +467,15 @@ get_bsr_raim_flag(#base_sr{raim_flag = X}) -> X.
 get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 
 %% @doc Decode the aid to navigation report.
-decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,_/bitstring>>) ->
+decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
+    _/bitstring>>) ->
+
     #atnr{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI,
-        aid_type = decode_aid_type(AT)}.
+        aid_type = decode_aid_type(AT),
+        name = decode_name(Name)}.
 
 %% @doc Decode the aid type parameter.
 decode_aid_type(0) -> default_not_specified;
@@ -499,10 +511,21 @@ decode_aid_type(29) -> safe_water;
 decode_aid_type(30) -> special_mark;
 decode_aid_type(31) -> light_vessel.
 
+%% @doc Decode the fixed name field. Returns an indication of whether the
+%% name field is full and the extra field needs to be decoded.
+decode_name(BinName) when is_binary(BinName) ->
+    Name = [bits_to_ascii(X) || <<X:6>> <= BinName],
+    [LastChar|_] = lists:reverse(Name), 
+    case LastChar of  
+        $@ -> {ok, Name};
+        _  -> {full, Name}
+    end.
+
 get_atnr_message_type(#atnr{message_type = X}) -> X.
 get_atnr_repeat_indicator(#atnr{repeat_indicator = X}) -> X.
 get_atnr_mmsi(#atnr{mmsi = X}) -> X.
 get_atnr_aid_type(#atnr{aid_type = X}) -> X.
+get_atnr_name(#atnr{name = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
