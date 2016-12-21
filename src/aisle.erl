@@ -75,7 +75,8 @@
     get_atnr_repeat_indicator/1,
     get_atnr_mmsi/1,
     get_atnr_aid_type/1,
-    get_atnr_name/1]).
+    get_atnr_name/1,
+    get_atnr_position_accuracy/1]).
 
 -record(ais, {
     id, 
@@ -126,7 +127,8 @@
         repeat_indicator,
         mmsi,
         aid_type,
-        name}).
+        name,
+        position_accuracy}).
 
 %% API
 
@@ -468,14 +470,15 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
-    _/bitstring>>) ->
+    PA:1,_/bitstring>>) ->
 
     #atnr{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI,
         aid_type = decode_aid_type(AT),
-        name = decode_name(Name)}.
+        name = decode_name(Name),
+        position_accuracy = decode_position_accuracy(PA)}.
 
 %% @doc Decode the aid type parameter.
 decode_aid_type(0) -> default_not_specified;
@@ -526,6 +529,7 @@ get_atnr_repeat_indicator(#atnr{repeat_indicator = X}) -> X.
 get_atnr_mmsi(#atnr{mmsi = X}) -> X.
 get_atnr_aid_type(#atnr{aid_type = X}) -> X.
 get_atnr_name(#atnr{name = X}) -> X.
+get_atnr_position_accuracy(#atnr{position_accuracy = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
