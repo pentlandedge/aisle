@@ -131,6 +131,7 @@ decode_aid_to_nav_report1() ->
     DimStern = aisle:get_atnr_dim_to_stern(ATNR),
     DimPort = aisle:get_atnr_dim_to_port(ATNR),
     DimStarboard = aisle:get_atnr_dim_to_starboard(ATNR), 
+    EPFD = aisle:get_atnr_type_of_epfd(ATNR), 
     [?_assertEqual(ok, Code), 
      ?_assertEqual(aid_to_navigation_report, MT),
      ?_assertEqual(do_not_repeat, RI),
@@ -143,7 +144,8 @@ decode_aid_to_nav_report1() ->
      ?_assertEqual(15, DimBow),
      ?_assertEqual(15, DimStern),
      ?_assertEqual(30, DimPort),
-     ?_assertEqual(30, DimStarboard)
+     ?_assertEqual(30, DimStarboard),
+     ?_assertEqual(undefined, EPFD)
     ].
 
 sample_sentence1() -> 

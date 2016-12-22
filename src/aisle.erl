@@ -82,7 +82,8 @@
     get_atnr_dim_to_bow/1,
     get_atnr_dim_to_stern/1,
     get_atnr_dim_to_port/1,
-    get_atnr_dim_to_starboard/1]).
+    get_atnr_dim_to_starboard/1,
+    get_atnr_type_of_epfd/1]).
 
 -record(ais, {
     id, 
@@ -140,7 +141,8 @@
         dim_to_bow,
         dim_to_stern,
         dim_to_port,
-        dim_to_starboard}).
+        dim_to_starboard,
+        type_of_epfd}).
 
 %% API
 
@@ -482,7 +484,8 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
-    PA:1,Lon:28/signed,Lat:27,DimBow:9,DimStern:9,DimPort:6,DimStar:6,_/bitstring>>) ->
+    PA:1,Lon:28/signed,Lat:27,DimBow:9,DimStern:9,DimPort:6,DimStar:6,EPFD:4,
+    _/bitstring>>) ->
 
     #atnr{
         message_type = decode_message_type(MT),
@@ -496,7 +499,8 @@ decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
         dim_to_bow = DimBow,
         dim_to_stern = DimStern,
         dim_to_port = DimPort,
-        dim_to_starboard = DimStar
+        dim_to_starboard = DimStar,
+        type_of_epfd = decode_epfd_fix_type(EPFD)
       }.
 
 %% @doc Decode the aid type parameter.
@@ -555,6 +559,7 @@ get_atnr_dim_to_bow(#atnr{dim_to_bow = X}) -> X.
 get_atnr_dim_to_stern(#atnr{dim_to_stern = X}) -> X.
 get_atnr_dim_to_port(#atnr{dim_to_port = X}) -> X.
 get_atnr_dim_to_starboard(#atnr{dim_to_starboard = X}) -> X.
+get_atnr_type_of_epfd(#atnr{type_of_epfd = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
