@@ -125,13 +125,17 @@ decode_aid_to_nav_report1() ->
     AT = aisle:get_atnr_aid_type(ATNR),
     Name = aisle:get_atnr_name(ATNR),
     PA = aisle:get_atnr_position_accuracy(ATNR),
+    Lon = aisle:get_atnr_longitude(ATNR),
+    Lat = aisle:get_atnr_latitude(ATNR),
     [?_assertEqual(ok, Code), 
      ?_assertEqual(aid_to_navigation_report, MT),
      ?_assertEqual(do_not_repeat, RI),
      ?_assertEqual(992320812, MMSI),
      ?_assertEqual(reference_point, AT),
      ?_assertEqual({ok, "BEAMER ROCK@@@@@@@@@"}, Name),
-     ?_assertEqual(unaugmented_gnss_greater_than_10m, PA)
+     ?_assertEqual(unaugmented_gnss_greater_than_10m, PA),
+     ?_assert(almost_equal(-3.41259, Lon, 0.00001)),
+     ?_assert(almost_equal(56.004738333, Lat, 0.00001))
     ].
 
 sample_sentence1() -> 

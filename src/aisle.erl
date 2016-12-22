@@ -76,7 +76,9 @@
     get_atnr_mmsi/1,
     get_atnr_aid_type/1,
     get_atnr_name/1,
-    get_atnr_position_accuracy/1]).
+    get_atnr_position_accuracy/1,
+    get_atnr_longitude/1,
+    get_atnr_latitude/1]).
 
 -record(ais, {
     id, 
@@ -128,7 +130,9 @@
         mmsi,
         aid_type,
         name,
-        position_accuracy}).
+        position_accuracy,
+        longitude,
+        latitude}).
 
 %% API
 
@@ -470,7 +474,7 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
-    PA:1,_/bitstring>>) ->
+    PA:1,Lon:28/signed,Lat:27,_/bitstring>>) ->
 
     #atnr{
         message_type = decode_message_type(MT),
@@ -478,7 +482,9 @@ decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
         mmsi = MMSI,
         aid_type = decode_aid_type(AT),
         name = decode_name(Name),
-        position_accuracy = decode_position_accuracy(PA)}.
+        position_accuracy = decode_position_accuracy(PA),
+        longitude = decode_longitude(Lon),
+        latitude = decode_latitude(Lat)}.
 
 %% @doc Decode the aid type parameter.
 decode_aid_type(0) -> default_not_specified;
@@ -530,6 +536,8 @@ get_atnr_mmsi(#atnr{mmsi = X}) -> X.
 get_atnr_aid_type(#atnr{aid_type = X}) -> X.
 get_atnr_name(#atnr{name = X}) -> X.
 get_atnr_position_accuracy(#atnr{position_accuracy = X}) -> X.
+get_atnr_longitude(#atnr{longitude = X}) -> X.
+get_atnr_latitude(#atnr{latitude = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
