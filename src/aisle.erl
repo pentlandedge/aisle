@@ -78,7 +78,11 @@
     get_atnr_name/1,
     get_atnr_position_accuracy/1,
     get_atnr_longitude/1,
-    get_atnr_latitude/1]).
+    get_atnr_latitude/1,
+    get_atnr_dim_to_bow/1,
+    get_atnr_dim_to_stern/1,
+    get_atnr_dim_to_port/1,
+    get_atnr_dim_to_starboard/1]).
 
 -record(ais, {
     id, 
@@ -132,7 +136,11 @@
         name,
         position_accuracy,
         longitude,
-        latitude}).
+        latitude,
+        dim_to_bow,
+        dim_to_stern,
+        dim_to_port,
+        dim_to_starboard}).
 
 %% API
 
@@ -474,7 +482,7 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
-    PA:1,Lon:28/signed,Lat:27,_/bitstring>>) ->
+    PA:1,Lon:28/signed,Lat:27,DimBow:9,DimStern:9,DimPort:6,DimStar:6,_/bitstring>>) ->
 
     #atnr{
         message_type = decode_message_type(MT),
@@ -484,7 +492,12 @@ decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
         name = decode_name(Name),
         position_accuracy = decode_position_accuracy(PA),
         longitude = decode_longitude(Lon),
-        latitude = decode_latitude(Lat)}.
+        latitude = decode_latitude(Lat),
+        dim_to_bow = DimBow,
+        dim_to_stern = DimStern,
+        dim_to_port = DimPort,
+        dim_to_starboard = DimStar
+      }.
 
 %% @doc Decode the aid type parameter.
 decode_aid_type(0) -> default_not_specified;
@@ -538,6 +551,10 @@ get_atnr_name(#atnr{name = X}) -> X.
 get_atnr_position_accuracy(#atnr{position_accuracy = X}) -> X.
 get_atnr_longitude(#atnr{longitude = X}) -> X.
 get_atnr_latitude(#atnr{latitude = X}) -> X.
+get_atnr_dim_to_bow(#atnr{dim_to_bow = X}) -> X.
+get_atnr_dim_to_stern(#atnr{dim_to_stern = X}) -> X.
+get_atnr_dim_to_port(#atnr{dim_to_port = X}) -> X.
+get_atnr_dim_to_starboard(#atnr{dim_to_starboard = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
