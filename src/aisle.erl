@@ -497,7 +497,7 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
     PA:1,Lon:28/signed,Lat:27,DimBow:9,DimStern:9,DimPort:6,DimStar:6,EPFD:4,
-    TS:6,Off:1,Reg:8/bitstring,RAIM:1,VA:1,_AM:1,_/bitstring>>) ->
+    TS:6,Off:1,Reg:8/bitstring,RAIM:1,VA:1,AM:1,_/bitstring>>) ->
 
     #atnr{
         message_type = decode_message_type(MT),
@@ -517,7 +517,8 @@ decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
         off_position = decode_off_position(Off),
         regional = Reg,
         raim_flag = decode_raim(RAIM),
-        virtual_aid = decode_virtual_aid_flag(VA)
+        virtual_aid = decode_virtual_aid_flag(VA),
+        assigned_mode = decode_assigned_mode_flag(AM)
       }.
 
 %% @doc Decode the aid type parameter.
@@ -574,6 +575,11 @@ decode_off_position(1) -> off_position.
 %% simulated by another station.
 decode_virtual_aid_flag(0) -> real_aid_to_nav;
 decode_virtual_aid_flag(1) -> virtual_aid_to_nav.
+
+%% @doc Decode the assigned mode flag. Indicates whether a station is 
+%% operating autonomously or is in assigned mode.
+decode_assigned_mode_flag(0) -> autonomous_mode;
+decode_assigned_mode_flag(1) -> assigned_mode.
 
 get_atnr_message_type(#atnr{message_type = X}) -> X.
 get_atnr_repeat_indicator(#atnr{repeat_indicator = X}) -> X.
