@@ -497,7 +497,7 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
     PA:1,Lon:28/signed,Lat:27,DimBow:9,DimStern:9,DimPort:6,DimStar:6,EPFD:4,
-    TS:6,Off:1,Reg:8/bitstring,RAIM:1,_VA:1,_AM:1,_/bitstring>>) ->
+    TS:6,Off:1,Reg:8/bitstring,RAIM:1,VA:1,_AM:1,_/bitstring>>) ->
 
     #atnr{
         message_type = decode_message_type(MT),
@@ -516,7 +516,8 @@ decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
         timestamp = TS,
         off_position = decode_off_position(Off),
         regional = Reg,
-        raim_flag = decode_raim(RAIM)
+        raim_flag = decode_raim(RAIM),
+        virtual_aid = decode_virtual_aid_flag(VA)
       }.
 
 %% @doc Decode the aid type parameter.
@@ -567,6 +568,12 @@ decode_name(BinName) when is_binary(BinName) ->
 %% aids-to-navigation. Only valid if UTC second <= 59.
 decode_off_position(0) -> on_position;
 decode_off_position(1) -> off_position.
+
+%% @doc Decode the virtual aid to nav flag. Indicates whether the aid is real
+%% and located at the specified position or if it is a virtual indication 
+%% simulated by another station.
+decode_virtual_aid_flag(0) -> real_aid_to_nav;
+decode_virtual_aid_flag(1) -> virtual_aid_to_nav.
 
 get_atnr_message_type(#atnr{message_type = X}) -> X.
 get_atnr_repeat_indicator(#atnr{repeat_indicator = X}) -> X.
