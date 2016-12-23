@@ -497,7 +497,7 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
     PA:1,Lon:28/signed,Lat:27,DimBow:9,DimStern:9,DimPort:6,DimStar:6,EPFD:4,
-    _/bitstring>>) ->
+    _TS:6,_Off:1,_Reg:8,_RAIM:1,_VA:1,_AM:1,_/bitstring>>) ->
 
     #atnr{
         message_type = decode_message_type(MT),
