@@ -136,6 +136,8 @@ decode_aid_to_nav_report1() ->
     OffPos = aisle:get_atnr_off_position(ATNR), 
     Reg = aisle:get_atnr_regional(ATNR), 
     RF = aisle:get_atnr_raim_flag(ATNR), 
+    VA = aisle:get_atnr_virtual_aid(ATNR), 
+    AssMode = aisle:get_atnr_assigned_mode(ATNR), 
     [?_assertEqual(ok, Code), 
      ?_assertEqual(aid_to_navigation_report, MT),
      ?_assertEqual(do_not_repeat, RI),
@@ -153,7 +155,9 @@ decode_aid_to_nav_report1() ->
      ?_assertEqual(15, TS),
      ?_assertEqual(on_position, OffPos),
      ?_assertEqual(<<0>>, Reg),
-     ?_assertEqual(raim_not_in_use, RF)
+     ?_assertEqual(raim_not_in_use, RF),
+     ?_assertEqual(virtual_aid_to_nav, VA),
+     ?_assertEqual(autonomous_mode, AssMode)
     ].
 
 sample_sentence1() -> 
