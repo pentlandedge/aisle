@@ -497,14 +497,23 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
     PA:1,Lon:28/signed,Lat:27,DimBow:9,DimStern:9,DimPort:6,DimStar:6,EPFD:4,
-    TS:6,Off:1,Reg:8/bitstring,RAIM:1,VA:1,AM:1,_/bitstring>>) ->
+    TS:6,Off:1,Reg:8/bitstring,RAIM:1,VA:1,AM:1,Rem/bitstring>> = Sentence) ->
 
+    %% We need to check for extra name data at the end of the field.
+    BitLength = bit_size(Sentence),
+    case BitLength of 
+        276 ->
+            DecName = decode_name(Name); 
+        _   ->
+            DecName = decode_name(Name,Rem) 
+    end,
+        
     #atnr{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI,
         aid_type = decode_aid_type(AT),
-        name = decode_name(Name),
+        name = DecName,
         position_accuracy = decode_position_accuracy(PA),
         longitude = decode_longitude(Lon),
         latitude = decode_latitude(Lat),
@@ -564,6 +573,12 @@ decode_name(BinName) when is_binary(BinName) ->
         $@ -> {ok, Name};
         _  -> {full, Name}
     end.
+
+%% @doc Decoding function to handle the extra name field.
+%% Not finished yet, does not deal with the extra.
+decode_name(Name, Rem) when is_binary(Name), is_bitstring(Rem) ->
+    %ExtraLength = bit_size(Rem),
+    decode_name(Name).
 
 %% @doc Decode the off position indicator, usef for floating 
 %% aids-to-navigation. Only valid if UTC second <= 59.
