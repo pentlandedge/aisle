@@ -162,6 +162,7 @@
 decode(Sentence) when is_list(Sentence) ->
     Tokens = to_tokens(Sentence, ",*"),
     [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] = Tokens,
+    FillBits = decode_fill_bits(Fill),
     case Id of 
         "!AIVDM" -> 
             AisRec = #ais{
@@ -170,13 +171,20 @@ decode(Sentence) when is_list(Sentence) ->
                 frag_num = list_to_integer(FragNum),
                 msg_id = decode_msg_id(MsgID),
                 radio_chan = decode_radio_chan(Chan),
-                data = decode_payload(Payload),
+                data = decode_payload(Payload, FillBits),
                 fill_bits = decode_fill_bits(Fill),
                 checksum = CS},
             {ok, AisRec};
         _ -> 
             {error, bad_identifier}
     end.
+
+%% @doc Trim the fill bits from the end of the payload.
+trim_payload(Payload, FillBits) when is_bitstring(Payload) ->
+    FullLen = bit_size(Payload),
+    TrimSize = FullLen - FillBits,
+    <<TrimPayload:TrimSize/bitstring,_/bitstring>> = Payload,
+    TrimPayload.
 
 %% @ Parse a log file constructed of AIS sentences, one per line.
 parse_file(Filename) ->
@@ -203,23 +211,24 @@ decode_msg_id(MsgID)  ->
     end.
 
 %% @doc Decode the data payload.
-decode_payload(Payload) ->
+decode_payload(Payload, FillBits) ->
     PayBin = payload_to_binary(list_to_binary(Payload)),
-    <<MT:6,_Rest/bitstring>> = PayBin,
+    TrimPayBin = trim_payload(PayBin, FillBits),
+    <<MT:6,_Rest/bitstring>> = TrimPayBin,
     %% Decode the message types we know how to decode, or simply return the
     %% message type.
     DMT = decode_message_type(MT),
     case DMT of
         pos_report_class_a -> 
-            decode_cnb(PayBin);
+            decode_cnb(TrimPayBin);
         pos_report_class_a_assigned_schedule -> 
-            decode_cnb(PayBin);
+            decode_cnb(TrimPayBin);
         pos_report_class_a_response_to_interrogation -> 
-            decode_cnb(PayBin);
+            decode_cnb(TrimPayBin);
         base_station_report ->
-            decode_bsr(PayBin);
+            decode_bsr(TrimPayBin);
         aid_to_navigation_report ->
-            decode_aid_to_navigation_report(PayBin);
+            decode_aid_to_navigation_report(TrimPayBin);
         _ ->
             DMT
     end.
@@ -501,7 +510,6 @@ decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
 
     %% We need to check for extra name data at the end of the field.
     BitLength = bit_size(Sentence),
-    io:format("Ext~p~n", [Ext]),
     case BitLength of 
         272 ->
             DecName = decode_name(Name); 
