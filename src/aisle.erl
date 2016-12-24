@@ -497,15 +497,16 @@ get_bsr_sotdma_state(#base_sr{sotdma_state = X}) -> X.
 %% @doc Decode the aid to navigation report.
 decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
     PA:1,Lon:28/signed,Lat:27,DimBow:9,DimStern:9,DimPort:6,DimStar:6,EPFD:4,
-    TS:6,Off:1,Reg:8/bitstring,RAIM:1,VA:1,AM:1,Rem/bitstring>> = Sentence) ->
+    TS:6,Off:1,Reg:8/bitstring,RAIM:1,VA:1,AM:1,_Sp:1,Ext/bitstring>> = Sentence) ->
 
     %% We need to check for extra name data at the end of the field.
     BitLength = bit_size(Sentence),
+    io:format("Ext~p~n", [Ext]),
     case BitLength of 
-        276 ->
+        272 ->
             DecName = decode_name(Name); 
         _   ->
-            DecName = decode_name(Name,Rem) 
+            DecName = decode_name(Name, Ext) 
     end,
         
     #atnr{
