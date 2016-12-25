@@ -586,8 +586,17 @@ decode_name(BinName) when is_binary(BinName) ->
 %% @doc Decoding function to handle the extra name field.
 %% Not finished yet, does not deal with the extra.
 decode_name(Name, Rem) when is_binary(Name), is_bitstring(Rem) ->
-    %ExtraLength = bit_size(Rem),
-    decode_name(Name).
+    ExtraLength = bit_size(Rem),
+    % Characters are 6 bits, so slice to a multiple of 6.
+    case ExtraLength rem 6 of
+        0 ->
+            ExtraNameBits = Rem;
+        X ->
+            Required = ExtraLength - X,
+            <<ExtraNameBits:Required,_/bitstring>> = Rem
+    end,
+    AllBits = <<Name/binary,ExtraNameBits/bitstring>>,
+    decode_name(AllBits).
 
 %% @doc Decode the off position indicator, usef for floating 
 %% aids-to-navigation. Only valid if UTC second <= 59.
