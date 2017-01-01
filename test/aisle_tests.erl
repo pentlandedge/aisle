@@ -23,7 +23,7 @@ aisle_test_() ->
     [decode_sample1(), decode_bad_id(), decode_base_station_report1(),
      decode_base_station_report2(), decode_aid_to_nav_report1(),
      decode_aid_to_nav_report2(), decode_static_voyage_pair1(),
-     decode_static_voyage_pair2()].
+     decode_static_voyage_pair2(), decode_class_a_res_to_interrogation()].
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
@@ -174,6 +174,10 @@ decode_static_voyage_pair2() ->
     _Sentence = static_and_voyage_data_sentence_pair2(),
     [].
 
+decode_class_a_res_to_interrogation() ->
+    _Sentence = response_to_interrogation1(),
+    [].
+
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 
@@ -196,6 +200,9 @@ static_and_voyage_data_sentence_pair1() ->
 static_and_voyage_data_sentence_pair2() ->
     ["!AIVDM,2,1,4,A,53P7f?000001I49G>20h5E860n2222222222220l1H8176o:044SlnE28888,0*31",
      "!AIVDM,2,2,4,A,88888888880,2*20"].
+
+response_to_interrogation1() ->
+    "!AIVDM,1,1,,B,33P;vahOh`OhFc<P3AMmI5E@010i,0*6B".
 
 bad_identifier() -> "!AIDVM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 
