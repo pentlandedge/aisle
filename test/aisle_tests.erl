@@ -22,7 +22,8 @@
 aisle_test_() ->
     [decode_sample1(), decode_bad_id(), decode_base_station_report1(),
      decode_base_station_report2(), decode_aid_to_nav_report1(),
-     decode_aid_to_nav_report2(), decode_static_voyage_pair()].
+     decode_aid_to_nav_report2(), decode_static_voyage_pair1(),
+     decode_static_voyage_pair2()].
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
@@ -165,8 +166,12 @@ decode_aid_to_nav_report2() ->
     _Sentence = aid_to_nav_report2(),
     [].
 
-decode_static_voyage_pair() ->
-    _Sentence = static_and_voyage_data_sentence_pair(),
+decode_static_voyage_pair1() ->
+    _Sentence = static_and_voyage_data_sentence_pair1(),
+    [].
+
+decode_static_voyage_pair2() ->
+    _Sentence = static_and_voyage_data_sentence_pair2(),
     [].
 
 sample_sentence1() -> 
@@ -184,9 +189,13 @@ aid_to_nav_report1() ->
 aid_to_nav_report2() ->
     "!AIVDM,1,1,,A,E8VDET1aRR1WsppP00000000000Oq<b2@4BL1J;Gwpph20,4*4B".
 
-static_and_voyage_data_sentence_pair() ->
+static_and_voyage_data_sentence_pair1() ->
     ["!AIVDM,2,1,2,A,54S`;l42BnK1K8ICR21`E@4L5>2222222222221D:hK6>6qU0?PTPAASkm80,0*6C", 
      "!AIVDM,2,2,2,A,PFH88888880,2*40"].
+
+static_and_voyage_data_sentence_pair2() ->
+    ["!AIVDM,2,1,4,A,53P7f?000001I49G>20h5E860n2222222222220l1H8176o:044SlnE28888,0*31",
+     "!AIVDM,2,2,4,A,88888888880,2*20"].
 
 bad_identifier() -> "!AIDVM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 
