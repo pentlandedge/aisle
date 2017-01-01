@@ -21,7 +21,8 @@
 %% Define a test generator for the aisle decoder. 
 aisle_test_() ->
     [decode_sample1(), decode_bad_id(), decode_base_station_report1(),
-     decode_base_station_report2(), decode_aid_to_nav_report1()].
+     decode_base_station_report2(), decode_aid_to_nav_report1(),
+     decode_aid_to_nav_report2()].
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
@@ -160,6 +161,10 @@ decode_aid_to_nav_report1() ->
      ?_assertEqual(autonomous_mode, AssMode)
     ].
 
+decode_aid_to_nav_report2() ->
+    _Sentence = aid_to_nav_report2(),
+    [].
+
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 
@@ -171,6 +176,9 @@ base_station_report2() ->
 
 aid_to_nav_report1() -> 
     "!AIVDM,1,1,,A,EvjFM;0Q2PVRa@97QUP00000000?p<6v@1NSH?1skh7P10,4*38".
+
+aid_to_nav_report2() ->
+    "!AIVDM,1,1,,A,E8VDET1aRR1WsppP00000000000Oq<b2@4BL1J;Gwpph20,4*4B".
 
 bad_identifier() -> "!AIDVM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 
