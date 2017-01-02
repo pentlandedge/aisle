@@ -172,13 +172,17 @@ decode_aid_to_nav_report2() ->
     AT = aisle:get_atnr_aid_type(ATNR),
     Name = aisle:get_atnr_name(ATNR),
     PA = aisle:get_atnr_position_accuracy(ATNR),
+    Lon = aisle:get_atnr_longitude(ATNR),
+    Lat = aisle:get_atnr_latitude(ATNR),
     [?_assertEqual(ok, Code), 
      ?_assertEqual(aid_to_navigation_report, MT),
      ?_assertEqual(no_repeats, RI),
      ?_assertEqual(577050000, MMSI),
      ?_assertEqual(fixed_structure_off_shore, AT),
      ?_assertEqual({ok, "SEDCO711@@@@@@@@@@@@"}, Name),
-     ?_assertEqual(dgps_less_than_10m, PA)
+     ?_assertEqual(dgps_less_than_10m, PA),
+     ?_assert(almost_equal(-2.971944, Lon, 0.00001)),
+     ?_assert(almost_equal(56.15824, Lat, 0.00001))
     ].
 
 decode_static_voyage_pair1() ->
