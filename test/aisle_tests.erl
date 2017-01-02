@@ -216,8 +216,13 @@ decode_static_voyage_pair2() ->
     [].
 
 decode_class_a_res_to_interrogation() ->
-    _Sentence = response_to_interrogation1(),
-    [].
+    Sentence = response_to_interrogation1(),
+    {Code, AisRec} = aisle:decode(Sentence),
+    CNB = aisle:get_data(AisRec),
+    MT = aisle:get_message_type(CNB),
+    [?_assertEqual(ok, Code), 
+     ?_assertEqual(pos_report_class_a_response_to_interrogation, MT)
+    ].
 
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
@@ -251,3 +256,4 @@ bad_identifier() -> "!AIDVM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 %% specified range.
 almost_equal(V1, V2, Delta) ->
     abs(V1 - V2) =< Delta.
+
