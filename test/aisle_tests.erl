@@ -166,8 +166,14 @@ decode_aid_to_nav_report2() ->
     Sentence = aid_to_nav_report2(),
     {Code, AisRec} = aisle:decode(Sentence),
     ATNR = aisle:get_data(AisRec),
+    MT = aisle:get_atnr_message_type(ATNR),
+    RI = aisle:get_atnr_repeat_indicator(ATNR),
+    MMSI = aisle:get_atnr_mmsi(ATNR),
     Name = aisle:get_atnr_name(ATNR),
     [?_assertEqual(ok, Code), 
+     ?_assertEqual(aid_to_navigation_report, MT),
+     ?_assertEqual(no_repeats, RI),
+     ?_assertEqual(577050000, MMSI),
      ?_assertEqual({ok, "SEDCO711@@@@@@@@@@@@"}, Name)
     ].
 
