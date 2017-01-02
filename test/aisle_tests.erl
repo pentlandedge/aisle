@@ -163,8 +163,13 @@ decode_aid_to_nav_report1() ->
     ].
 
 decode_aid_to_nav_report2() ->
-    _Sentence = aid_to_nav_report2(),
-    [].
+    Sentence = aid_to_nav_report2(),
+    {Code, AisRec} = aisle:decode(Sentence),
+    ATNR = aisle:get_data(AisRec),
+    Name = aisle:get_atnr_name(ATNR),
+    [?_assertEqual(ok, Code), 
+     ?_assertEqual({ok, "SEDCO711@@@@@@@@@@@@"}, Name)
+    ].
 
 decode_static_voyage_pair1() ->
     _Sentence = static_and_voyage_data_sentence_pair1(),
