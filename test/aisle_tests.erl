@@ -174,6 +174,17 @@ decode_aid_to_nav_report2() ->
     PA = aisle:get_atnr_position_accuracy(ATNR),
     Lon = aisle:get_atnr_longitude(ATNR),
     Lat = aisle:get_atnr_latitude(ATNR),
+    DimBow = aisle:get_atnr_dim_to_bow(ATNR),
+    DimStern = aisle:get_atnr_dim_to_stern(ATNR),
+    DimPort = aisle:get_atnr_dim_to_port(ATNR),
+    DimStarboard = aisle:get_atnr_dim_to_starboard(ATNR), 
+    EPFD = aisle:get_atnr_type_of_epfd(ATNR), 
+    TS = aisle:get_atnr_timestamp(ATNR), 
+    OffPos = aisle:get_atnr_off_position(ATNR), 
+    Reg = aisle:get_atnr_regional(ATNR), 
+    RF = aisle:get_atnr_raim_flag(ATNR), 
+    VA = aisle:get_atnr_virtual_aid(ATNR), 
+    AssMode = aisle:get_atnr_assigned_mode(ATNR), 
     [?_assertEqual(ok, Code), 
      ?_assertEqual(aid_to_navigation_report, MT),
      ?_assertEqual(no_repeats, RI),
@@ -182,7 +193,18 @@ decode_aid_to_nav_report2() ->
      ?_assertEqual({ok, "SEDCO711@@@@@@@@@@@@"}, Name),
      ?_assertEqual(dgps_less_than_10m, PA),
      ?_assert(almost_equal(-2.971944, Lon, 0.00001)),
-     ?_assert(almost_equal(56.15824, Lat, 0.00001))
+     ?_assert(almost_equal(56.15824, Lat, 0.00001)),
+     ?_assertEqual(90, DimBow),
+     ?_assertEqual(90, DimStern),
+     ?_assertEqual(63, DimPort),
+     ?_assertEqual(63, DimStarboard),
+     ?_assertEqual(gps, EPFD),
+     ?_assertEqual(49, TS),
+     ?_assertEqual(off_position, OffPos),
+     ?_assertEqual(<<0>>, Reg),
+     ?_assertEqual(raim_in_use, RF),
+     ?_assertEqual(real_aid_to_nav, VA),
+     ?_assertEqual(autonomous_mode, AssMode)
     ].
 
 decode_static_voyage_pair1() ->
