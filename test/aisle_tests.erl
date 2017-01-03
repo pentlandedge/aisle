@@ -220,8 +220,20 @@ decode_class_a_res_to_interrogation() ->
     {Code, AisRec} = aisle:decode(Sentence),
     CNB = aisle:get_data(AisRec),
     MT = aisle:get_message_type(CNB),
+    RI = aisle:get_repeat_indicator(CNB),
+    MMSI = aisle:get_mmsi(CNB),
+    NS = aisle:get_nav_status(CNB),
+    ROT = aisle:get_rate_of_turn(CNB),
+    SOG = aisle:get_speed_over_ground(CNB),
+    PA = aisle:get_position_accuracy(CNB),
     [?_assertEqual(ok, Code), 
-     ?_assertEqual(pos_report_class_a_response_to_interrogation, MT)
+     ?_assertEqual(pos_report_class_a_response_to_interrogation, MT),
+     ?_assertEqual(no_repeats, RI),
+     ?_assertEqual(235077287, MMSI),
+     ?_assertEqual(under_way_using_engine, NS),
+     ?_assertEqual(turning_right_more_than_5deg_30sec, ROT),
+     ?_assertEqual(true, almost_equal(4.0, SOG, 0.00001)),
+     ?_assertEqual(unaugmented_gnss_greater_than_10m, PA)
     ].
 
 sample_sentence1() -> 
