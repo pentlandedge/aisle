@@ -228,6 +228,7 @@ decode_class_a_res_to_interrogation() ->
     PA = aisle:get_position_accuracy(CNB),
     Lon = aisle:get_longitude(CNB),
     Lat = aisle:get_latitude(CNB),
+    COG = aisle:get_course_over_ground(CNB),
     TS = aisle:get_timestamp(CNB),
     MI = aisle:get_maneuver_indicator(CNB),
     RF = aisle:get_raim_flag(CNB),
@@ -241,6 +242,7 @@ decode_class_a_res_to_interrogation() ->
      ?_assertEqual(unaugmented_gnss_greater_than_10m, PA),
      ?_assertEqual(true, almost_equal(-3.4178567, Lon, 0.00001)),
      ?_assertEqual(true, almost_equal(56.0134250, Lat, 0.00001)),
+     ?_assertEqual(true, almost_equal(138.0, COG, 0.00001)),
      ?_assertEqual(40, TS),
      ?_assertEqual(not_available, MI),
      ?_assertEqual(raim_not_in_use, RF)].
