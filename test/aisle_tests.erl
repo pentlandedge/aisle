@@ -226,6 +226,11 @@ decode_class_a_res_to_interrogation() ->
     ROT = aisle:get_rate_of_turn(CNB),
     SOG = aisle:get_speed_over_ground(CNB),
     PA = aisle:get_position_accuracy(CNB),
+    Lon = aisle:get_longitude(CNB),
+    Lat = aisle:get_latitude(CNB),
+    TS = aisle:get_timestamp(CNB),
+    MI = aisle:get_maneuver_indicator(CNB),
+    RF = aisle:get_raim_flag(CNB),
     [?_assertEqual(ok, Code), 
      ?_assertEqual(pos_report_class_a_response_to_interrogation, MT),
      ?_assertEqual(no_repeats, RI),
@@ -233,8 +238,12 @@ decode_class_a_res_to_interrogation() ->
      ?_assertEqual(under_way_using_engine, NS),
      ?_assertEqual(turning_right_more_than_5deg_30sec, ROT),
      ?_assertEqual(true, almost_equal(4.0, SOG, 0.00001)),
-     ?_assertEqual(unaugmented_gnss_greater_than_10m, PA)
-    ].
+     ?_assertEqual(unaugmented_gnss_greater_than_10m, PA),
+     ?_assertEqual(true, almost_equal(-3.4178567, Lon, 0.00001)),
+     ?_assertEqual(true, almost_equal(56.0134250, Lat, 0.00001)),
+     ?_assertEqual(40, TS),
+     ?_assertEqual(not_available, MI),
+     ?_assertEqual(raim_not_in_use, RF)].
 
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
