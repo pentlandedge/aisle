@@ -213,10 +213,14 @@ decode_static_voyage_pair1() ->
     Id = aisle:get_id(AisRec),
     FragCount = aisle:get_frag_count(AisRec),
     FragNum = aisle:get_frag_num(AisRec),   
+    MsgID = aisle:get_msg_id(AisRec),
+    Chan = aisle:get_radio_chan(AisRec),
     [?_assertEqual(ok, Code),
      ?_assertEqual(aivdm, Id),
      ?_assertEqual(2, FragCount),
-     ?_assertEqual(1, FragNum)
+     ?_assertEqual(1, FragNum),
+     ?_assertEqual(2, MsgID),
+     ?_assertEqual(radio_chan_a, Chan)
     ].
 
 decode_static_voyage_pair2() ->
