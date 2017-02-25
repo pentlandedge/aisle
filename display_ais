@@ -1,0 +1,18 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+%%! -smp enable -sname display_ais -pa ebin -mnesia debug verbose
+main([Filename]) ->
+    try
+        AIS = aisle:parse_file(Filename),
+        aisle:display(AIS)
+    catch
+        _:_ ->
+            usage()
+    end;
+main(_) ->
+    usage().
+
+usage() ->
+    io:format("usage: display_ais filename\n"),
+    halt(1).
+
