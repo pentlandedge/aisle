@@ -28,7 +28,9 @@
     decode_message_type/1,
     payload_to_binary/1,
     int_to_bits/1,
-    to_tokens/2]).
+    to_tokens/2,
+    decode_contains_cnb/1,
+    contains_cnb/1]).
 
 %% Accessors for the top level AIS structure.
 -export([
@@ -731,4 +733,13 @@ extract_message_type({ok, #ais{} = A}, Acc) ->
         {error,_}              -> Acc;
         MT                     -> [MT|Acc]
     end.
+
+%% Unwraps the decode return which contains a status in addition to the 
+%% decoded record. Only valid decodes are considered.
+decode_contains_cnb({ok, #ais{} = A}) -> contains_cnb(A);
+decode_contains_cnb(_)                -> false.
+
+%% Predicate to indicate whether a decoded AIS record contains a CNB.
+contains_cnb(#ais{data = #cnb{}}) -> true;
+contains_cnb(_)                   -> false.
 
