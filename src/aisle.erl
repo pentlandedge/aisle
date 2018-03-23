@@ -28,6 +28,10 @@
     decode_message_type/1,
     payload_to_binary/1,
     int_to_bits/1,
+    to_tokens/2]).
+
+%% Accessors for the top level AIS structure.
+-export([
     get_id/1,
     get_frag_count/1,
     get_frag_num/1,
@@ -35,7 +39,10 @@
     get_radio_chan/1,
     get_data/1,
     get_fill_bits/1,
-    get_checksum/1,
+    get_checksum/1]).
+
+%% Accessors for the CNB fields.
+-export([
     get_message_type/1,
     get_repeat_indicator/1,
     get_mmsi/1,
@@ -50,9 +57,9 @@
     get_timestamp/1,
     get_maneuver_indicator/1,
     get_raim_flag/1,
-    get_radio_status/1,
-    to_tokens/2]).
+    get_radio_status/1]).
 
+%% Accessors for base station reports. 
 -export([
     get_bsr_message_type/1,
     get_bsr_repeat_indicator/1,
@@ -70,6 +77,7 @@
     get_bsr_raim_flag/1,
     get_bsr_sotdma_state/1]).
 
+%% Accessors for aid to navigation reports.
 -export([
     get_atnr_message_type/1,
     get_atnr_repeat_indicator/1,
