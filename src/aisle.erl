@@ -29,6 +29,7 @@
     payload_to_binary/1,
     int_to_bits/1,
     to_tokens/2,
+    extract_cnb_records/1,
     decode_contains_cnb/1,
     contains_cnb/1]).
 
@@ -733,6 +734,21 @@ extract_message_type({ok, #ais{} = A}, Acc) ->
         {error,_}              -> Acc;
         MT                     -> [MT|Acc]
     end.
+
+%% Extracts all records containing CNB data from a list of decoded AIS 
+%% records.
+extract_cnb_records(AisRecs) ->
+    F = fun(Rec, Acc) ->
+            case decode_contains_cnb(Rec) of
+                true -> 
+                    {ok, Ais} = Rec,
+                    [Ais|Acc];
+                false ->
+                    Acc
+            end
+        end,
+    Rev = lists:foldl(F, [], AisRecs),
+    lists:reverse(Rev).
 
 %% Unwraps the decode return which contains a status in addition to the 
 %% decoded record. Only valid decodes are considered.
