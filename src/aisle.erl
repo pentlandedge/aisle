@@ -44,6 +44,8 @@
     get_fill_bits/1,
     get_checksum/1]).
 
+-export([get_payload_type/1]).
+
 %% Accessors for the CNB fields.
 -export([
     get_message_type/1,
@@ -73,6 +75,7 @@
     get_bsr_hour_utc/1,
     get_bsr_minute_utc/1,
     get_bsr_second_utc/1,
+    get_bsr_datetime/1,
     get_bsr_position_accuracy/1,
     get_bsr_longitude/1,
     get_bsr_latitude/1,
@@ -507,6 +510,13 @@ get_bsr_day_utc(#base_sr{day_utc = X}) -> X.
 get_bsr_hour_utc(#base_sr{hour_utc = X}) -> X.
 get_bsr_minute_utc(#base_sr{minute_utc = X}) -> X.
 get_bsr_second_utc(#base_sr{second_utc = X}) -> X.
+get_bsr_datetime(#base_sr{
+    year_utc = Y, 
+    month_utc = M, 
+    day_utc = D, 
+    hour_utc = H,
+    minute_utc = Min,
+    second_utc = S}) -> {{Y,M,D},{H,Min,S}}.
 get_bsr_position_accuracy(#base_sr{position_accuracy = X}) -> X.
 get_bsr_longitude(#base_sr{longitude = X}) -> X.
 get_bsr_latitude(#base_sr{latitude = X}) -> X.
@@ -735,6 +745,13 @@ extract_message_type({ok, #ais{} = A}, Acc) ->
         MT                     -> [MT|Acc]
     end.
 
+get_payload_type({ok, #ais{} = A}) ->
+    case get_data(A) of
+        #cnb{}     -> cnb;
+        #base_sr{} -> base_sr;
+        _          -> undefined 
+    end.
+    
 %% Extracts all records containing CNB data from a list of decoded AIS 
 %% records.
 extract_cnb_records(AisRecs) ->
