@@ -30,8 +30,10 @@
     int_to_bits/1,
     to_tokens/2,
     extract_cnb_records/1,
+    extract_last_cnb_by_mmsi/1,
     decode_contains_cnb/1,
-    contains_cnb/1]).
+    contains_cnb/1,
+    find_cnb/1]).
 
 %% Accessors for the top level AIS structure.
 -export([
@@ -767,6 +769,19 @@ extract_cnb_records(AisRecs) ->
     Rev = lists:foldl(F, [], AisRecs),
     lists:reverse(Rev).
 
+%% Extract last CNB for each MMSI present in the data.
+extract_last_cnb_by_mmsi(AisRecs) ->
+    F = fun(Rec, AccMap) ->
+            case find_cnb(Rec) of
+                {ok, CNB} ->
+                    MMSI = get_mmsi(CNB),
+                    maps:put(MMSI, CNB, AccMap);
+                error ->
+                    AccMap
+            end
+        end,
+    lists:foldl(F, #{}, AisRecs).
+
 %% Unwraps the decode return which contains a status in addition to the 
 %% decoded record. Only valid decodes are considered.
 decode_contains_cnb({ok, #ais{} = A}) -> contains_cnb(A);
@@ -775,4 +790,9 @@ decode_contains_cnb(_)                -> false.
 %% Predicate to indicate whether a decoded AIS record contains a CNB.
 contains_cnb(#ais{data = #cnb{}}) -> true;
 contains_cnb(_)                   -> false.
+
+%% Extract the CNB from a record if it exists or return an error.
+find_cnb({ok, #ais{} = A})          -> find_cnb(A);
+find_cnb(#ais{data = #cnb{} = CNB}) -> {ok, CNB};
+find_cnb(_)                         -> error.
 
