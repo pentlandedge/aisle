@@ -31,6 +31,7 @@
     to_tokens/2,
     extract_cnb_records/1,
     extract_last_cnb_by_mmsi/1,
+    update_cnb_map/2,
     decode_contains_cnb/1,
     contains_cnb/1,
     find_cnb/1]).
@@ -771,6 +772,10 @@ extract_cnb_records(AisRecs) ->
 
 %% Extract last CNB for each MMSI present in the data.
 extract_last_cnb_by_mmsi(AisRecs) ->
+    update_cnb_map(AisRecs, #{}).
+
+%% Update an existing CNB map with new records.
+update_cnb_map(AisRecs, CnbMap) ->
     F = fun(Rec, AccMap) ->
             case find_cnb(Rec) of
                 {ok, CNB} ->
@@ -780,7 +785,7 @@ extract_last_cnb_by_mmsi(AisRecs) ->
                     AccMap
             end
         end,
-    lists:foldl(F, #{}, AisRecs).
+    lists:foldl(F, CnbMap, AisRecs).
 
 %% Unwraps the decode return which contains a status in addition to the 
 %% decoded record. Only valid decodes are considered.
