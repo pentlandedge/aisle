@@ -622,8 +622,8 @@ decode_name(Name, Rem) when is_binary(Name), is_bitstring(Rem) ->
     AllBits = <<Name/binary,ExtraNameBits/bitstring>>,
     decode_name(AllBits).
 
-%% @doc Decode the off position indicator, usef for floating 
-%% aids-to-navigation. Only valid if UTC second <= 59.
+%% @doc Decode the off position indicator, used for floating 
+%% aids-to-navigation. Only valid if UTC second is less than or equal to 59.
 decode_off_position(0) -> on_position;
 decode_off_position(1) -> off_position.
 
