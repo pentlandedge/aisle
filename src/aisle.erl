@@ -177,10 +177,10 @@
 
 %% @doc Decode an AIS sentence.
 decode(Sentence) when is_list(Sentence) ->
-    io:format("~p~n", [Sentence]),
+    %io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] = Tokens,
-    io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
+    %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
     FillBits = decode_fill_bits(Fill),
     case Id of 
         "!AIVDM" -> 
@@ -254,10 +254,10 @@ decode_payload(Payload, FillBits) ->
         base_station_report ->
             decode_bsr(TrimPayBin);
         aid_to_navigation_report ->
-            io:format("Aid to Nav bits ~p size ~p ~p~n", [bit_size(TrimPayBin), byte_size(TrimPayBin), TrimPayBin]),
+            %io:format("Aid to Nav bits ~p size ~p ~p~n", [bit_size(TrimPayBin), byte_size(TrimPayBin), TrimPayBin]),
             decode_aid_to_navigation_report(TrimPayBin);
         _ ->
-            io:format("Default decode payload~n"),
+            %io:format("Default decode payload~n"),
             {unsupported_message_type, DMT}
     end.
 
