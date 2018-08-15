@@ -263,7 +263,7 @@ decode_class_a_res_to_interrogation() ->
      ?_assertEqual(raim_not_in_use, RF)].
 
 decode_aid_to_nav_short_payload() ->
-    Sentence = "!AIVDM,1,1,,B,EvjFM;0Q2PVR@97QUP00000000?p<6v@1NSH?1skhGP10,4*4B\n",
+    Sentence = aid_to_nav_short_payload(),
     {Code, Reason} = aisle:decode(Sentence),
     [?_assertEqual(error, Code),
      ?_assertEqual(payload_error, Reason)].
@@ -282,6 +282,9 @@ aid_to_nav_report1() ->
 
 aid_to_nav_report2() ->
     "!AIVDM,1,1,,A,E8VDET1aRR1WsppP00000000000Oq<b2@4BL1J;Gwpph20,4*4B".
+
+aid_to_nav_short_payload() ->
+    "!AIVDM,1,1,,B,EvjFM;0Q2PVR@97QUP00000000?p<6v@1NSH?1skhGP10,4*4B\n".
 
 %static_and_voyage_data_sentence_pair1() ->
 %    "!AIVDM,2,1,2,A,54S`;l42BnK1K8ICR21`E@4L5>2222222222221D:hK6>6qU0?PTPAASkm80,0*6C\n" ++
