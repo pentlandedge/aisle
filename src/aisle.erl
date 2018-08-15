@@ -177,21 +177,30 @@
 
 %% @doc Decode an AIS sentence.
 decode(Sentence) when is_list(Sentence) ->
+    io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] = Tokens,
+    io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
     FillBits = decode_fill_bits(Fill),
     case Id of 
         "!AIVDM" -> 
-            AisRec = #ais{
-                id = aivdm,
-                frag_count = list_to_integer(FragCount),
-                frag_num = list_to_integer(FragNum),
-                msg_id = decode_msg_id(MsgID),
-                radio_chan = decode_radio_chan(Chan),
-                data = decode_payload(Payload, FillBits),
-                fill_bits = decode_fill_bits(Fill),
-                checksum = CS},
-            {ok, AisRec};
+            case decode_payload(Payload, FillBits) of
+                {ok, PayloadData} ->
+                    AisRec = #ais{
+                        id = aivdm,
+                        frag_count = list_to_integer(FragCount),
+                        frag_num = list_to_integer(FragNum),
+                        msg_id = decode_msg_id(MsgID),
+                        radio_chan = decode_radio_chan(Chan),
+                        data = PayloadData, 
+                        fill_bits = decode_fill_bits(Fill),
+                        checksum = CS},
+                    {ok, AisRec};
+                {unsupported_message_type, UMT} ->
+                    {unsupported_message_type, UMT};
+                _ ->
+                    {error, payload_error}
+            end;
         _ -> 
             {error, bad_identifier}
     end.
@@ -245,9 +254,11 @@ decode_payload(Payload, FillBits) ->
         base_station_report ->
             decode_bsr(TrimPayBin);
         aid_to_navigation_report ->
+            io:format("Aid to Nav bits ~p size ~p ~p~n", [bit_size(TrimPayBin), byte_size(TrimPayBin), TrimPayBin]),
             decode_aid_to_navigation_report(TrimPayBin);
         _ ->
-            DMT
+            io:format("Default decode payload~n"),
+            {unsupported_message_type, DMT}
     end.
 
 %% @doc Decode the radio channel, either 'A' at 161.975 MHz or 'B' at 
@@ -327,7 +338,7 @@ decode_repeat_indicator(3) -> do_not_repeat.
 decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,PA:1,Lon:28/signed,
     Lat:27/signed,COG:12,HDG:9,TS:6,MI:2,_Sp:3,RAIM:1,_RS:19>>) ->
 
-    #cnb{
+    {ok, #cnb{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI,
@@ -341,7 +352,7 @@ decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,PA:1,Lon:28/signed,
         true_heading = decode_true_heading(HDG),
         timestamp = TS,
         maneuver_indicator = decode_maneuver_indicator(MI),
-        raim_flag = decode_raim(RAIM)};
+        raim_flag = decode_raim(RAIM)}};
 
 decode_cnb(_) ->
     {error, failed_to_decode_cnb}.
@@ -440,7 +451,7 @@ get_radio_status(#cnb{radio_status = X}) -> X.
 %% @doc Decode the 168-bit Base Station Report (BSR). 
 decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1, 
     Lon:28/signed,Lat:27/signed,Type:4,_Sp:10,RAIM:1,SOTDMA:19/bitstring>>) ->
-    #base_sr{
+    {ok, #base_sr{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI,
@@ -455,7 +466,7 @@ decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1,
         latitude = decode_latitude(Lat),
         type_of_epfd = decode_epfd_fix_type(Type),
         raim_flag = decode_raim(RAIM),
-        sotdma_state = decode_sotdma_state(SOTDMA)}.
+        sotdma_state = decode_sotdma_state(SOTDMA)}}.
 
 decode_epfd_fix_type(0) -> undefined; 
 decode_epfd_fix_type(1) -> gps;
@@ -541,7 +552,7 @@ decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
             DecName = decode_name(Name, Ext) 
     end,
         
-    #atnr{
+    {ok, #atnr{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI,
@@ -560,8 +571,9 @@ decode_aid_to_navigation_report(<<MT:6,RI:2,MMSI:30,AT:5,Name:120/bitstring,
         regional = Reg,
         raim_flag = decode_raim(RAIM),
         virtual_aid = decode_virtual_aid_flag(VA),
-        assigned_mode = decode_assigned_mode_flag(AM)
-      }.
+        assigned_mode = decode_assigned_mode_flag(AM)}};
+decode_aid_to_navigation_report(_) ->
+    {error, payload_error}.
 
 %% @doc Decode the aid type parameter.
 decode_aid_type(0) -> default_not_specified;

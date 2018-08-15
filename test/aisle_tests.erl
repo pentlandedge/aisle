@@ -22,8 +22,9 @@
 aisle_test_() ->
     [decode_sample1(), decode_bad_id(), decode_base_station_report1(),
      decode_base_station_report2(), decode_aid_to_nav_report1(),
-     decode_aid_to_nav_report2(), decode_static_voyage_pair1(),
-     decode_static_voyage_pair2(), decode_class_a_res_to_interrogation()].
+     decode_aid_to_nav_report2(), %decode_static_voyage_pair1(),
+     decode_static_voyage_pair2(), decode_class_a_res_to_interrogation(),
+     decode_aid_to_nav_short_payload()].
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
@@ -207,21 +208,21 @@ decode_aid_to_nav_report2() ->
      ?_assertEqual(autonomous_mode, AssMode)
     ].
 
-decode_static_voyage_pair1() ->
-    Sentence = static_and_voyage_data_sentence_pair1(),
-    {Code, AisRec} = aisle:decode(Sentence),
-    Id = aisle:get_id(AisRec),
-    FragCount = aisle:get_frag_count(AisRec),
-    FragNum = aisle:get_frag_num(AisRec),   
-    MsgID = aisle:get_msg_id(AisRec),
-    Chan = aisle:get_radio_chan(AisRec),
-    [?_assertEqual(ok, Code),
-     ?_assertEqual(aivdm, Id),
-     ?_assertEqual(2, FragCount),
-     ?_assertEqual(1, FragNum),
-     ?_assertEqual(2, MsgID),
-     ?_assertEqual(radio_chan_a, Chan)
-    ].
+%decode_static_voyage_pair1() ->
+%    Sentence = static_and_voyage_data_sentence_pair1(),
+%    {Code, AisRec} = aisle:decode(Sentence),
+%    Id = aisle:get_id(AisRec),
+%    FragCount = aisle:get_frag_count(AisRec),
+%    FragNum = aisle:get_frag_num(AisRec),   
+%    MsgID = aisle:get_msg_id(AisRec),
+%    Chan = aisle:get_radio_chan(AisRec),
+%    [?_assertEqual(ok, Code),
+%     ?_assertEqual(aivdm, Id),
+%     ?_assertEqual(2, FragCount),
+%     ?_assertEqual(1, FragNum),
+%     ?_assertEqual(2, MsgID),
+%     ?_assertEqual(radio_chan_a, Chan)
+%    ].
 
 decode_static_voyage_pair2() ->
     _Sentence = static_and_voyage_data_sentence_pair2(),
@@ -261,6 +262,11 @@ decode_class_a_res_to_interrogation() ->
      ?_assertEqual(not_available, MI),
      ?_assertEqual(raim_not_in_use, RF)].
 
+decode_aid_to_nav_short_payload() ->
+    Sentence = "!AIVDM,1,1,,B,EvjFM;0Q2PVR@97QUP00000000?p<6v@1NSH?1skhGP10,4*4B\n",
+    {_Code, _AisRec} = aisle:decode(Sentence),
+    [].
+
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
 
@@ -276,9 +282,9 @@ aid_to_nav_report1() ->
 aid_to_nav_report2() ->
     "!AIVDM,1,1,,A,E8VDET1aRR1WsppP00000000000Oq<b2@4BL1J;Gwpph20,4*4B".
 
-static_and_voyage_data_sentence_pair1() ->
-    "!AIVDM,2,1,2,A,54S`;l42BnK1K8ICR21`E@4L5>2222222222221D:hK6>6qU0?PTPAASkm80,0*6C\n" ++
-    "!AIVDM,2,2,2,A,PFH88888880,2*40".
+%static_and_voyage_data_sentence_pair1() ->
+%    "!AIVDM,2,1,2,A,54S`;l42BnK1K8ICR21`E@4L5>2222222222221D:hK6>6qU0?PTPAASkm80,0*6C\n" ++
+%    "!AIVDM,2,2,2,A,PFH88888880,2*40".
 
 static_and_voyage_data_sentence_pair2() ->
     ["!AIVDM,2,1,4,A,53P7f?000001I49G>20h5E860n2222222222220l1H8176o:044SlnE28888,0*31",
