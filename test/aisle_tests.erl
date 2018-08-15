@@ -264,8 +264,9 @@ decode_class_a_res_to_interrogation() ->
 
 decode_aid_to_nav_short_payload() ->
     Sentence = "!AIVDM,1,1,,B,EvjFM;0Q2PVR@97QUP00000000?p<6v@1NSH?1skhGP10,4*4B\n",
-    {_Code, _AisRec} = aisle:decode(Sentence),
-    [].
+    {Code, Reason} = aisle:decode(Sentence),
+    [?_assertEqual(error, Code),
+     ?_assertEqual(payload_error, Reason)].
 
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
