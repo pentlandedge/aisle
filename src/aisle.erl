@@ -177,7 +177,7 @@
 
 %% @doc Decode an AIS sentence.
 decode(Sentence) when is_list(Sentence) ->
-    %io:format("~p~n", [Sentence]),
+    io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] = Tokens,
     %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
@@ -213,11 +213,15 @@ trim_payload(Payload, FillBits) when is_bitstring(Payload) ->
     TrimPayload.
 
 %% @ Parse a log file constructed of AIS sentences, one per line.
-parse_file(Filename) ->
-    {ok, S} = file:open(Filename, read),
-    Acc = parse_lines(S, fun decode/1, []),
-    file:close(S),
-    Acc.
+parse_file(Filename) when is_list(Filename) ->
+    case file:open(Filename, [read]) of
+        {ok, S} -> 
+            Acc = parse_lines(S, fun decode/1, []),
+            file:close(S),
+            Acc;
+        {error, Reason} ->
+            {error, Reason}
+    end.
 
 parse_lines(S, ProcFn, Acc) ->
     case io:get_line(S, "") of
