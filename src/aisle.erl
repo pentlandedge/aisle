@@ -177,7 +177,6 @@
 
 %% @doc Decode an AIS sentence.
 decode(Sentence) when is_list(Sentence) ->
-    io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] = Tokens,
     %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
