@@ -180,6 +180,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
 
+-opaque cnb() :: #cnb{}.
+-export_type([cnb/0]).
+
 -type fill_bits_char() :: $0 | $1 | $2 | $3 | $4 | $5.
 -type fill_bits() :: 0..5.
 
@@ -356,6 +359,7 @@ decode_repeat_indicator(2) -> two_repeats;
 decode_repeat_indicator(3) -> do_not_repeat.
 
 %% @doc Decode the 168-bit Common Navigation Block (CNB).
+-spec decode_cnb(binary()) -> {ok, cnb()} | {error, Reason::atom()}.
 decode_cnb(<<MT:6,RI:2,MMSI:30,NS:4,ROT:8/signed,SOG:10,PA:1,Lon:28/signed,
     Lat:27/signed,COG:12,HDG:9,TS:6,MI:2,_Sp:3,RAIM:1,_RS:19>>) ->
 
@@ -379,6 +383,7 @@ decode_cnb(_) ->
     {error, failed_to_decode_cnb}.
 
 %% @doc Decode the navigation status bits.
+-spec decode_nav_status(non_neg_integer()) -> atom().
 decode_nav_status(0) -> under_way_using_engine;
 decode_nav_status(1) -> at_anchor;
 decode_nav_status(2) -> not_under_command;
