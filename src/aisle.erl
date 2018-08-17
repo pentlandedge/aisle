@@ -318,6 +318,7 @@ bits_to_ascii(X) ->
     end.
 
 %% @doc Decode the message type in the data payload.
+-spec decode_message_type(pos_integer()) -> atom().
 decode_message_type(1) -> pos_report_class_a;
 decode_message_type(2) -> pos_report_class_a_assigned_schedule;
 decode_message_type(3) -> pos_report_class_a_response_to_interrogation;
@@ -348,6 +349,7 @@ decode_message_type(27) -> pos_report_for_long_range_applications;
 decode_message_type(_) -> unknown_message_type.
 
 %% @doc Decode the repeat indicator.
+-spec decode_repeat_indicator(non_neg_integer()) -> atom().
 decode_repeat_indicator(0) -> no_repeats;
 decode_repeat_indicator(1) -> one_repeat;
 decode_repeat_indicator(2) -> two_repeats;
