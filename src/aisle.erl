@@ -180,6 +180,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
 
+-opaque ais() :: #ais{}.
+-export_type([ais/0]).
+
 -opaque cnb() :: #cnb{}.
 -export_type([cnb/0]).
 
@@ -193,6 +196,9 @@
 %% Function definitions.
 
 %% @doc Decode an AIS sentence.
+-spec decode(Sentence::string()) -> Ret when
+    Ret :: {ok, ais()} | {unsupported_message_type, atom()} | {error, Reason},
+    Reason :: atom.
 decode(Sentence) when is_list(Sentence) ->
     Tokens = to_tokens(Sentence, ",*"),
     [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] = Tokens,
@@ -212,8 +218,8 @@ decode(Sentence) when is_list(Sentence) ->
                         fill_bits = decode_fill_bits(Fill),
                         checksum = CS},
                     {ok, AisRec};
-                {unsupported_message_type, UMT} ->
-                    {unsupported_message_type, UMT};
+                {unsupported_message_type, _UMT} ->
+                    {error, unsupported_message_type};
                 _ ->
                     {error, payload_error}
             end;
