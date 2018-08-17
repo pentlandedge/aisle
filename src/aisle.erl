@@ -108,6 +108,9 @@
     get_atnr_virtual_aid/1,
     get_atnr_assigned_mode/1]).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Record definitions.
+
 -record(ais, {
     id, 
     frag_count, 
@@ -173,10 +176,18 @@
     virtual_aid,
     assigned_mode}).
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Type specifications.
+
+-type fill_bits_char() :: $0 | $1 | $2 | $3 | $4 | $5.
+-type fill_bits() :: 0..5.
+
 -type radio_chan_char() :: $A | $B | $1 | $2.
 -type radio_chan() :: radio_chan_a | radio_chan_b.
 
-%% API
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Function definitions.
 
 %% @doc Decode an AIS sentence.
 decode(Sentence) when is_list(Sentence) ->
@@ -278,6 +289,7 @@ decode_radio_chan("1") -> radio_chan_a;
 decode_radio_chan("2") -> radio_chan_b.
 
 %% @doc Simple mapping of the fill bits string to the corresponding integer.
+-spec decode_fill_bits(FillTok::[fill_bits_char()]) -> fill_bits().
 decode_fill_bits("0") -> 0;
 decode_fill_bits("1") -> 1;
 decode_fill_bits("2") -> 2;
