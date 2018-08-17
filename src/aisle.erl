@@ -173,6 +173,9 @@
     virtual_aid,
     assigned_mode}).
 
+-type radio_chan_char() :: $A | $B | $1 | $2.
+-type radio_chan() :: radio_chan_a | radio_chan_b.
+
 %% API
 
 %% @doc Decode an AIS sentence.
@@ -266,6 +269,9 @@ decode_payload(Payload, FillBits) ->
 
 %% @doc Decode the radio channel, either 'A' at 161.975 MHz or 'B' at 
 %% 162.025 MHz. Sometimes mapped as '1' or '2'.
+-spec decode_radio_chan(ChanTok) -> ChanID when 
+    ChanTok :: [radio_chan_char()],
+    ChanID  :: radio_chan().
 decode_radio_chan("A") -> radio_chan_a;
 decode_radio_chan("B") -> radio_chan_b;
 decode_radio_chan("1") -> radio_chan_a;
