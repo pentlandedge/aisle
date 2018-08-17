@@ -197,7 +197,7 @@
 
 %% @doc Decode an AIS sentence.
 -spec decode(Sentence::string()) -> Ret when
-    Ret :: {ok, ais()} | {unsupported_message_type, atom()} | {error, Reason},
+    Ret :: {ok, ais()} | {error, Reason},
     Reason :: atom.
 decode(Sentence) when is_list(Sentence) ->
     Tokens = to_tokens(Sentence, ",*"),
