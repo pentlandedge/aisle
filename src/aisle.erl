@@ -228,6 +228,7 @@ decode(Sentence) when is_list(Sentence) ->
     end.
 
 %% @doc Trim the fill bits from the end of the payload.
+-spec trim_payload(bitstring(), fill_bits()) -> bitstring().
 trim_payload(Payload, FillBits) when is_bitstring(Payload) ->
     FullLen = bit_size(Payload),
     TrimSize = FullLen - FillBits,
