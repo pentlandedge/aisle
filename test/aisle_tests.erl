@@ -24,7 +24,7 @@ aisle_test_() ->
      decode_base_station_report2(), decode_aid_to_nav_report1(),
      decode_aid_to_nav_report2(), %decode_static_voyage_pair1(),
      decode_static_voyage_pair2(), decode_class_a_res_to_interrogation(),
-     decode_aid_to_nav_short_payload()].
+     decode_aid_to_nav_short_payload(), decode_no_star()].
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
@@ -268,8 +268,17 @@ decode_aid_to_nav_short_payload() ->
     [?_assertEqual(error, Code),
      ?_assertEqual(payload_error, Reason)].
 
+decode_no_star() ->
+    Sentence = no_star_sentence(),
+    {Code, Reason} = aisle:decode(Sentence),
+    [?_assertEqual(error, Code),
+     ?_assertEqual(insufficient_elements, Reason)].
+
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
+
+no_star_sentence() ->
+    "!AIVDM,1,1,,B,EvjFM;0Q2PVRa@97QUP00000000?p<6v@1NSH?1skh0010,45C".
 
 base_station_report1() -> 
     "!AIVDM,1,1,,A,402=ac1v2rAM`OhIijP3BCw028Gm,0*2C".

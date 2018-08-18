@@ -202,30 +202,34 @@
 decode(Sentence) when is_list(Sentence) ->
     %io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
-    [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] = Tokens,
-    %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
-    FillBits = decode_fill_bits(Fill),
-    case Id of 
-        "!AIVDM" -> 
-            case decode_payload(Payload, FillBits) of
-                {ok, PayloadData} ->
-                    AisRec = #ais{
-                        id = aivdm,
-                        frag_count = list_to_integer(FragCount),
-                        frag_num = list_to_integer(FragNum),
-                        msg_id = decode_msg_id(MsgID),
-                        radio_chan = decode_radio_chan(Chan),
-                        data = PayloadData, 
-                        fill_bits = decode_fill_bits(Fill),
-                        checksum = CS},
-                    {ok, AisRec};
-                {unsupported_message_type, _UMT} ->
-                    {error, unsupported_message_type};
-                _ ->
-                    {error, payload_error}
+    case Tokens of
+        [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] ->
+            %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
+            FillBits = decode_fill_bits(Fill),
+            case Id of 
+                "!AIVDM" -> 
+                    case decode_payload(Payload, FillBits) of
+                        {ok, PayloadData} ->
+                            AisRec = #ais{
+                                id = aivdm,
+                                frag_count = list_to_integer(FragCount),
+                                frag_num = list_to_integer(FragNum),
+                                msg_id = decode_msg_id(MsgID),
+                                radio_chan = decode_radio_chan(Chan),
+                                data = PayloadData, 
+                                fill_bits = decode_fill_bits(Fill),
+                                checksum = CS},
+                            {ok, AisRec};
+                        {unsupported_message_type, _UMT} ->
+                            {error, unsupported_message_type};
+                        _ ->
+                            {error, payload_error}
+                    end;
+                _ -> 
+                    {error, bad_identifier}
             end;
-        _ -> 
-            {error, bad_identifier}
+        _ ->
+            {error, insufficient_elements}
     end.
 
 %% @doc Trim the fill bits from the end of the payload.
