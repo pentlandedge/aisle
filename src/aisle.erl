@@ -200,6 +200,7 @@
     Ret :: {ok, ais()} | {error, Reason},
     Reason :: atom.
 decode(Sentence) when is_list(Sentence) ->
+    %io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] = Tokens,
     %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
@@ -499,7 +500,9 @@ decode_bsr(<<MT:6,RI:2,MMSI:30,Y:14,M:4,D:5,H:5,Min:6,Sec:6,PA:1,
         latitude = decode_latitude(Lat),
         type_of_epfd = decode_epfd_fix_type(Type),
         raim_flag = decode_raim(RAIM),
-        sotdma_state = decode_sotdma_state(SOTDMA)}}.
+        sotdma_state = decode_sotdma_state(SOTDMA)}};
+decode_bsr(_) ->
+    {error, payload_error}.
 
 decode_epfd_fix_type(0) -> undefined; 
 decode_epfd_fix_type(1) -> gps;
