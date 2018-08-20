@@ -221,6 +221,8 @@ decode(Sentence) when is_list(Sentence) ->
                                 checksum = CS},
                             {ok, AisRec};
                         {unsupported_message_type, _UMT} ->
+                            io:format("UMT ~p~n", [_UMT]),
+                            io:format("Sentence ~p~n", [Sentence]),
                             {error, unsupported_message_type};
                         _ ->
                             {error, payload_error}
@@ -269,6 +271,12 @@ decode_msg_id(MsgID)  ->
     end.
 
 %% @doc Decode the data payload.
+-spec decode_payload(Payload, FillBits) -> Ret when
+    Payload :: string(),
+    FillBits :: non_neg_integer(),
+    Ret :: {ok, any()} | 
+           {error, Reason::atom()} | 
+           {unsupported_message_type, Type::atom()}.
 decode_payload(Payload, FillBits) ->
     PayBin = payload_to_binary(list_to_binary(Payload)),
     TrimPayBin = trim_payload(PayBin, FillBits),
