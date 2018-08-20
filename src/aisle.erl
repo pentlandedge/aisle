@@ -186,11 +186,16 @@
 -opaque cnb() :: #cnb{}.
 -export_type([cnb/0]).
 
+-opaque atnr() :: #atnr{}.
+-export_type([atnr/0]).
+
 -type fill_bits_char() :: $0 | $1 | $2 | $3 | $4 | $5.
 -type fill_bits() :: 0..5.
 
 -type radio_chan_char() :: $A | $B | $1 | $2.
 -type radio_chan() :: radio_chan_a | radio_chan_b.
+
+-type payload_data() :: cnb() | atnr().
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function definitions.
@@ -270,7 +275,7 @@ decode_msg_id(MsgID)  ->
 -spec decode_payload(Payload, FillBits) -> Ret when
     Payload :: string(),
     FillBits :: non_neg_integer(),
-    Ret :: {ok, any()} | {error, Reason::atom()}.
+    Ret :: {ok, payload_data()} | {error, Reason::atom()}.
 decode_payload(Payload, FillBits) ->
     PayBin = payload_to_binary(list_to_binary(Payload)),
     TrimPayBin = trim_payload(PayBin, FillBits),
