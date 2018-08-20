@@ -186,10 +186,13 @@
 -opaque cnb() :: #cnb{}.
 -export_type([cnb/0]).
 
+-opaque base_sr() :: #base_sr{}.
+-export_type([base_sr/0]).
+
 -opaque atnr() :: #atnr{}.
 -export_type([atnr/0]).
 
--type payload_data() :: cnb() | atnr().
+-type payload_data() :: cnb() | base_sr() | atnr().
 -export_type([payload_data/0]).
 
 -type fill_bits_char() :: $0 | $1 | $2 | $3 | $4 | $5.
