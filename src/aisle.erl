@@ -220,12 +220,8 @@ decode(Sentence) when is_list(Sentence) ->
                                 fill_bits = decode_fill_bits(Fill),
                                 checksum = CS},
                             {ok, AisRec};
-                        {unsupported_message_type, _UMT} ->
-                            io:format("UMT ~p~n", [_UMT]),
-                            io:format("Sentence ~p~n", [Sentence]),
-                            {error, unsupported_message_type};
-                        _ ->
-                            {error, payload_error}
+                        {error, Reason} ->
+                            {error, Reason}
                     end;
                 _ -> 
                     {error, bad_identifier}
@@ -274,9 +270,7 @@ decode_msg_id(MsgID)  ->
 -spec decode_payload(Payload, FillBits) -> Ret when
     Payload :: string(),
     FillBits :: non_neg_integer(),
-    Ret :: {ok, any()} | 
-           {error, Reason::atom()} | 
-           {unsupported_message_type, Type::atom()}.
+    Ret :: {ok, any()} | {error, Reason::atom()}.
 decode_payload(Payload, FillBits) ->
     PayBin = payload_to_binary(list_to_binary(Payload)),
     TrimPayBin = trim_payload(PayBin, FillBits),
@@ -298,7 +292,7 @@ decode_payload(Payload, FillBits) ->
             decode_aid_to_navigation_report(TrimPayBin);
         _ ->
             %io:format("Default decode payload~n"),
-            {unsupported_message_type, DMT}
+            {error, unsupported_message_type}
     end.
 
 %% @doc Decode the radio channel, either 'A' at 161.975 MHz or 'B' at 
