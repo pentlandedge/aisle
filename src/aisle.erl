@@ -244,7 +244,8 @@ trim_payload(Payload, FillBits) when is_bitstring(Payload) ->
     <<TrimPayload:TrimSize/bitstring,_/bitstring>> = Payload,
     TrimPayload.
 
-%% @ Parse a log file constructed of AIS sentences, one per line.
+%% @doc Parse a log file constructed of AIS sentences, one per line.
+-spec parse_file(string()) -> [{ok, ais()} | {error, atom()}] | {error, atom()}. 
 parse_file(Filename) when is_list(Filename) ->
     case file:open(Filename, [read]) of
         {ok, S} -> 
@@ -255,6 +256,7 @@ parse_file(Filename) when is_list(Filename) ->
             {error, Reason}
     end.
 
+%% @doc Parse the lines in the string specified.
 parse_lines(S, ProcFn, Acc) ->
     case io:get_line(S, "") of
         eof  -> 
