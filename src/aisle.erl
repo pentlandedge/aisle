@@ -189,13 +189,14 @@
 -opaque atnr() :: #atnr{}.
 -export_type([atnr/0]).
 
+-type payload_data() :: cnb() | atnr().
+-export_type([payload_data/0]).
+
 -type fill_bits_char() :: $0 | $1 | $2 | $3 | $4 | $5.
 -type fill_bits() :: 0..5.
 
 -type radio_chan_char() :: $A | $B | $1 | $2.
 -type radio_chan() :: radio_chan_a | radio_chan_b.
-
--type payload_data() :: cnb() | atnr().
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function definitions.
