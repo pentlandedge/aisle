@@ -208,6 +208,8 @@
 -type maneuver_indicator() :: 
     not_available | no_special_maneuver | special_maneuver.
 
+-type raim() :: raim_not_in_use | raim_in_use.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function definitions.
 
@@ -485,6 +487,7 @@ decode_maneuver_indicator(1) -> no_special_maneuver;
 decode_maneuver_indicator(2) -> special_maneuver.
 
 %% @doc RAIM (Receiver Autonomous Integrity Monitoring) flag mapping.
+-spec decode_raim(0 | 1) -> raim().
 decode_raim(0) -> raim_not_in_use; 
 decode_raim(1) -> raim_in_use. 
 
