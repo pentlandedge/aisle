@@ -280,6 +280,7 @@ parse_lines(S, ProcFn, Acc) ->
 
 %% @doc Decode the message ID field. This is often not set, so we need to trap
 %% this.
+-spec decode_msg_id(string()) -> undefined | integer().
 decode_msg_id(MsgID)  ->
     case string:to_integer(MsgID) of
         {error, _} -> undefined;
@@ -336,6 +337,7 @@ decode_fill_bits("5") -> 5.
 %% Uses a binary comprehension to compress the 8-bit ASCII characters to 
 %% 6-bit values, remapping as described in the section on "Payload Armoring"
 %% in the online notes.
+-spec payload_to_binary(binary()) -> binary().
 payload_to_binary(PayloadData) when is_binary(PayloadData) ->
     << <<(aisle:int_to_bits(X)):6>> || <<X:8>> <= PayloadData >>.
 
