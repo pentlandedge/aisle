@@ -342,7 +342,8 @@ payload_to_binary(PayloadData) when is_binary(PayloadData) ->
     << <<(aisle:int_to_bits(X)):6>> || <<X:8>> <= PayloadData >>.
 
 %% Reverse the ASCII mapping of 6 bit values.
-int_to_bits(X) ->
+-spec int_to_bits(non_neg_integer()) -> non_neg_integer().
+int_to_bits(X) when X >= 0 ->
     Y = X - 48,
     case Y >= 40 of
         true  -> Y - 8;
@@ -350,7 +351,8 @@ int_to_bits(X) ->
     end.
 
 %% Map the 6 bit encoded characters back to normal ASCII.
-bits_to_ascii(X) ->
+-spec bits_to_ascii(non_neg_integer()) -> non_neg_integer().
+bits_to_ascii(X) when X >= 0 ->
     case X >= 32 of 
         true  -> X;
         false -> X + 64 
