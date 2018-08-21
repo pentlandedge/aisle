@@ -195,11 +195,18 @@
 -type payload_data() :: cnb() | base_sr() | atnr().
 -export_type([payload_data/0]).
 
+-type optional_float() :: not_available | float().
+
 -type fill_bits_char() :: $0 | $1 | $2 | $3 | $4 | $5.
 -type fill_bits() :: 0..5.
 
 -type radio_chan_char() :: $A | $B | $1 | $2.
 -type radio_chan() :: radio_chan_a | radio_chan_b.
+
+-type pos_acc() :: dgps_less_than_10m | unaugmented_gnss_greater_than_10m.
+
+-type maneuver_indicator() :: 
+    not_available | no_special_maneuver | special_maneuver.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function definitions.
@@ -446,26 +453,33 @@ decode_sog(1022) -> more_than_102p2_knots;
 decode_sog(X)    -> 0.1 * X.
 
 %% @doc Decode the position accuracy field.
+-spec decode_position_accuracy(0 | 1) -> pos_acc().
 decode_position_accuracy(1) -> dgps_less_than_10m;
 decode_position_accuracy(0) -> unaugmented_gnss_greater_than_10m. 
 
 %% @doc Decode the Longitude parameter.
+-spec decode_longitude(integer()) -> optional_float(). 
 decode_longitude(16#6791AC0) -> not_available;
 decode_longitude(X) -> X / 600000.0.
 
 %% @doc Decode the Longitude parameter.
+-spec decode_latitude(integer()) -> optional_float(). 
 decode_latitude(16#3412140) -> not_available;
 decode_latitude(X) -> X / 600000.0.
 
 %% @doc Decod the course over ground field.
+-spec decode_cog(non_neg_integer()) -> optional_float().
 decode_cog(3600) -> not_available;
 decode_cog(COG) -> 0.1 * COG.
 
 %% @doc Decode the true heading field.
+-spec decode_true_heading(non_neg_integer()) -> 
+    not_available | non_neg_integer().
 decode_true_heading(511) -> not_available;
 decode_true_heading(X)   -> X.
 
 %% @doc Decode the maneuver indicator field.
+-spec decode_maneuver_indicator(0..2) -> maneuver_indicator().
 decode_maneuver_indicator(0) -> not_available;
 decode_maneuver_indicator(1) -> no_special_maneuver;
 decode_maneuver_indicator(2) -> special_maneuver.
