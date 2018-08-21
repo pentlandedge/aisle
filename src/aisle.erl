@@ -427,6 +427,7 @@ decode_nav_status(14) -> ais_sart_is_active;
 decode_nav_status(15) -> not_defined. 
 
 %% @doc Decode the rate of turn field.
+-spec decode_rate_of_turn(-128..127) -> atom().
 decode_rate_of_turn(0)    -> not_turning;
 decode_rate_of_turn(127)  -> turning_right_more_than_5deg_30sec;
 decode_rate_of_turn(-127) -> turning_left_more_than_5deg_30sec;
@@ -439,6 +440,7 @@ decode_rate_of_turn(R) when R >= -126, R =< -1 ->
     -(V * V).
 
 %% @doc Decode the speed over ground field.
+-spec decode_sog(0..1023) -> atom() | float().
 decode_sog(1023) -> speed_not_available;
 decode_sog(1022) -> more_than_102p2_knots;
 decode_sog(X)    -> 0.1 * X.
