@@ -23,6 +23,8 @@
     decode/1, 
     display/1, 
     parse_file/1,
+    accum_msgs/1,
+    acc_frag/2,
     extract_all_mmsi/1,
     extract_all_message_types/1,
     decode_message_type/1,
@@ -195,6 +197,10 @@
 -type payload_data() :: cnb() | base_sr() | atnr().
 -export_type([payload_data/0]).
 
+%% Define a complete input message, which may comprise one or more sentence
+%% fragments.
+%-type ais_msg() :: [string()] | string().
+
 -type optional_float() :: not_available | float().
 
 -type fill_bits_char() :: $0 | $1 | $2 | $3 | $4 | $5.
@@ -276,6 +282,34 @@ parse_lines(S, ProcFn, Acc) ->
         Line -> 
             NewRec = ProcFn(Line),
             parse_lines(S, ProcFn, [NewRec|Acc])
+    end.
+
+%% @doc Accumulate sentence fragments into complete messages.
+accum_msgs(Sentences) -> 
+    lists:foldl(fun acc_frag/2, {0, [], []}, Sentences).
+
+%% @doc Accumulate the sentence fragments into a list of complete messages.
+-spec acc_frag(Sentence::string(), Acc::{FragsRxd, Frags, Msgs}) -> NewAcc 
+    when FragsRxd::non_neg_integer(),
+         Frags::[string()],
+         Msgs::[string()],
+         NewAcc::{FragsRxd, Frags, Msgs}.
+acc_frag(Sentence, {FragsRxd, Frags, Msgs}) -> 
+    Tokens = to_tokens(Sentence, ",*"),
+    case Tokens of
+        [_, FragCount, FragNum, _, _, _, _, _|_Rest] ->
+            case {FragCount, FragNum} of
+                {FragCount, FragCount} -> 
+                    NewMsgs = [lists:reverse([Sentence|Frags])|Msgs],
+                    {0, [], NewMsgs};
+                {FragCount, FragNum} when FragCount > FragNum ->
+                    {FragsRxd+1, [Sentence|Frags], Msgs};
+                _ ->
+                    % Error, reset the fragments.
+                    {0, [], Msgs}
+            end;
+        _ ->
+            {1, 0, [], Msgs}
     end.
 
 %% @doc Decode the message ID field. This is often not set, so we need to trap
