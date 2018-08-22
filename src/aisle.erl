@@ -309,7 +309,7 @@ acc_frag(Sentence, {FragsRxd, Frags, Msgs}) ->
                     {0, [], Msgs}
             end;
         _ ->
-            {1, 0, [], Msgs}
+            {0, [], Msgs}
     end.
 
 %% @doc Decode the message ID field. This is often not set, so we need to trap
