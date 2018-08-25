@@ -25,7 +25,7 @@ aisle_test_() ->
      decode_aid_to_nav_report2(), %decode_static_voyage_pair1(),
      decode_static_voyage_pair2(), decode_class_a_res_to_interrogation(),
      decode_aid_to_nav_short_payload(), decode_bsr_short_payload(),
-     decode_no_star(), acc_frags_check()].
+     decode_no_star(), acc_frags_check(), decode_frag_message_check()].
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
@@ -288,6 +288,16 @@ acc_frags_check() ->
     {_, _, Msgs} = aisle:accum_msgs(S1),
 
     [?_assertEqual(3, length(Msgs))].
+
+decode_frag_message_check() ->
+    S1 = frags_sample(),
+
+    % The sentences should be grouped into 3 messages.
+    {_, _, Msgs} = aisle:accum_msgs(S1),
+
+    % Decode the grouped messages.
+    aisle:decode_msgs(Msgs),
+    [].
 
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".

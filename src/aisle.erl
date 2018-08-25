@@ -24,6 +24,7 @@
     display/1, 
     parse_file/1,
     accum_msgs/1,
+    decode_msgs/1,
     acc_frag/2,
     extract_all_mmsi/1,
     extract_all_message_types/1,
@@ -311,6 +312,9 @@ acc_frag(Sentence, {FragsRxd, Frags, Msgs}) ->
         _ ->
             {0, [], Msgs}
     end.
+
+decode_msgs(Msgs) when is_list(Msgs) ->
+    ok.
 
 %% @doc Decode the message ID field. This is often not set, so we need to trap
 %% this.
