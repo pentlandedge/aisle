@@ -313,8 +313,16 @@ acc_frag(Sentence, {FragsRxd, Frags, Msgs}) ->
             {0, [], Msgs}
     end.
 
+%% @doc Decode a list of messages. A message in this case is a list of 
+%% sentences (fragments) comprising a complete AIS message.
 decode_msgs(Msgs) when is_list(Msgs) ->
-    ok.
+    lists:map(fun decode_msg/1, Msgs). 
+
+%% @doc Decode a single message. This may consist of one or more sentences.
+decode_msg([Sentence]) ->
+    decode(Sentence);
+decode_msg(_) ->
+    {error, unsupported_msg}.
 
 %% @doc Decode the message ID field. This is often not set, so we need to trap
 %% this.
