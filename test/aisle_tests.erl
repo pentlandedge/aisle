@@ -282,10 +282,7 @@ decode_no_star() ->
      ?_assertEqual(insufficient_elements, Reason)].
 
 acc_frags_check() ->
-    S1 = ["!AIVDM,1,1,,B,13P;NO9P00Oh?<>P3cvbwOwb0@OF,0*7E", 
-          "!AIVDM,2,1,4,A,53P=6bT1snLo8L4KN21ADllDj22222222222221J1h?274Rh5;DSlnE28888,0*50", 
-          "!AIVDM,2,2,4,A,88888888880,2*20", 
-          "!AIVDM,1,1,,B,13P;J=9P00OhH`2P2uGPO?wd2<0s,0*41"],
+    S1 = frags_sample(),
 
     % The sentences should be grouped into 3 messages.
     {_, _, Msgs} = aisle:accum_msgs(S1),
@@ -315,6 +312,13 @@ aid_to_nav_short_payload() ->
 
 bsr_short_payload() ->
     "!AIVDM,1,1,,A,402=ac1vRkJ`OhIhrP3BL?026I`,0*74\n".
+
+%% Sample containing a message split over two sentence fragments.
+frags_sample() ->
+    ["!AIVDM,1,1,,B,13P;NO9P00Oh?<>P3cvbwOwb0@OF,0*7E", 
+     "!AIVDM,2,1,4,A,53P=6bT1snLo8L4KN21ADllDj22222222222221J1h?274Rh5;DSlnE28888,0*50", 
+     "!AIVDM,2,2,4,A,88888888880,2*20", 
+     "!AIVDM,1,1,,B,13P;J=9P00OhH`2P2uGPO?wd2<0s,0*41"].
 
 %static_and_voyage_data_sentence_pair1() ->
 %    "!AIVDM,2,1,2,A,54S`;l42BnK1K8ICR21`E@4L5>2222222222221D:hK6>6qU0?PTPAASkm80,0*6C\n" ++
