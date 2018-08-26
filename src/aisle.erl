@@ -321,7 +321,9 @@ decode_msgs(Msgs) when is_list(Msgs) ->
 %% @doc Decode a single message. This may consist of one or more sentences.
 decode_msg([Sentence]) ->
     decode(Sentence);
-decode_msg(_) ->
+decode_msg([_Sentence1,_Sentence2]) ->
+    {error, unsupported_msg}; 
+decode_msg(Msgs) when is_list(Msgs) ->
     {error, unsupported_msg}.
 
 %% @doc Decode the message ID field. This is often not set, so we need to trap
