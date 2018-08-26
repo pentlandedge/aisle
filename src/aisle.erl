@@ -321,7 +321,39 @@ decode_msgs(Msgs) when is_list(Msgs) ->
 %% @doc Decode a single message. This may consist of one or more sentences.
 decode_msg([Sentence]) ->
     decode(Sentence);
-decode_msg([_Sentence1,_Sentence2]) ->
+decode_msg([Sentence1,Sentence2]) ->
+    io:format("~p ~p~n", [Sentence1, Sentence2]),
+    Tokens1 = to_tokens(Sentence1, ",*"),
+    Tokens2 = to_tokens(Sentence2, ",*"),
+    io:format("Tokens1 ~p~n", [Tokens1]),
+    io:format("Tokens2 ~p~n", [Tokens2]),
+    %case Tokens of
+    %    [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] ->
+    %        %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
+    %        FillBits = decode_fill_bits(Fill),
+    %        case Id of 
+    %            "!AIVDM" -> 
+    %                case decode_payload(Payload, FillBits) of
+    %                    {ok, PayloadData} ->
+    %                        AisRec = #ais{
+    %                            id = aivdm,
+    %                            frag_count = list_to_integer(FragCount),
+    %                            frag_num = list_to_integer(FragNum),
+    %                            msg_id = decode_msg_id(MsgID),
+    %                            radio_chan = decode_radio_chan(Chan),
+    %                            data = PayloadData, 
+    %                            fill_bits = decode_fill_bits(Fill),
+    %                            checksum = CS},
+    %                        {ok, AisRec};
+    %                    {error, Reason} ->
+    %                        {error, Reason}
+    %                end;
+    %            _ -> 
+    %                {error, bad_identifier}
+    %        end;
+    %    _ ->
+    %        {error, insufficient_elements}
+    %end,
     {error, unsupported_msg}; 
 decode_msg(Msgs) when is_list(Msgs) ->
     {error, unsupported_msg}.
