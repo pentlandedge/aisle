@@ -9,16 +9,21 @@ There is now some sample data in the logs directory. The first batch was capture
 
 AIS sentences extracted from this data, in combination with the online decoder at http://www.maritec.co.za/aisvdmvdodecoding.php is being used to construct the regression tests.
 
+## Pre-requisites
+
+It is necessary to have a recent version of Erlang, the rebar3 build tool and (optionally) a make utiility installed in order to build the software.
+
 ## Building and runnning the unit tests
-It is necessary to have Erlang installed, and the compiler erlc available on the path. The rebar tool is used to control the build process, so it is also necessary to have a copy of rebar available on the path. The software can be built (on a Linux platform) using rebar:
+The software can be built (on a Linux platform) as follows:
 ```
-# rebar compile eunit
+# make 
 ```
+This will also run the unit tests, generate module documentation and run the dialyzer static analysis tool.
 
 ## Testing interactively
 The easiest way to play around with the library is from the Erlang interactive shell. To start the shell and set up the paths to the compiled files, run
 ```
-# rebar shell
+# rebar3 shell
 ```
 From the Erlang shell, it is possible to parse the supplied log file, e.g.
 ```
