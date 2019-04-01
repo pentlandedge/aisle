@@ -223,7 +223,7 @@
 %% @doc Decode an AIS sentence.
 -spec decode(Sentence::string()) -> Ret when
     Ret :: {ok, ais()} | {error, Reason},
-    Reason :: atom.
+    Reason :: atom().
 decode(Sentence) when is_list(Sentence) ->
     %io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
