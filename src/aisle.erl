@@ -785,7 +785,7 @@ decode_name(Name, Rem) when is_binary(Name), is_bitstring(Rem) ->
             ExtraNameBits = Rem;
         X ->
             Required = ExtraLength - X,
-            <<ExtraNameBits:Required,_/bitstring>> = Rem
+            <<ExtraNameBits:Required/bitstring,_/bitstring>> = Rem
     end,
     AllBits = <<Name/binary,ExtraNameBits/bitstring>>,
     decode_name(AllBits).
