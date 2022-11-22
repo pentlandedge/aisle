@@ -1,5 +1,5 @@
 # aisle
-AIS Library in Erlang. Free software decoder library for the maritime AIS data format written in the Erlang programming language. This library is still in the early stages of development, but can now decode the main part of the AIS sentence and the message types containing the "Common Navigation Block" as it is termed in the protocol decoding notes. This is sufficient to pick up location and direction of travel information from vessels. It can now also decode base station reports and work on the aid to navigation report is underway.
+AIS Library in Erlang. Free software decoder library for the maritime AIS data format written in the Erlang programming language. This library can now decode the main part of the AIS sentence and the message types containing the "Common Navigation Block" as it is termed in the protocol decoding notes. This is sufficient to pick up location and direction of travel information from vessels. It can now also decode base station reports and work on the aid to navigation report is underway.
 
 ## Protocol decoding
 The information used to create this library is based heavily on the notes at http://catb.org/gpsd/AIVDM.html
