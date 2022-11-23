@@ -391,8 +391,12 @@ decode_payload(Payload, FillBits) ->
         aid_to_navigation_report ->
             %io:format("Aid to Nav bits ~p size ~p ~p~n", [bit_size(TrimPayBin), byte_size(TrimPayBin), TrimPayBin]),
             decode_aid_to_navigation_report(TrimPayBin);
+        binary_broadcast_message -> 
+            % Decode function NYI.
+            decode_binary_broadcast_message(TrimPayBin),
+            {error, unsupported_message_type};
         _ ->
-            %io:format("Default decode payload~n"),
+            io:format("Unsupported message type: ~p~n", [DMT]),
             {error, unsupported_message_type}
     end.
 
@@ -969,3 +973,6 @@ find_cnb({ok, #ais{} = A})          -> find_cnb(A);
 find_cnb(#ais{data = #cnb{} = CNB}) -> {ok, CNB};
 find_cnb(_)                         -> error.
 
+%% Type 8. 
+decode_binary_broadcast_message(Bin) when is_binary(Bin) ->
+    ok.
