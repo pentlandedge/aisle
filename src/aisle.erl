@@ -402,9 +402,7 @@ decode_payload(Payload, FillBits) ->
             %io:format("Aid to Nav bits ~p size ~p ~p~n", [bit_size(TrimPayBin), byte_size(TrimPayBin), TrimPayBin]),
             decode_aid_to_navigation_report(TrimPayBin);
         binary_broadcast_message -> 
-            % Decode function NYI.
-            decode_binary_broadcast_message(TrimPayBin),
-            {error, unsupported_message_type};
+            decode_binary_broadcast_message(TrimPayBin);
         _ ->
             io:format("Unsupported message type: ~p~n", [DMT]),
             {error, unsupported_message_type}
@@ -985,9 +983,19 @@ find_cnb(_)                         -> error.
 
 %% Type 8. 
 -spec decode_binary_broadcast_message(binary()) -> {ok, bbm()} | {error, Reason::atom()}.
-decode_binary_broadcast_message(<<_MT:6,_RI:2,_MMSI:30,_Sp:2,_Lon:18,_Lat:17,
+decode_binary_broadcast_message(<<MT:6,RI:2,MMSI:30,_Sp:2,Lon:18,Lat:17,
     _Sp2:5,_Rem/binary>>) ->
 
-    ok;
+    {ok, #bbm{
+        message_type = decode_message_type(MT),
+        repeat_indicator = decode_repeat_indicator(RI),
+        mmsi = MMSI,
+        longitude = decode_bbm_longitude(Lon),
+        latitude = decode_bbm_latitude(Lat)}};
 decode_binary_broadcast_message(_) ->
     {error, failed_to_decode_bbm}.
+
+%% These are placeholders for now: the decoding of Lat/Lon is different from
+%% the CNB.
+decode_bbm_longitude(L) -> decode_longitude(L).
+decode_bbm_latitude(L) -> decode_latitude(L).
