@@ -974,5 +974,7 @@ find_cnb(#ais{data = #cnb{} = CNB}) -> {ok, CNB};
 find_cnb(_)                         -> error.
 
 %% Type 8. 
-decode_binary_broadcast_message(Bin) when is_binary(Bin) ->
+decode_binary_broadcast_message(<<_MT:6,_RI:2,_MMSI:30,_Sp:2,_Lon:18,_Lat:17,
+    _Sp2:5,_Rem/binary>>) ->
+
     ok.
