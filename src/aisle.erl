@@ -179,6 +179,13 @@
     virtual_aid,
     assigned_mode}).
 
+-record(bbm, {
+    message_type,
+    repeat_indicator,
+    mmsi,
+    longitude,
+    latitude,
+    payload}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
@@ -194,6 +201,9 @@
 
 -opaque atnr() :: #atnr{}.
 -export_type([atnr/0]).
+
+-opaque bbm() :: #bbm{}.
+-export_type([bbm/0]).
 
 -type payload_data() :: cnb() | base_sr() | atnr().
 -export_type([payload_data/0]).
@@ -974,7 +984,10 @@ find_cnb(#ais{data = #cnb{} = CNB}) -> {ok, CNB};
 find_cnb(_)                         -> error.
 
 %% Type 8. 
+-spec decode_binary_broadcast_message(binary()) -> {ok, bbm()} | {error, Reason::atom()}.
 decode_binary_broadcast_message(<<_MT:6,_RI:2,_MMSI:30,_Sp:2,_Lon:18,_Lat:17,
     _Sp2:5,_Rem/binary>>) ->
 
-    ok.
+    ok;
+decode_binary_broadcast_message(_) ->
+    {error, failed_to_decode_bbm}.
