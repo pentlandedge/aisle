@@ -398,6 +398,10 @@ decode_payload(Payload, FillBits) ->
             decode_cnb(TrimPayBin);
         base_station_report ->
             decode_bsr(TrimPayBin);
+        static_and_voyage_data ->
+            io:format("Unsupported message type: ~p~n", [DMT]),
+            decode_static_and_voyage_data(TrimPayBin),
+            {error, unsupported_message_type};
         aid_to_navigation_report ->
             %io:format("Aid to Nav bits ~p size ~p ~p~n", [bit_size(TrimPayBin), byte_size(TrimPayBin), TrimPayBin]),
             decode_aid_to_navigation_report(TrimPayBin);
@@ -999,3 +1003,7 @@ decode_binary_broadcast_message(_) ->
 %% the CNB.
 decode_bbm_longitude(L) -> decode_longitude(L).
 decode_bbm_latitude(L) -> decode_latitude(L).
+
+%% Type 
+decode_static_and_voyage_data(<<_Rem/binary>>) -> ok.
+
