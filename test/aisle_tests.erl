@@ -226,8 +226,10 @@ decode_aid_to_nav_report2() ->
 %    ].
 
 decode_static_voyage_pair2() ->
-    _Sentence = static_and_voyage_data_sentence_pair2(),
-    [].
+    Sentences = static_and_voyage_data_sentence_pair2(),
+    {Code, _AisRec} = aisle:decode_msgs(Sentences),
+    [?_assertEqual(ok, Code)
+    ].
 
 decode_class_a_res_to_interrogation() ->
     Sentence = response_to_interrogation1(),
@@ -296,7 +298,7 @@ decode_frag_message_check() ->
     {_, _, Msgs} = aisle:accum_msgs(S1),
 
     % Decode the grouped messages.
-    aisle:decode_msgs(Msgs),
+    % aisle:decode_msgs(Msgs),
     [].
 
 sample_sentence1() -> 

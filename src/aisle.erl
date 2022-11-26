@@ -26,6 +26,7 @@
     accum_msgs/1,
     decode_msgs/1,
     acc_frag/2,
+    extract_payload/1,
     extract_all_mmsi/1,
     extract_all_message_types/1,
     decode_message_type/1,
@@ -243,7 +244,7 @@
     Ret :: {ok, ais()} | {error, Reason},
     Reason :: atom().
 decode(Sentence) when is_list(Sentence) ->
-    %io:format("~p~n", [Sentence]),
+    io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     case Tokens of
         [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] ->
@@ -280,6 +281,18 @@ trim_payload(Payload, FillBits) when is_bitstring(Payload) ->
     TrimSize = FullLen - FillBits,
     <<TrimPayload:TrimSize/bitstring,_/bitstring>> = Payload,
     TrimPayload.
+
+extract_payload(Sentence) when is_list(Sentence) ->
+    io:format("~p~n", [Sentence]),
+    Tokens = to_tokens(Sentence, ",*"),
+    case Tokens of
+        [_, _, _, _, _, Payload, Fill, _|_Rest] ->
+            PayBin = payload_to_binary(list_to_binary(Payload)),
+            FillBits = decode_fill_bits(Fill),
+            trim_payload(PayBin, FillBits);
+        _ ->
+            {error, insufficient_elements}
+    end.
 
 %% @doc Parse a log file constructed of AIS sentences, one per line.
 -spec parse_file(string()) -> [{ok, ais()} | {error, atom()}] | {error, atom()}. 
@@ -334,47 +347,13 @@ acc_frag(Sentence, {FragsRxd, Frags, Msgs}) ->
 %% @doc Decode a list of messages. A message in this case is a list of 
 %% sentences (fragments) comprising a complete AIS message.
 decode_msgs(Msgs) when is_list(Msgs) ->
-    lists:map(fun decode_msg/1, Msgs). 
+    Pay = accum_payload(Msgs),
+    io:format("accum payload: ~p~n", [Pay]),
+    {ok, nyi}.
 
-%% @doc Decode a single message. This may consist of one or more sentences.
-decode_msg([Sentence]) ->
-    decode(Sentence);
-decode_msg([Sentence1,Sentence2]) ->
-    io:format("~p ~p~n", [Sentence1, Sentence2]),
-    Tokens1 = to_tokens(Sentence1, ",*"),
-    Tokens2 = to_tokens(Sentence2, ",*"),
-    io:format("Tokens1 ~p~n", [Tokens1]),
-    io:format("Tokens2 ~p~n", [Tokens2]),
-    %case Tokens of
-    %    [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] ->
-    %        %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
-    %        FillBits = decode_fill_bits(Fill),
-    %        case Id of 
-    %            "!AIVDM" -> 
-    %                case decode_payload(Payload, FillBits) of
-    %                    {ok, PayloadData} ->
-    %                        AisRec = #ais{
-    %                            id = aivdm,
-    %                            frag_count = list_to_integer(FragCount),
-    %                            frag_num = list_to_integer(FragNum),
-    %                            msg_id = decode_msg_id(MsgID),
-    %                            radio_chan = decode_radio_chan(Chan),
-    %                            data = PayloadData, 
-    %                            fill_bits = decode_fill_bits(Fill),
-    %                            checksum = CS},
-    %                        {ok, AisRec};
-    %                    {error, Reason} ->
-    %                        {error, Reason}
-    %                end;
-    %            _ -> 
-    %                {error, bad_identifier}
-    %        end;
-    %    _ ->
-    %        {error, insufficient_elements}
-    %end,
-    {error, unsupported_msg}; 
-decode_msg(Msgs) when is_list(Msgs) ->
-    {error, unsupported_msg}.
+accum_payload(Msgs) when is_list(Msgs) ->
+    Bins = lists:map(fun extract_payload/1, Msgs),
+    erlang:iolist_to_binary(Bins). 
 
 %% @doc Decode the message ID field. This is often not set, so we need to trap
 %% this.
