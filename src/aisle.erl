@@ -187,6 +187,11 @@
     latitude,
     payload}).
 
+-record(svd, {
+    message_type,
+    repeat_indicator,
+    mmsi}).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
 
@@ -1005,5 +1010,12 @@ decode_bbm_longitude(L) -> decode_longitude(L).
 decode_bbm_latitude(L) -> decode_latitude(L).
 
 %% Type 
-decode_static_and_voyage_data(<<_Rem/binary>>) -> ok.
+decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,_Rem/binary>>) ->
+    {ok, #svd{
+        message_type = decode_message_type(MT),
+        repeat_indicator = decode_repeat_indicator(RI),
+        mmsi = MMSI
+    }};
+decode_static_and_voyage_data(_) ->
+    {error, failed_to_decode_bbm}.
 
