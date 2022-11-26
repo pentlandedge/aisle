@@ -210,6 +210,9 @@
 -opaque bbm() :: #bbm{}.
 -export_type([bbm/0]).
 
+-opaque svd() :: #svd{}.
+-export_type([svd/0]).
+
 -type payload_data() :: cnb() | base_sr() | atnr().
 -export_type([payload_data/0]).
 
@@ -404,9 +407,7 @@ decode_payload(Payload, FillBits) ->
         base_station_report ->
             decode_bsr(TrimPayBin);
         static_and_voyage_data ->
-            io:format("Unsupported message type: ~p~n", [DMT]),
-            decode_static_and_voyage_data(TrimPayBin),
-            {error, unsupported_message_type};
+            decode_static_and_voyage_data(TrimPayBin);
         aid_to_navigation_report ->
             %io:format("Aid to Nav bits ~p size ~p ~p~n", [bit_size(TrimPayBin), byte_size(TrimPayBin), TrimPayBin]),
             decode_aid_to_navigation_report(TrimPayBin);
@@ -1009,7 +1010,8 @@ decode_binary_broadcast_message(_) ->
 decode_bbm_longitude(L) -> decode_longitude(L).
 decode_bbm_latitude(L) -> decode_latitude(L).
 
-%% Type 
+%% Type 5.
+-spec decode_static_and_voyage_data(binary()) -> {ok, bbm()} | {error, Reason::atom()}.
 decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,_Rem/binary>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
@@ -1017,5 +1019,4 @@ decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,_Rem/binary>>) ->
         mmsi = MMSI
     }};
 decode_static_and_voyage_data(_) ->
-    {error, failed_to_decode_bbm}.
-
+    {error, failed_to_decode_svd}.
