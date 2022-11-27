@@ -344,8 +344,8 @@ acc_frag(Sentence, {FragsRxd, Frags, Msgs}) ->
             {0, [], Msgs}
     end.
 
-%% @doc Decode a list of messages. A message in this case is a list of 
-%% sentences (fragments) comprising a complete AIS message.
+%% @doc Decode a list of sentences comprising a message. A message in this 
+%% case is a list of fragments comprising a complete AIS message.
 decode_msgs(Msgs) when is_list(Msgs) ->
     Pay = accum_payload(Msgs),
     io:format("accum payload: ~p~n", [Pay]),
