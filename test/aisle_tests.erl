@@ -227,8 +227,11 @@ decode_aid_to_nav_report2() ->
 
 decode_static_voyage_pair2() ->
     Sentences = static_and_voyage_data_sentence_pair2(),
-    {Code, _AisRec} = aisle:decode_msgs(Sentences),
-    [?_assertEqual(ok, Code)
+    {Code, AisRec} = aisle:decode_msgs(Sentences),
+    SVDR = aisle:get_data(AisRec),
+    MT = aisle:get_svd_message_type(SVDR),
+    [?_assertEqual(ok, Code),
+     ?_assertEqual(static_and_voyage_data, MT)
     ].
 
 decode_class_a_res_to_interrogation() ->
