@@ -112,6 +112,11 @@
     get_atnr_virtual_aid/1,
     get_atnr_assigned_mode/1]).
 
+%% Accessors for static and voyage data reports.
+-export([
+    get_svd_message_type/1
+        ]).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Record definitions.
 
@@ -1034,3 +1039,5 @@ decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,_S:2,_Rem/binary>>) ->
 decode_static_and_voyage_data(_Arg) ->
     io:format("svd decode error clause, arg: ~p~n", [_Arg]),
     {error, failed_to_decode_svd}.
+
+get_svd_message_type(#svd{message_type = X}) -> X.
