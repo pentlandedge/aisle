@@ -346,10 +346,40 @@ acc_frag(Sentence, {FragsRxd, Frags, Msgs}) ->
 
 %% @doc Decode a list of sentences comprising a message. A message in this 
 %% case is a list of fragments comprising a complete AIS message.
+decode_msgs([Msg]) ->
+    decode(Msg);
 decode_msgs(Msgs) when is_list(Msgs) ->
     Pay = accum_payload(Msgs),
-    io:format("accum payload: ~p~n", [Pay]),
-    {ok, nyi}.
+    [First|_] = Msgs,
+    io:format("~p~n", [First]),
+        Tokens = to_tokens(First, ",*"),
+        case Tokens of
+            [Id, FragCount, FragNum, MsgID, Chan, _, _, CS|_Rest] ->
+                %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
+                case Id of 
+                    "!AIVDM" -> 
+                        case decode_payload(Pay, 0) of
+                            {ok, PayloadData} ->
+                                AisRec = #ais{
+                                    id = aivdm,
+                                    frag_count = list_to_integer(FragCount),
+                                    frag_num = list_to_integer(FragNum),
+                                    msg_id = decode_msg_id(MsgID),
+                                    radio_chan = decode_radio_chan(Chan),
+                                    data = PayloadData, 
+                                    fill_bits = 0, 
+                                    checksum = CS},
+                                {ok, AisRec};
+                            {error, Reason} ->
+                                {error, Reason}
+                        end;
+                    _ -> 
+                        {error, bad_identifier}
+                end;
+            _ ->
+                {error, insufficient_elements}
+        end.
+
 
 accum_payload(Msgs) when is_list(Msgs) ->
     Bins = lists:map(fun extract_payload/1, Msgs),
@@ -366,12 +396,15 @@ decode_msg_id(MsgID)  ->
 
 %% @doc Decode the data payload.
 -spec decode_payload(Payload, FillBits) -> Ret when
-    Payload :: string(),
+    Payload :: string() | binary(),
     FillBits :: non_neg_integer(),
     Ret :: {ok, payload_data()} | {error, Reason::atom()}.
-decode_payload(Payload, FillBits) ->
+decode_payload(Payload, FillBits) when is_list(Payload) ->
     PayBin = payload_to_binary(list_to_binary(Payload)),
     TrimPayBin = trim_payload(PayBin, FillBits),
+    decode_payload(TrimPayBin, 0);
+decode_payload(Payload, _FillBits) ->
+    TrimPayBin = Payload,
     <<MT:6,_Rest/bitstring>> = TrimPayBin,
     %% Decode the message types we know how to decode, or simply return the
     %% message type.
@@ -386,6 +419,7 @@ decode_payload(Payload, FillBits) ->
         base_station_report ->
             decode_bsr(TrimPayBin);
         static_and_voyage_data ->
+            io:format("decode svd: ~p~n", [TrimPayBin]),
             decode_static_and_voyage_data(TrimPayBin);
         aid_to_navigation_report ->
             %io:format("Aid to Nav bits ~p size ~p ~p~n", [bit_size(TrimPayBin), byte_size(TrimPayBin), TrimPayBin]),
@@ -990,12 +1024,13 @@ decode_bbm_longitude(L) -> decode_longitude(L).
 decode_bbm_latitude(L) -> decode_latitude(L).
 
 %% Type 5.
--spec decode_static_and_voyage_data(binary()) -> {ok, bbm()} | {error, Reason::atom()}.
-decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,_Rem/binary>>) ->
+-spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
+decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,_S:2,_Rem/binary>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI
     }};
-decode_static_and_voyage_data(_) ->
+decode_static_and_voyage_data(_Arg) ->
+    io:format("svd decode error clause, arg: ~p~n", [_Arg]),
     {error, failed_to_decode_svd}.
