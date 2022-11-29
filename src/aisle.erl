@@ -198,7 +198,8 @@
 -record(svd, {
     message_type,
     repeat_indicator,
-    mmsi}).
+    mmsi,
+    ais_version}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
@@ -1032,11 +1033,12 @@ decode_bbm_latitude(L) -> decode_latitude(L).
 
 %% Type 5.
 -spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
-decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,_S:2,_Rem/binary>>) ->
+decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,_Rem/binary>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
-        mmsi = MMSI
+        mmsi = MMSI,
+        ais_version = Vsn
     }};
 decode_static_and_voyage_data(_Arg) ->
     io:format("svd decode error clause, arg: ~p~n", [_Arg]),
