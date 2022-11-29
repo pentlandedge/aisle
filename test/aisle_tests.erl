@@ -230,8 +230,12 @@ decode_static_voyage_pair2() ->
     {Code, AisRec} = aisle:decode_msgs(Sentences),
     SVDR = aisle:get_data(AisRec),
     MT = aisle:get_svd_message_type(SVDR),
+    RI = aisle:get_svd_repeat_indicator(SVDR),
+    MMSI = aisle:get_svd_mmsi(SVDR),
     [?_assertEqual(ok, Code),
-     ?_assertEqual(static_and_voyage_data, MT)
+     ?_assertEqual(static_and_voyage_data, MT),
+     ?_assertEqual(no_repeats, RI),
+     ?_assertEqual(235007548, MMSI)
     ].
 
 decode_class_a_res_to_interrogation() ->

@@ -114,7 +114,9 @@
 
 %% Accessors for static and voyage data reports.
 -export([
-    get_svd_message_type/1
+    get_svd_message_type/1,
+    get_svd_repeat_indicator/1,
+    get_svd_mmsi/1
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -219,7 +221,7 @@
 -opaque svd() :: #svd{}.
 -export_type([svd/0]).
 
--type payload_data() :: cnb() | base_sr() | atnr().
+-type payload_data() :: cnb() | base_sr() | atnr() | bbm() | svd().
 -export_type([payload_data/0]).
 
 %% Define a complete input message, which may comprise one or more sentence
@@ -1041,3 +1043,5 @@ decode_static_and_voyage_data(_Arg) ->
     {error, failed_to_decode_svd}.
 
 get_svd_message_type(#svd{message_type = X}) -> X.
+get_svd_repeat_indicator(#svd{repeat_indicator = X}) -> X.
+get_svd_mmsi(#svd{mmsi = X}) -> X.
