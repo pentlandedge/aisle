@@ -199,7 +199,14 @@
     message_type,
     repeat_indicator,
     mmsi,
-    ais_version}).
+    ais_version,
+    imo,
+    call_sign,
+    vessel_name,
+    ship_type,
+    dim_to_bow,
+    dim_to_stern,
+    dim_to_port}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
@@ -1033,13 +1040,20 @@ decode_bbm_latitude(L) -> decode_latitude(L).
 
 %% Type 5.
 -spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
-decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42,VN:120,
-    ST:8,DB:9,DS:9,DP:6,_Rem/binary>>) ->
+decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,_CS:42,_VN:120,
+    _ST:8,DB:9,DS:9,DP:6,_Rem/binary>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI,
-        ais_version = Vsn
+        ais_version = Vsn,
+        imo = IMO,
+        % call_sign
+        % vessel_name 
+        % ship_type
+        dim_to_bow = DB,
+        dim_to_stern = DS,
+        dim_to_port = DP
     }};
 decode_static_and_voyage_data(_Arg) ->
     io:format("svd decode error clause, arg: ~p~n", [_Arg]),
