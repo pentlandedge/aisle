@@ -1033,7 +1033,8 @@ decode_bbm_latitude(L) -> decode_latitude(L).
 
 %% Type 5.
 -spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
-decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,_Rem/binary>>) ->
+decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42,VN:120,
+    ST:8,DB:9,DS:9,DP:6,_Rem/binary>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
