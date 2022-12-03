@@ -1050,7 +1050,7 @@ decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,_CS:42,_VN:120,
         imo = IMO,
         % call_sign
         % vessel_name 
-        ship_type = ship_type:decode_ship_type(ST),
+        ship_type = ship_type:decode(ST),
         dim_to_bow = DB,
         dim_to_stern = DS,
         dim_to_port = DP
