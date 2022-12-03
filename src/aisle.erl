@@ -1040,8 +1040,8 @@ decode_bbm_latitude(L) -> decode_latitude(L).
 
 %% Type 5.
 -spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
-decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,_VN:120,
-    ST:8,DB:9,DS:9,DP:6,_Rem/binary>>) ->
+decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
+    VN:120/bitstring,ST:8,DB:9,DS:9,DP:6,_Rem/binary>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
@@ -1049,7 +1049,7 @@ decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,_
         ais_version = Vsn,
         imo = IMO,
         call_sign = decode_call_sign(CS), 
-        % vessel_name 
+        vessel_name = decode_vessel_name(VN),
         ship_type = ship_type:decode(ST),
         dim_to_bow = DB,
         dim_to_stern = DS,
@@ -1060,7 +1060,9 @@ decode_static_and_voyage_data(_Arg) ->
     {error, failed_to_decode_svd}.
 
 decode_call_sign(Bin) ->
-    %[char:decode(X) || <<X:6>> <= Bin].
+    [sixbit:decode(X) || <<X:6>> <= Bin].
+
+decode_vessel_name(Bin) ->
     [sixbit:decode(X) || <<X:6>> <= Bin].
 
 get_svd_message_type(#svd{message_type = X}) -> X.
