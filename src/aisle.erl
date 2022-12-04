@@ -207,7 +207,8 @@
     dim_to_bow,
     dim_to_stern,
     dim_to_port,
-    dim_to_starboard}).
+    dim_to_starboard,
+    epfd_fix}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
@@ -684,6 +685,7 @@ decode_epfd_fix_type(5) -> chayka;
 decode_epfd_fix_type(6) -> integrated_navigation_system;
 decode_epfd_fix_type(7) -> surveyed;
 decode_epfd_fix_type(8) -> galileo;
+decode_epfd_fix_type(15) -> unofficial_undefined;
 decode_epfd_fix_type(_) -> not_used.
 
 decode_sotdma_state(<<Sync:2,SlotTimeOut:3,SubMsg:14/bitstring>>) ->
@@ -1042,7 +1044,7 @@ decode_bbm_latitude(L) -> decode_latitude(L).
 %% Type 5.
 -spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
 decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
-    VN:120/bitstring,ST:8,DB:9,DS:9,DP:6,DSt:6,_Rem/bitstring>>) ->
+    VN:120/bitstring,ST:8,DB:9,DS:9,DP:6,DSt:6,EPFD:4,_Rem/bitstring>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
@@ -1055,7 +1057,8 @@ decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
         dim_to_bow = DB,
         dim_to_stern = DS,
         dim_to_port = DP,
-        dim_to_starboard = DSt
+        dim_to_starboard = DSt,
+        epfd_fix = decode_epfd_fix_type(EPFD)
     }};
 decode_static_and_voyage_data(_Arg) ->
     io:format("svd decode error clause, arg: ~p~n", [_Arg]),
@@ -1070,4 +1073,3 @@ decode_vessel_name(Bin) ->
 get_svd_message_type(#svd{message_type = X}) -> X.
 get_svd_repeat_indicator(#svd{repeat_indicator = X}) -> X.
 get_svd_mmsi(#svd{mmsi = X}) -> X.
-

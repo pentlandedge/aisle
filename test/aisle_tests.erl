@@ -106,7 +106,7 @@ decode_base_station_report1() ->
      ?_assertEqual(unaugmented_gnss_greater_than_10m, PA),
      ?_assert(almost_equal(-3.407265, Lon, 0.00001)),
      ?_assert(almost_equal(56.013785, Lat, 0.00001)),
-     ?_assertEqual(not_used, EPFD),
+     ?_assertEqual(unofficial_undefined, EPFD),
      ?_assertEqual(raim_in_use, RF),
      ?_assertEqual({utc_direct, {2, slot_number}, {slot_number,1525}}, SOTDMA)
     ].
