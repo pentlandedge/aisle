@@ -206,7 +206,8 @@
     ship_type,
     dim_to_bow,
     dim_to_stern,
-    dim_to_port}).
+    dim_to_port,
+    dim_to_starboard}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
@@ -1041,7 +1042,7 @@ decode_bbm_latitude(L) -> decode_latitude(L).
 %% Type 5.
 -spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
 decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
-    VN:120/bitstring,ST:8,DB:9,DS:9,DP:6,_Rem/binary>>) ->
+    VN:120/bitstring,ST:8,DB:9,DS:9,DP:6,DSt:6,_Rem/bitstring>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
@@ -1053,7 +1054,8 @@ decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
         ship_type = ship_type:decode(ST),
         dim_to_bow = DB,
         dim_to_stern = DS,
-        dim_to_port = DP
+        dim_to_port = DP,
+        dim_to_starboard = DSt
     }};
 decode_static_and_voyage_data(_Arg) ->
     io:format("svd decode error clause, arg: ~p~n", [_Arg]),
