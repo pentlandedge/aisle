@@ -212,7 +212,10 @@
     eta_month,
     eta_day,
     eta_hour,
-    eta_min}).
+    eta_min,
+    draught,
+    destination,
+    dte}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
@@ -1049,7 +1052,7 @@ decode_bbm_latitude(L) -> decode_latitude(L).
 -spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
 decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
     VN:120/bitstring,ST:8,DB:9,DS:9,DP:6,DSt:6,EPFD:4,ETAM:4,ETAD:5,ETAH:5,
-    ETAMin:6,_Rem/bitstring>>) ->
+    ETAMin:6,Dr:8,Dest:120/bitstring,DTE:1,_Rem/bitstring>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
@@ -1067,7 +1070,10 @@ decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
         eta_month = ETAM,
         eta_day = ETAD,
         eta_hour = ETAH,
-        eta_min = ETAMin
+        eta_min = ETAMin,
+        draught = Dr / 10,
+        destination = decode_destination(Dest),
+        dte = decode_dte(DTE)
     }};
 decode_static_and_voyage_data(_Arg) ->
     io:format("svd decode error clause, arg: ~p~n", [_Arg]),
@@ -1078,6 +1084,12 @@ decode_call_sign(Bin) ->
 
 decode_vessel_name(Bin) ->
     [sixbit:decode(X) || <<X:6>> <= Bin].
+
+decode_destination(Bin) ->
+    [sixbit:decode(X) || <<X:6>> <= Bin].
+
+decode_dte(0) -> data_terminal_ready;
+decode_dte(1) -> data_terminal_not_ready.
 
 get_svd_message_type(#svd{message_type = X}) -> X.
 get_svd_repeat_indicator(#svd{repeat_indicator = X}) -> X.
