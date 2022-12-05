@@ -208,7 +208,11 @@
     dim_to_stern,
     dim_to_port,
     dim_to_starboard,
-    epfd_fix}).
+    epfd_fix,
+    eta_month,
+    eta_day,
+    eta_hour,
+    eta_min}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Type specifications.
@@ -1044,7 +1048,8 @@ decode_bbm_latitude(L) -> decode_latitude(L).
 %% Type 5.
 -spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
 decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
-    VN:120/bitstring,ST:8,DB:9,DS:9,DP:6,DSt:6,EPFD:4,_Rem/bitstring>>) ->
+    VN:120/bitstring,ST:8,DB:9,DS:9,DP:6,DSt:6,EPFD:4,ETAM:4,ETAD:5,ETAH:5,
+    ETAMin:6,_Rem/bitstring>>) ->
     {ok, #svd{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
@@ -1058,7 +1063,11 @@ decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
         dim_to_stern = DS,
         dim_to_port = DP,
         dim_to_starboard = DSt,
-        epfd_fix = decode_epfd_fix_type(EPFD)
+        epfd_fix = decode_epfd_fix_type(EPFD),
+        eta_month = ETAM,
+        eta_day = ETAD,
+        eta_hour = ETAH,
+        eta_min = ETAMin
     }};
 decode_static_and_voyage_data(_Arg) ->
     io:format("svd decode error clause, arg: ~p~n", [_Arg]),
