@@ -191,9 +191,9 @@
     message_type,
     repeat_indicator,
     mmsi,
-    longitude,
-    latitude,
-    payload}).
+    dac,
+    fid,
+    data}).
 
 -record(svd, {
     message_type,
@@ -1031,22 +1031,22 @@ find_cnb(_)                         -> error.
 
 %% Type 8. 
 -spec decode_binary_broadcast_message(binary()) -> {ok, bbm()} | {error, Reason::atom()}.
-decode_binary_broadcast_message(<<MT:6,RI:2,MMSI:30,_Sp:2,Lon:18,Lat:17,
-    _Sp2:5,_Rem/binary>>) ->
+decode_binary_broadcast_message(<<MT:6,RI:2,MMSI:30,_Sp:2,DAC:10,FID:6,
+    _Rem/binary>>) ->
 
     {ok, #bbm{
         message_type = decode_message_type(MT),
         repeat_indicator = decode_repeat_indicator(RI),
         mmsi = MMSI,
-        longitude = decode_bbm_longitude(Lon),
-        latitude = decode_bbm_latitude(Lat)}};
+        dac = DAC, 
+        fid = FID}};
 decode_binary_broadcast_message(_) ->
     {error, failed_to_decode_bbm}.
 
 %% These are placeholders for now: the decoding of Lat/Lon is different from
 %% the CNB.
-decode_bbm_longitude(L) -> decode_longitude(L).
-decode_bbm_latitude(L) -> decode_latitude(L).
+%% decode_bbm_longitude(L) -> decode_longitude(L).
+%% decode_bbm_latitude(L) -> decode_latitude(L).
 
 %% Type 5.
 -spec decode_static_and_voyage_data(binary()) -> {ok, svd()} | {error, Reason::atom()}.
