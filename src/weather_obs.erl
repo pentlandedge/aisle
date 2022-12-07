@@ -2,11 +2,26 @@
 
 -export([decode/1]).
 
--record(weath_obs, {
+-record(weather_obs, {
     message_type,
     repeat_indicator,
-    mmsi
+    mmsi,
+    dac,
+    fid,
+    variant,
+    location,
+    longitude,
+    latitude
     }).
 
-decode(_Bin) ->
-    {ok, #weath_obs{}}.
+-opaque weather_obs() :: #weather_obs{}.
+-export_type([weather_obs/0]).
+
+%% @doc Decode the IMO289 weather observations. 
+-spec decode(binary()) -> {ok, weather_obs()} | {error, Reason::atom()}.
+decode(<<MT:6,RI:2,MMSI:30,_Rem/bitstring>>) ->
+    {ok, #weather_obs{
+        message_type = aisle:decode_message_type(MT),
+        repeat_indicator = aisle:decode_repeat_indicator(RI),
+        mmsi = MMSI
+    }}.

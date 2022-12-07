@@ -30,6 +30,7 @@
     extract_all_mmsi/1,
     extract_all_message_types/1,
     decode_message_type/1,
+    decode_repeat_indicator/1,
     payload_to_binary/1,
     int_to_bits/1,
     to_tokens/2,
