@@ -11,8 +11,26 @@
     variant,
     location,
     longitude,
-    latitude
-    }).
+    latitude,
+    utc_day,
+    utc_hour,
+    utc_minute,
+    present_weather,
+    visibility_limit,
+    horiz_visibility,
+    relative_humidity,
+    average_wind_speed,
+    wind_direction,
+    air_pressure,
+    pressure_tendency,
+    air_temperature,
+    water_temperature,
+    wave_period,
+    wave_height,
+    wave_direction,
+    swell_height,
+    swell_direction,
+    swell_period}).
 
 -opaque weather_obs() :: #weather_obs{}.
 -export_type([weather_obs/0]).
