@@ -38,7 +38,7 @@
 %% @doc Decode the IMO289 weather observations. 
 -spec decode(binary()) -> {ok, weather_obs_non_wmo()} | {error, Reason::atom()}.
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
-    _Day:5,_Hr:5,Min:6,_Pres:4,_Vis:1,_HVis:7,_RelHum:7,_AveWS:7,_WindDir:9,
+    Day:5,Hr:5,Min:6,_Pres:4,_Vis:1,_HVis:7,_RelHum:7,_AveWS:7,_WindDir:9,
     _AirP:9,_Rem/bitstring>>) ->
     {ok, #weather_obs_non_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -49,11 +49,19 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
         variant = 0,
         location = decode_location(Loc),
 
+        utc_day = decode_utc_day(Day),
+        utc_hour = decode_utc_hour(Hr),
         utc_minute = decode_utc_minute(Min)
     }}.
 
 decode_location(Bin) ->
     [sixbit:decode(X) || <<X:6>> <= Bin].
 
+decode_utc_day(0) -> not_available;
+decode_utc_day(X) when X > 0, X =< 31 -> X.
+
+decode_utc_hour(24) -> not_available;
+decode_utc_hour(X) when X >= 0, X < 24 -> X.
+
 decode_utc_minute(60) -> not_available;
-decode_utc_minute(X) when X >= 0, X =< 59 -> X.
+decode_utc_minute(X) when X >= 0, X < 60 -> X.
