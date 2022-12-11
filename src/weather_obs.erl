@@ -38,7 +38,7 @@
 %% @doc Decode the IMO289 weather observations. 
 -spec decode(binary()) -> {ok, weather_obs_non_wmo()} | {error, Reason::atom()}.
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
-    Day:5,Hr:5,Min:6,_Pres:4,_Vis:1,_HVis:7,_RelHum:7,_AveWS:7,_WindDir:9,
+    Day:5,Hr:5,Min:6,Pres:4,_Vis:1,_HVis:7,_RelHum:7,_AveWS:7,_WindDir:9,
     _AirP:9,_Rem/bitstring>>) ->
     {ok, #weather_obs_non_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -51,7 +51,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
 
         utc_day = decode_utc_day(Day),
         utc_hour = decode_utc_hour(Hr),
-        utc_minute = decode_utc_minute(Min)
+        utc_minute = decode_utc_minute(Min),
+        present_weather = decode_wmo_code(Pres)
     }}.
 
 decode_location(Bin) ->
@@ -65,3 +66,14 @@ decode_utc_hour(X) when X >= 0, X < 24 -> X.
 
 decode_utc_minute(60) -> not_available;
 decode_utc_minute(X) when X >= 0, X < 60 -> X.
+
+decode_wmo_code(0) -> clear;
+decode_wmo_code(1) -> cloudy;
+decode_wmo_code(2) -> rain;
+decode_wmo_code(3) -> fog;
+decode_wmo_code(4) -> snow;
+decode_wmo_code(5) -> typhoon_hurricane;
+decode_wmo_code(6) -> monsoon;
+decode_wmo_code(7) -> thunderstorm;
+decode_wmo_code(8) -> not_available;
+decode_wmo_code(X) when X >= 9, X =< 15 -> reserved.
