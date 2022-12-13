@@ -38,7 +38,7 @@
 %% @doc Decode the IMO289 weather observations. 
 -spec decode(binary()) -> {ok, weather_obs_non_wmo()} | {error, Reason::atom()}.
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
-    Day:5,Hr:5,Min:6,Pres:4,Vis:1,HVis:7,_RelHum:7,_AveWS:7,_WindDir:9,
+    Day:5,Hr:5,Min:6,Pres:4,Vis:1,HVis:7,RelHum:7,_AveWS:7,_WindDir:9,
     _AirP:9,_Rem/bitstring>>) ->
     {ok, #weather_obs_non_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -54,7 +54,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
         utc_minute = decode_utc_minute(Min),
         present_weather = decode_wmo_code(Pres),
         visibility_limit = decode_vis_limit(Vis),
-        horiz_visibility = decode_horiz_vis(HVis)
+        horiz_visibility = decode_horiz_vis(HVis),
+        relative_humidity = decode_relative_humidity(RelHum)
     }}.
 
 decode_location(Bin) ->
@@ -87,3 +88,9 @@ decode_horiz_vis(127) ->
     not_available;
 decode_horiz_vis(X) when X >= 0, X =< 126 ->
     0.1 * X.
+
+%% @doc Relative humidity as a percentage.
+decode_relative_humidity(127) ->
+    not_available;
+decode_relative_humidity(X) when X >= 0, X =< 100 ->
+    X.
