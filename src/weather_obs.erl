@@ -39,7 +39,7 @@
 -spec decode(binary()) -> {ok, weather_obs_non_wmo()} | {error, Reason::atom()}.
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
     Day:5,Hr:5,Min:6,Pres:4,Vis:1,HVis:7,RelHum:7,AveWS:7,WindDir:9,
-    AirP:9,_Tend:4,AirT:11,_Rem/bitstring>>) ->
+    AirP:9,_Tend:4,AirT:11,WatT:10,_Rem/bitstring>>) ->
     {ok, #weather_obs_non_wmo{
         message_type = aisle:decode_message_type(MT),
         repeat_indicator = aisle:decode_repeat_indicator(RI),
@@ -59,7 +59,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
         average_wind_speed = decode_wind_speed(AveWS),
         wind_direction = decode_wind_direction(WindDir),
         air_pressure = decode_air_pressure(AirP),
-        air_temperature = decode_air_temperature(AirT)
+        air_temperature = decode_air_temperature(AirT),
+        water_temperature = decode_water_temperature(WatT)
     }}.
 
 decode_location(Bin) ->
@@ -121,3 +122,8 @@ decode_air_temperature(1024) ->
     not_available;
 decode_air_temperature(X) when X >=0 -> 
     -60.0 + 0.1 * X.
+
+decode_water_temperature(601) ->
+    not_available;
+decode_water_temperature(X) when X >=0, X =< 600 ->
+    -10.0 + 0.1 * X.
