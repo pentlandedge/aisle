@@ -39,7 +39,7 @@
 -spec decode(binary()) -> {ok, weather_obs_non_wmo()} | {error, Reason::atom()}.
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
     Day:5,Hr:5,Min:6,Pres:4,Vis:1,HVis:7,RelHum:7,AveWS:7,WindDir:9,
-    _AirP:9,_Rem/bitstring>>) ->
+    AirP:9,_Rem/bitstring>>) ->
     {ok, #weather_obs_non_wmo{
         message_type = aisle:decode_message_type(MT),
         repeat_indicator = aisle:decode_repeat_indicator(RI),
@@ -57,7 +57,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
         horiz_visibility = decode_horiz_vis(HVis),
         relative_humidity = decode_relative_humidity(RelHum),
         average_wind_speed = decode_wind_speed(AveWS),
-        wind_direction = decode_wind_direction(WindDir)
+        wind_direction = decode_wind_direction(WindDir),
+        air_pressure = decode_air_pressure(AirP)
     }}.
 
 decode_location(Bin) ->
@@ -106,3 +107,11 @@ decode_wind_direction(360) ->
     not_available;
 decode_wind_direction(X) when X >= 0, X =< 359 -> 
     X.
+
+%% @doc Decode the air pressure. The reference material suggests adding 400
+%% to the value, but this seems wrong given the range of available input
+%% numbers and the desired output range. 800 seems to fit the range, but
+%% need to check this.
+decode_air_pressure(402) -> pressure_gte_1201;
+decode_air_pressure(403) -> not_available;
+decode_air_pressure(X)   -> X + 800.
