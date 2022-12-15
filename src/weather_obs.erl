@@ -32,6 +32,36 @@
     swell_direction,
     swell_period}).
 
+-record(weather_obs_wmo, {
+    message_type,
+    repeat_indicator,
+    mmsi,
+    dac,
+    fid,
+    variant,
+    location,
+    longitude,
+    latitude,
+    utc_day,
+    utc_hour,
+    utc_minute,
+    present_weather,
+    visibility_limit,
+    horiz_visibility,
+    relative_humidity,
+    average_wind_speed,
+    wind_direction,
+    air_pressure,
+    pressure_tendency,
+    air_temperature,
+    water_temperature,
+    wave_period,
+    wave_height,
+    wave_direction,
+    swell_height,
+    swell_direction,
+    swell_period}).
+
 -opaque weather_obs_non_wmo() :: #weather_obs_non_wmo{}.
 -export_type([weather_obs_non_wmo/0]).
 
@@ -69,8 +99,18 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         wave_direction = decode_wave_direction(WavD),
         swell_height = decode_swell_height(SwH),
         swell_direction = decode_swell_direction(SwD),
-        swell_period = decode_swell_period(SwP)}}.
-
+        swell_period = decode_swell_period(SwP)}};
+decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,_Rem/bitstring>>) ->
+    {ok, #weather_obs_wmo{
+        message_type = aisle:decode_message_type(MT),
+        repeat_indicator = aisle:decode_repeat_indicator(RI),
+        mmsi = MMSI,
+        dac = DAC,
+        fid = FID,
+        variant = 1
+    }};
+decode(_) ->
+    {error, failed_to_decode_svd}.
 decode_location(Bin) ->
     [sixbit:decode(X) || <<X:6>> <= Bin].
 
