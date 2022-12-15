@@ -37,10 +37,10 @@
 
 %% @doc Decode the IMO289 weather observations. 
 -spec decode(binary()) -> {ok, weather_obs_non_wmo()} | {error, Reason::atom()}.
-decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
-    Day:5,Hr:5,Min:6,Pres:4,Vis:1,HVis:7,RelHum:7,AveWS:7,WindDir:9,
-    AirP:9,_Tend:4,AirT:11,WatT:10,WavP:6,WavH:8,WavD:9,SwH:8,SwD:9,SwP:6,
-    _Sp:3,_Rem/bitstring>>) ->
+decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
+    Lat:24/signed,Day:5,Hr:5,Min:6,Pres:4,Vis:1,HVis:7,RelHum:7,AveWS:7,
+    WindDir:9,AirP:9,_Tend:4,AirT:11,WatT:10,WavP:6,WavH:8,WavD:9,SwH:8,SwD:9,
+    SwP:6,_Sp:3,_Rem/bitstring>>) ->
     {ok, #weather_obs_non_wmo{
         message_type = aisle:decode_message_type(MT),
         repeat_indicator = aisle:decode_repeat_indicator(RI),
@@ -49,7 +49,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
         fid = FID,
         variant = 0,
         location = decode_location(Loc),
-
+        longitude = decode_longitude(Lon),
+        latitude = decode_latitude(Lat),
         utc_day = decode_utc_day(Day),
         utc_hour = decode_utc_hour(Hr),
         utc_minute = decode_utc_minute(Min),
@@ -71,6 +72,12 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
 
 decode_location(Bin) ->
     [sixbit:decode(X) || <<X:6>> <= Bin].
+
+decode_longitude(181000) -> not_available;
+decode_longitude(X)      -> 0.001 * X.
+
+decode_latitude(91000) -> not_available;
+decode_latitude(X)     -> 0.001 * X.
 
 decode_utc_day(0) -> not_available;
 decode_utc_day(X) when X > 0, X =< 31 -> X.
