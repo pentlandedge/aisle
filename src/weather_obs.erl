@@ -39,7 +39,7 @@
 -spec decode(binary()) -> {ok, weather_obs_non_wmo()} | {error, Reason::atom()}.
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
     Lat:24/signed,Day:5,Hr:5,Min:6,Pres:4,Vis:1,HVis:7,RelHum:7,AveWS:7,
-    WindDir:9,AirP:9,_Tend:4,AirT:11,WatT:10,WavP:6,WavH:8,WavD:9,SwH:8,SwD:9,
+    WindDir:9,AirP:9,Tend:4,AirT:11,WatT:10,WavP:6,WavH:8,WavD:9,SwH:8,SwD:9,
     SwP:6,_Sp:3,_Rem/bitstring>>) ->
     {ok, #weather_obs_non_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -61,6 +61,7 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         average_wind_speed = decode_wind_speed(AveWS),
         wind_direction = decode_wind_direction(WindDir),
         air_pressure = decode_air_pressure(AirP),
+        pressure_tendency = Tend, % Need to find how to interpret this.
         air_temperature = decode_air_temperature(AirT),
         water_temperature = decode_water_temperature(WatT),
         wave_period = decode_wave_period(WavP),
