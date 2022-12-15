@@ -39,7 +39,8 @@
 -spec decode(binary()) -> {ok, weather_obs_non_wmo()} | {error, Reason::atom()}.
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
     Day:5,Hr:5,Min:6,Pres:4,Vis:1,HVis:7,RelHum:7,AveWS:7,WindDir:9,
-    AirP:9,_Tend:4,AirT:11,WatT:10,_Rem/bitstring>>) ->
+    AirP:9,_Tend:4,AirT:11,WatT:10,WavP:6,WavH:8,WavD:9,SwH:8,SwD:9,SwP:6,
+    _Sp:3,_Rem/bitstring>>) ->
     {ok, #weather_obs_non_wmo{
         message_type = aisle:decode_message_type(MT),
         repeat_indicator = aisle:decode_repeat_indicator(RI),
@@ -60,8 +61,13 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,_Lon:25,_Lat:24,
         wind_direction = decode_wind_direction(WindDir),
         air_pressure = decode_air_pressure(AirP),
         air_temperature = decode_air_temperature(AirT),
-        water_temperature = decode_water_temperature(WatT)
-    }}.
+        water_temperature = decode_water_temperature(WatT),
+        wave_period = decode_wave_period(WavP),
+        wave_height = decode_wave_height(WavH),
+        wave_direction = decode_wave_direction(WavD),
+        swell_height = decode_swell_height(SwH),
+        swell_direction = decode_swell_direction(SwD),
+        swell_period = decode_swell_period(SwP)}}.
 
 decode_location(Bin) ->
     [sixbit:decode(X) || <<X:6>> <= Bin].
@@ -105,10 +111,7 @@ decode_wind_speed(127) ->
 decode_wind_speed(X) when X >= 0 -> 
     X.
 
-decode_wind_direction(360) -> 
-    not_available;
-decode_wind_direction(X) when X >= 0, X =< 359 -> 
-    X.
+decode_wind_direction(X) -> decode_direction(X).
 
 %% @doc Decode the air pressure. The reference material suggests adding 400
 %% to the value, but this seems wrong given the range of available input
@@ -127,3 +130,26 @@ decode_water_temperature(601) ->
     not_available;
 decode_water_temperature(X) when X >=0, X =< 600 ->
     -10.0 + 0.1 * X.
+
+decode_wave_period(X) -> decode_period(X).
+
+decode_wave_height(X)  -> decode_height(X).
+
+decode_wave_direction(X) -> decode_direction(X).
+
+decode_swell_height(X) -> decode_height(X).
+
+decode_swell_direction(X) -> decode_direction(X).
+
+decode_swell_period(X) -> decode_period(X).
+
+decode_direction(360) -> 
+    not_available;
+decode_direction(X) when X >= 0, X =< 359 -> 
+    X.
+
+decode_height(255) -> not_available;
+decode_height(X)   -> 0.1 * X.
+
+decode_period(63) -> not_available;
+decode_period(X)  -> X.
