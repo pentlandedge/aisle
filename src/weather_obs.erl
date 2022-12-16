@@ -130,7 +130,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_height = decode_swell_height(SwH),
         swell_direction = decode_swell_direction(SwD),
         swell_period = decode_swell_period(SwP)}};
-decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,
+decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
+    Min:3,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -140,11 +141,11 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,
         fid = FID,
         variant = 1,
         longitude = decode_wmo_longitude(Lon),
-        latitude = decode_wmo_latitude(Lat)
-        % utc_month,
-        % utc_day,
-        % utc_hour,
-        % utc_minute,
+        latitude = decode_wmo_latitude(Lat),
+        utc_month = decode_wmo_utc_month(Mon),
+        utc_day = decode_wmo_utc_day(Day),
+        utc_hour = decode_wmo_utc_hour(Hr),
+        utc_minute = decode_wmo_utc_minute(Min)
         % course_over_ground,
         % speed_over_ground,
         % heading,
@@ -285,3 +286,24 @@ decode_wmo_longitude(X)       -> 0.01 * X - 180.0.
 
 decode_wmo_latitude(16#7FFF) -> not_available;
 decode_wmo_latitude(X)       -> 0.01 * X - 90.0.
+
+decode_wmo_utc_month(15) ->
+    not_available;
+decode_wmo_utc_month(X) when X >= 1, X =< 12 ->
+    X.
+
+decode_wmo_utc_day(63) ->
+    not_available;
+decode_wmo_utc_day(X) when X >= 1, X =< 31 ->
+    X.
+
+decode_wmo_utc_hour(31) ->
+    not_available;
+decode_wmo_utc_hour(X) when X >= 0, X =< 23 ->
+    X.
+
+decode_wmo_utc_minute(7) ->
+    not_available;
+decode_wmo_utc_minute(X) when X >= 0, X =< 6 ->
+    10 * X.
+
