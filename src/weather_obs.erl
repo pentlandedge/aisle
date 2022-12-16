@@ -42,25 +42,55 @@
     location,
     longitude,
     latitude,
+    utc_month,
     utc_day,
     utc_hour,
     utc_minute,
-    present_weather,
-    visibility_limit,
-    horiz_visibility,
-    relative_humidity,
-    average_wind_speed,
-    wind_direction,
-    air_pressure,
+    course_over_ground,
+    speed_over_ground,
+    heading,
+    pressure_sea_level,
+    pressure_change,
     pressure_tendency,
+    true_wind_direction,
+    true_wind_speed,
+    relative_wind_direction,
+    relative_wind_speed,
+    maximum_gust_speed,
+    maximum_gust_direction,
     air_temperature,
-    water_temperature,
-    wave_period,
-    wave_height,
-    wave_direction,
-    swell_height,
-    swell_direction,
-    swell_period}).
+    relative_humidity,
+    sea_surface_temperature,
+    horiz_visibility,
+    present_weather,
+    past_weather_1,
+    past_weather_2,
+    total_cloud_cover,
+    cloud_amount_low,
+    cloud_type_low,
+    cloud_type_middle,
+    cloud_type_high,
+    height_of_cloud_base,
+    period_of_wind_waves,
+    height_of_wind_waves,
+    first_swell_direction,
+    first_swell_period,
+    first_swell_height,
+    second_swell_direction,
+    second_swell_period,
+    second_swell_height,
+    ice_deposit_thickness,
+    rate_of_ice_accretion,
+    cause_of_ice_accretion,
+    sea_ice_concentration,
+    amount_type_ice,
+    ice_situation,
+    ice_development,
+    bearing_of_ice_edge}).
+
+
+
+
 
 -opaque weather_obs_non_wmo() :: #weather_obs_non_wmo{}.
 -export_type([weather_obs_non_wmo/0]).
@@ -100,14 +130,62 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_height = decode_swell_height(SwH),
         swell_direction = decode_swell_direction(SwD),
         swell_period = decode_swell_period(SwP)}};
-decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,_Rem/bitstring>>) ->
+decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,
+    _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
         repeat_indicator = aisle:decode_repeat_indicator(RI),
         mmsi = MMSI,
         dac = DAC,
         fid = FID,
-        variant = 1
+        variant = 1,
+        longitude = decode_wmo_longitude(Lon),
+        latitude = decode_wmo_latitude(Lat)
+        % utc_month,
+        % utc_day,
+        % utc_hour,
+        % utc_minute,
+        % course_over_ground,
+        % speed_over_ground,
+        % heading,
+        % pressure_sea_level,
+        % pressure_change,
+        % pressure_tendency,
+        % true_wind_direction,
+        % true_wind_speed,
+        % relative_wind_direction,
+        % relative_wind_speed,
+        % maximum_gust_speed,
+        % maximum_gust_direction,
+        % air_temperature,
+        % relative_humidity,
+        % sea_surface_temperature,
+        % horiz_visibility,
+        % present_weather,
+        % past_weather_1,
+        % past_weather_2,
+        % total_cloud_cover,
+        % cloud_amount_low,
+        % cloud_type_low,
+        % cloud_type_middle,
+        % cloud_type_high,
+        % height_of_cloud_base,
+        % period_of_wind_waves,
+        % height_of_wind_waves,
+        % first_swell_direction,
+        % first_swell_period,
+        % first_swell_height,
+        % second_swell_direction,
+        % second_swell_period,
+        % second_swell_height,
+        % ice_deposit_thickness,
+        % rate_of_ice_accretion,
+        % cause_of_ice_accretion,
+        % sea_ice_concentration,
+        % amount_type_ice,
+        % ice_situation,
+        % ice_development,
+        % bearing_of_ice_edge,
     }};
 decode(_) ->
     {error, failed_to_decode_svd}.
@@ -201,3 +279,9 @@ decode_height(X)   -> 0.1 * X.
 
 decode_period(63) -> not_available;
 decode_period(X)  -> X.
+
+decode_wmo_longitude(16#FFFF) -> not_available;
+decode_wmo_longitude(X)       -> 0.01 * X - 180.0.
+
+decode_wmo_latitude(16#7FFF) -> not_available;
+decode_wmo_latitude(X)       -> 0.01 * X - 90.0.
