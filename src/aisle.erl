@@ -120,7 +120,7 @@
     get_svd_mmsi/1
         ]).
 
--export([get_unsupported_messages/1]).
+-export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Record definitions.
@@ -1117,3 +1117,9 @@ get_unsupported_messages(DecodeList) ->
             end
         end,
     lists:filter(F, DecodeList).
+
+get_unsupported_message_types(DecodeList) ->
+    Unsupported = get_unsupported_messages(DecodeList),
+    Ts = [T || {_, _, T, _} <- Unsupported],
+    Set = sets:from_list(Ts),
+    sets:to_list(Set).
