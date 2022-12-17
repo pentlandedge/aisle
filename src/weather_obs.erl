@@ -131,7 +131,7 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_direction = decode_swell_direction(SwD),
         swell_period = decode_swell_period(SwP)}};
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
-    Min:3,COG:7,SOG:5,
+    Min:3,COG:7,SOG:5,Hd:7,PSL:11,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -147,9 +147,9 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
         utc_hour = decode_wmo_utc_hour(Hr),
         utc_minute = decode_wmo_utc_minute(Min),
         course_over_ground = decode_course_over_ground(COG),
-        speed_over_ground = decode_speed_over_ground(SOG)
-        % heading,
-        % pressure_sea_level,
+        speed_over_ground = decode_speed_over_ground(SOG),
+        heading = decode_heading(Hd),
+        pressure_sea_level = decode_pressure_sea_level(PSL)
         % pressure_change,
         % pressure_tendency,
         % true_wind_direction,
@@ -313,3 +313,13 @@ decode_speed_over_ground(31) ->
     not_available;
 decode_speed_over_ground(X) when X >= 0, X =< 30 ->
     X.
+
+%% @doc Decode the ship heading. Allows a value of zero which is not mentioned
+%% in the notes (range 1 -> 72 pre-scaling permitted).
+decode_heading(127) ->
+    not_available;
+decode_heading(X) when X >= 0, X =< 72 ->
+    5 * X.
+
+decode_pressure_sea_level(X) when X >= 0, X =< 2000 ->
+    (X / 10) + 900.
