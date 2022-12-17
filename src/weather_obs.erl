@@ -131,7 +131,7 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_direction = decode_swell_direction(SwD),
         swell_period = decode_swell_period(SwP)}};
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
-    Min:3,COG:7,
+    Min:3,COG:7,SOG:5,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -146,8 +146,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
         utc_day = decode_wmo_utc_day(Day),
         utc_hour = decode_wmo_utc_hour(Hr),
         utc_minute = decode_wmo_utc_minute(Min),
-        course_over_ground = decode_course_over_ground(COG)
-        % speed_over_ground,
+        course_over_ground = decode_course_over_ground(COG),
+        speed_over_ground = decode_speed_over_ground(SOG)
         % heading,
         % pressure_sea_level,
         % pressure_change,
@@ -308,3 +308,8 @@ decode_wmo_utc_minute(X) when X >= 0, X =< 6 ->
     10 * X.
 
 decode_course_over_ground(X) when X >= 0, X =< 359 -> X.
+
+decode_speed_over_ground(31) ->
+    not_available;
+decode_speed_over_ground(X) when X >= 0, X =< 30 ->
+    X.
