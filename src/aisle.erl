@@ -290,7 +290,9 @@ decode(Sentence) when is_list(Sentence) ->
                                 checksum = CS},
                             {ok, AisRec};
                         {error, Reason} ->
-                            {error, Reason}
+                            {error, Reason};
+                        {error, Reason, Opt} ->
+                            {error, Reason, Opt}
                     end;
                 _ -> 
                     {error, bad_identifier}
@@ -396,7 +398,10 @@ decode_msgs(Msgs) when is_list(Msgs) ->
                                     checksum = CS},
                                 {ok, AisRec};
                             {error, Reason} ->
-                                {error, Reason}
+                                {error, Reason};
+                            {error, Reason, Opt} ->
+                                {error, Reason, Opt}
+
                         end;
                     _ -> 
                         {error, bad_identifier}
@@ -423,7 +428,8 @@ decode_msg_id(MsgID)  ->
 -spec decode_payload(Payload, FillBits) -> Ret when
     Payload :: string() | binary(),
     FillBits :: non_neg_integer(),
-    Ret :: {ok, payload_data()} | {error, Reason::atom()}.
+    Ret :: {ok, payload_data()} | {error, Reason::atom()} | 
+        {error, Reason::atom(), Opt::any()}.
 decode_payload(Payload, FillBits) when is_list(Payload) ->
     PayBin = payload_to_binary(list_to_binary(Payload)),
     TrimPayBin = trim_payload(PayBin, FillBits),
@@ -453,7 +459,7 @@ decode_payload(Payload, _FillBits) ->
             decode_binary_broadcast_message(TrimPayBin);
         _ ->
             io:format("Unsupported message type: ~p~n", [DMT]),
-            {error, unsupported_message_type}
+            {error, unsupported_message_type, DMT}
     end.
 
 %% @doc Decode the radio channel, either 'A' at 161.975 MHz or 'B' at 
