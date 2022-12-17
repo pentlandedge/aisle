@@ -266,10 +266,12 @@
 
 %% @doc Decode an AIS sentence.
 -spec decode(Sentence::string()) -> Ret when
-    Ret :: {ok, ais()} | {error, Reason},
-    Reason :: atom().
+    Ret :: {ok, ais()} | {error, Reason, Sentence} |
+           {error, Reason, Opt, Sentence},
+    Reason :: atom(),
+    Opt :: any().
 decode(Sentence) when is_list(Sentence) ->
-    io:format("~p~n", [Sentence]),
+    % io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     case Tokens of
         [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] ->
@@ -290,15 +292,15 @@ decode(Sentence) when is_list(Sentence) ->
                                 checksum = CS},
                             {ok, AisRec};
                         {error, Reason} ->
-                            {error, Reason};
+                            {error, Reason, Sentence};
                         {error, Reason, Opt} ->
-                            {error, Reason, Opt}
+                            {error, Reason, Opt, Sentence}
                     end;
                 _ -> 
-                    {error, bad_identifier}
+                    {error, bad_identifier, Sentence}
             end;
         _ ->
-            {error, insufficient_elements}
+            {error, insufficient_elements, Sentence}
     end.
 
 %% @doc Trim the fill bits from the end of the payload.
@@ -458,7 +460,6 @@ decode_payload(Payload, _FillBits) ->
         binary_broadcast_message -> 
             decode_binary_broadcast_message(TrimPayBin);
         _ ->
-            io:format("Unsupported message type: ~p~n", [DMT]),
             {error, unsupported_message_type, DMT}
     end.
 

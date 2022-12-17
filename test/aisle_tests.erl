@@ -72,7 +72,7 @@ decode_sample1() ->
 decode_bad_id() ->
     Sentence = bad_identifier(),
     Result = aisle:decode(Sentence),
-    [?_assertEqual({error, bad_identifier}, Result)].
+    [?_assertEqual({error, bad_identifier, Sentence}, Result)].
 
 decode_base_station_report1() ->
     Sentence = base_station_report1(),
@@ -274,19 +274,19 @@ decode_class_a_res_to_interrogation() ->
 
 decode_aid_to_nav_short_payload() ->
     Sentence = aid_to_nav_short_payload(),
-    {Code, Reason} = aisle:decode(Sentence),
+    {Code, Reason, Sentence} = aisle:decode(Sentence),
     [?_assertEqual(error, Code),
      ?_assertEqual(payload_error, Reason)].
 
 decode_bsr_short_payload() ->
     Sentence = bsr_short_payload(),
-    {Code, Reason} = aisle:decode(Sentence),
+    {Code, Reason, Sentence} = aisle:decode(Sentence),
     [?_assertEqual(error, Code),
      ?_assertEqual(payload_error, Reason)].
 
 decode_no_star() ->
     Sentence = no_star_sentence(),
-    {Code, Reason} = aisle:decode(Sentence),
+    {Code, Reason, Sentence} = aisle:decode(Sentence),
     [?_assertEqual(error, Code),
      ?_assertEqual(insufficient_elements, Reason)].
 
@@ -302,7 +302,7 @@ decode_frag_message_check() ->
     S1 = frags_sample(),
 
     % The sentences should be grouped into 3 messages.
-    {_, _, Msgs} = aisle:accum_msgs(S1),
+    {_, _, _Msgs} = aisle:accum_msgs(S1),
 
     % Decode the grouped messages.
     % aisle:decode_msgs(Msgs),
