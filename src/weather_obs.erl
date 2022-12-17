@@ -131,7 +131,7 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_direction = decode_swell_direction(SwD),
         swell_period = decode_swell_period(SwP)}};
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
-    Min:3,COG:7,SOG:5,Hd:7,PSL:11,
+    Min:3,COG:7,SOG:5,Hd:7,PSL:11,PC:20,PT:4,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -149,9 +149,9 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
         course_over_ground = decode_course_over_ground(COG),
         speed_over_ground = decode_speed_over_ground(SOG),
         heading = decode_heading(Hd),
-        pressure_sea_level = decode_pressure_sea_level(PSL)
-        % pressure_change,
-        % pressure_tendency,
+        pressure_sea_level = decode_pressure_sea_level(PSL),
+        pressure_change = decode_pressure_change(PC),
+        pressure_tendency = decode_pressure_tendency(PT)
         % true_wind_direction,
         % true_wind_speed,
         % relative_wind_direction,
@@ -323,3 +323,23 @@ decode_heading(X) when X >= 0, X =< 72 ->
 
 decode_pressure_sea_level(X) when X >= 0, X =< 2000 ->
     (X / 10) + 900.
+
+%% @doc Decode pressure change function. Note the use of 1000 as the upper
+%% limit, rather than 100 in the spec (which looks wrong, given the desired
+%% output range).
+decode_pressure_change(1023) ->
+    not_available;
+decode_pressure_change(X) when X >= 0, X =< 1000 ->
+    (X / 10) - 50.
+
+decode_pressure_tendency(0) -> increasing_then_decreasing;
+decode_pressure_tendency(1) -> increasing_then_steady;
+decode_pressure_tendency(2) -> increasing;
+decode_pressure_tendency(3) -> decreasing_or_steady_then_increasing;
+decode_pressure_tendency(4) -> steady;
+decode_pressure_tendency(5) -> decreasing_then_increasing;
+decode_pressure_tendency(6) -> decreasing_then_steady;
+decode_pressure_tendency(7) -> decreasing;
+decode_pressure_tendency(8) -> steady_or_increasing_then_decreasing;
+decode_pressure_tendency(15) -> not_available.
+
