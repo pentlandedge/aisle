@@ -120,6 +120,8 @@
     get_svd_mmsi/1
         ]).
 
+-export([get_unsupported_messages/1]).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Record definitions.
 
@@ -1102,3 +1104,16 @@ decode_dte(1) -> data_terminal_not_ready.
 get_svd_message_type(#svd{message_type = X}) -> X.
 get_svd_repeat_indicator(#svd{repeat_indicator = X}) -> X.
 get_svd_mmsi(#svd{mmsi = X}) -> X.
+
+get_unsupported_messages(DecodeList) ->
+    F = fun(X) ->
+            case X of 
+                {error, unsupported_message_type, _} ->
+                    true;
+                {error, unsupported_message_type, _, _} ->
+                    true;
+                _ -> 
+                    false
+            end
+        end,
+    lists:filter(F, DecodeList).
