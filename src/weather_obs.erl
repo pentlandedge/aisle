@@ -342,17 +342,11 @@ decode_pressure_tendency(15) -> not_available.
 
 decode_true_wind_direction(X) -> decode_bearing(X).
 
-decode_true_wind_speed(255) ->
-    not_available;
-decode_true_wind_speed(X) when X >= 0, X =< 254 ->
-    0.5 * X.
+decode_true_wind_speed(X) -> decode_speed(X).
 
 decode_relative_wind_direction(X) -> decode_bearing(X).
 
-decode_relative_wind_speed(255) ->
-    not_available;
-decode_relative_wind_speed(X) when X >= 0, X =< 254 ->
-    0.5 * X.
+decode_relative_wind_speed(X) -> decode_speed(X).
 
 %% @doc Decode a bearing. Allows a value of zero which is not mentioned
 %% in the notes (range 1 -> 72 pre-scaling permitted).
@@ -360,3 +354,8 @@ decode_bearing(127) ->
     not_available;
 decode_bearing(X) when X >= 0, X =< 72 ->
     5 * X.
+
+decode_speed(255) ->
+    not_available;
+decode_speed(X) when X >= 0, X =< 254 ->
+    0.5 * X.
