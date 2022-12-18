@@ -131,7 +131,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_direction = decode_swell_direction(SwD),
         swell_period = decode_swell_period(SwP)}};
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
-    Min:3,COG:7,SOG:5,Hd:7,PSL:11,PC:20,PT:4,WD:7,WS:8,RWD:7,RWS:8,
+    Min:3,COG:7,SOG:5,Hd:7,PSL:11,PC:20,PT:4,WD:7,WS:8,RWD:7,RWS:8,MGS:8,
+    MGD:7,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -155,9 +156,9 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
         true_wind_direction = decode_true_wind_direction(WD),
         true_wind_speed = decode_true_wind_speed(WS),
         relative_wind_direction = decode_relative_wind_direction(RWD),
-        relative_wind_speed = decode_relative_wind_speed(RWS)
-        % maximum_gust_speed,
-        % maximum_gust_direction,
+        relative_wind_speed = decode_relative_wind_speed(RWS),
+        maximum_gust_speed = decode_maximum_gust_speed(MGS),
+        maximum_gust_direction = decode_maximum_gust_direction(MGD)
         % air_temperature,
         % relative_humidity,
         % sea_surface_temperature,
@@ -347,6 +348,11 @@ decode_true_wind_speed(X) -> decode_speed(X).
 decode_relative_wind_direction(X) -> decode_bearing(X).
 
 decode_relative_wind_speed(X) -> decode_speed(X).
+
+decode_maximum_gust_speed(X) -> decode_speed(X).
+
+decode_maximum_gust_direction(0) -> calm;
+decode_maximum_gust_direction(X) -> decode_bearing(X).
 
 %% @doc Decode a bearing. Allows a value of zero which is not mentioned
 %% in the notes (range 1 -> 72 pre-scaling permitted).
