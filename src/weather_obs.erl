@@ -131,7 +131,7 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_direction = decode_swell_direction(SwD),
         swell_period = decode_swell_period(SwP)}};
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
-    Min:3,COG:7,SOG:5,Hd:7,PSL:11,PC:20,PT:4,
+    Min:3,COG:7,SOG:5,Hd:7,PSL:11,PC:20,PT:4,WD:7,WS:8,RWD:7,RWS:8,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -151,11 +151,11 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
         heading = decode_heading(Hd),
         pressure_sea_level = decode_pressure_sea_level(PSL),
         pressure_change = decode_pressure_change(PC),
-        pressure_tendency = decode_pressure_tendency(PT)
-        % true_wind_direction,
-        % true_wind_speed,
-        % relative_wind_direction,
-        % relative_wind_speed,
+        pressure_tendency = decode_pressure_tendency(PT),
+        true_wind_direction = decode_true_wind_direction(WD),
+        true_wind_speed = decode_true_wind_speed(WS),
+        relative_wind_direction = decode_relative_wind_direction(RWD),
+        relative_wind_speed = decode_relative_wind_speed(RWS)
         % maximum_gust_speed,
         % maximum_gust_direction,
         % air_temperature,
@@ -316,10 +316,7 @@ decode_speed_over_ground(X) when X >= 0, X =< 30 ->
 
 %% @doc Decode the ship heading. Allows a value of zero which is not mentioned
 %% in the notes (range 1 -> 72 pre-scaling permitted).
-decode_heading(127) ->
-    not_available;
-decode_heading(X) when X >= 0, X =< 72 ->
-    5 * X.
+decode_heading(X) -> decode_bearing(X).
 
 decode_pressure_sea_level(X) when X >= 0, X =< 2000 ->
     (X / 10) + 900.
@@ -343,3 +340,23 @@ decode_pressure_tendency(7) -> decreasing;
 decode_pressure_tendency(8) -> steady_or_increasing_then_decreasing;
 decode_pressure_tendency(15) -> not_available.
 
+decode_true_wind_direction(X) -> decode_bearing(X).
+
+decode_true_wind_speed(255) ->
+    not_available;
+decode_true_wind_speed(X) when X >= 0, X =< 254 ->
+    0.5 * X.
+
+decode_relative_wind_direction(X) -> decode_bearing(X).
+
+decode_relative_wind_speed(255) ->
+    not_available;
+decode_relative_wind_speed(X) when X >= 0, X =< 254 ->
+    0.5 * X.
+
+%% @doc Decode a bearing. Allows a value of zero which is not mentioned
+%% in the notes (range 1 -> 72 pre-scaling permitted).
+decode_bearing(127) ->
+    not_available;
+decode_bearing(X) when X >= 0, X =< 72 ->
+    5 * X.
