@@ -132,7 +132,7 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_period = decode_swell_period(SwP)}};
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
     Min:3,COG:7,SOG:5,Hd:7,PSL:11,PC:20,PT:4,WD:7,WS:8,RWD:7,RWS:8,MGS:8,
-    MGD:7,AT:10,RH:7,
+    MGD:7,AT:10,RH:7,SST:9,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -160,8 +160,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
         maximum_gust_speed = decode_maximum_gust_speed(MGS),
         maximum_gust_direction = decode_maximum_gust_direction(MGD),
         air_temperature = decode_wmo_air_temperature(AT),
-        relative_humidity = decode_relative_humidity(RH)
-        % sea_surface_temperature,
+        relative_humidity = decode_relative_humidity(RH),
+        sea_surface_temperature = decode_sea_surface_temperature(SST)
         % horiz_visibility,
         % present_weather,
         % past_weather_1,
@@ -358,6 +358,11 @@ decode_wmo_air_temperature(1023) ->
     not_available;
 decode_wmo_air_temperature(X) when X >= 0, X =< 1000 ->
     (X / 10) + 223.
+
+decode_sea_surface_temperature(511) ->
+    not_available;
+decode_sea_surface_temperature(X) when X >= 0, X =< 500 ->
+    (X / 10) + 268.
 
 %% @doc Decode a bearing. Allows a value of zero which is not mentioned
 %% in the notes (range 1 -> 72 pre-scaling permitted).
