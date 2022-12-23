@@ -132,7 +132,7 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_period = decode_swell_period(SwP)}};
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
     Min:3,COG:7,SOG:5,Hd:7,PSL:11,PC:20,PT:4,WD:7,WS:8,RWD:7,RWS:8,MGS:8,
-    MGD:7,AT:10,RH:7,SST:9,HV:6,_PW:9,_PW1:5,_PW2:5,
+    MGD:7,AT:10,RH:7,SST:9,HV:6,_PW:9,_PW1:5,_PW2:5,TCC:4,_CA:4,_CT:6,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -162,11 +162,11 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
         air_temperature = decode_wmo_air_temperature(AT),
         relative_humidity = decode_relative_humidity(RH),
         sea_surface_temperature = decode_sea_surface_temperature(SST),
-        horiz_visibility = decode_wmo_horiz_vis(HV)
+        horiz_visibility = decode_wmo_horiz_vis(HV),
         % present_weather,
         % past_weather_1,
         % past_weather_2,
-        % total_cloud_cover,
+        total_cloud_cover = decode_total_cloud_cover(TCC)
         % cloud_amount_low,
         % cloud_type_low,
         % cloud_type_middle,
@@ -368,6 +368,11 @@ decode_wmo_horiz_vis(63) ->
     not_available;
 decode_wmo_horiz_vis(X) when X >= 0, X =< 62->
     (X * X) * 13.073.
+
+decode_total_cloud_cover(15) ->
+    not_available;
+decode_total_cloud_cover(X) when X >= 0, X =< 10 ->
+    10 * X.
 
 %% @doc Decode a bearing. Allows a value of zero which is not mentioned
 %% in the notes (range 1 -> 72 pre-scaling permitted).
