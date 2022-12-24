@@ -132,7 +132,8 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
         swell_period = decode_swell_period(SwP)}};
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
     Min:3,COG:7,SOG:5,Hd:7,PSL:11,PC:20,PT:4,WD:7,WS:8,RWD:7,RWS:8,MGS:8,
-    MGD:7,AT:10,RH:7,SST:9,HV:6,_PW:9,_PW1:5,_PW2:5,TCC:4,_CA:4,_CT:6,
+    MGD:7,AT:10,RH:7,SST:9,HV:6,_PW:9,_PW1:5,_PW2:5,TCC:4,_CA:4,_CTL:6, _CTM:6,
+    _CTH:6,HCB:7,_PoWW:5,_HoWW:6,_FSD:6,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -166,12 +167,12 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
         % present_weather,
         % past_weather_1,
         % past_weather_2,
-        total_cloud_cover = decode_total_cloud_cover(TCC)
+        total_cloud_cover = decode_total_cloud_cover(TCC),
         % cloud_amount_low,
         % cloud_type_low,
         % cloud_type_middle,
         % cloud_type_high,
-        % height_of_cloud_base,
+        height_of_cloud_base = decode_height_of_cloud_base(HCB)
         % period_of_wind_waves,
         % height_of_wind_waves,
         % first_swell_direction,
@@ -373,6 +374,13 @@ decode_total_cloud_cover(15) ->
     not_available;
 decode_total_cloud_cover(X) when X >= 0, X =< 10 ->
     10 * X.
+
+decode_height_of_cloud_base(127) ->
+    not_available;
+decode_height_of_cloud_base(126) ->
+    exceeds_2500;
+decode_height_of_cloud_base(X) when X >= 0, X =< 125 ->
+    (X * X) * 0.16.
 
 %% @doc Decode a bearing. Allows a value of zero which is not mentioned
 %% in the notes (range 1 -> 72 pre-scaling permitted).
