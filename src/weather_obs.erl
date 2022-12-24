@@ -133,7 +133,7 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,0:1,Loc:120/bitstring,Lon:25/signed,
 decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
     Min:3,COG:7,SOG:5,Hd:7,PSL:11,PC:20,PT:4,WD:7,WS:8,RWD:7,RWS:8,MGS:8,
     MGD:7,AT:10,RH:7,SST:9,HV:6,_PW:9,_PW1:5,_PW2:5,TCC:4,_CA:4,_CTL:6, _CTM:6,
-    _CTH:6,HCB:7,_PoWW:5,_HoWW:6,_FSD:6,
+    _CTH:6,HCB:7,PoWW:5,HoWW:6,FSD:6,
     _Rem/bitstring>>) ->
     {ok, #weather_obs_wmo{
         message_type = aisle:decode_message_type(MT),
@@ -172,10 +172,10 @@ decode(<<MT:6,RI:2,MMSI:30,DAC:10,FID:6,1:1,Lon:16,Lat:16,Mon:4,Day:6,Hr:5,
         % cloud_type_low,
         % cloud_type_middle,
         % cloud_type_high,
-        height_of_cloud_base = decode_height_of_cloud_base(HCB)
-        % period_of_wind_waves,
-        % height_of_wind_waves,
-        % first_swell_direction,
+        height_of_cloud_base = decode_height_of_cloud_base(HCB),
+        period_of_wind_waves  =  decode_period_of_wind_waves(PoWW),
+        height_of_wind_waves = decode_height_of_wind_waves(HoWW),
+        first_swell_direction = decode_first_swell_direction(FSD)
         % first_swell_period,
         % first_swell_height,
         % second_swell_direction,
@@ -381,6 +381,23 @@ decode_height_of_cloud_base(126) ->
     exceeds_2500;
 decode_height_of_cloud_base(X) when X >= 0, X =< 125 ->
     (X * X) * 0.16.
+
+decode_period_of_wind_waves(31) ->
+    not_available;
+decode_period_of_wind_waves(X) when X >= 0, X =< 30 ->
+    X.
+
+decode_height_of_wind_waves(63) ->
+    not_available;
+decode_height_of_wind_waves(X) when X >= 0, X =< 60 ->
+    0.5 * X.
+
+decode_first_swell_direction(63) ->
+    not_available;
+decode_first_swell_direction(0) ->
+    calm;
+decode_first_swell_direction(X) when X >= 1, X =< 36 ->
+    10 * X.
 
 %% @doc Decode a bearing. Allows a value of zero which is not mentioned
 %% in the notes (range 1 -> 72 pre-scaling permitted).
