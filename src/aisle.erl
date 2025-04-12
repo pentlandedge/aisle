@@ -273,11 +273,11 @@
     Reason :: atom(),
     Opt :: any().
 decode(Sentence) when is_list(Sentence) ->
-    io:format("~p~n", [Sentence]),
+    %io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     case Tokens of
         [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] ->
-            io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
+            %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
             FillBits = decode_fill_bits(Fill),
             case Id of 
                 "!AIVDM" -> 
@@ -314,7 +314,7 @@ trim_payload(Payload, FillBits) when is_bitstring(Payload) ->
     TrimPayload.
 
 extract_payload(Sentence) when is_list(Sentence) ->
-    io:format("~p~n", [Sentence]),
+    %io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     case Tokens of
         [_, _, _, _, _, Payload, Fill, _|_Rest] ->
@@ -382,7 +382,7 @@ decode_msgs([Msg]) ->
 decode_msgs(Msgs) when is_list(Msgs) ->
     Pay = accum_payload(Msgs),
     [First|_] = Msgs,
-    io:format("~p~n", [First]),
+    %io:format("~p~n", [First]),
         Tokens = to_tokens(First, ",*"),
         case Tokens of
             [Id, FragCount, FragNum, MsgID, Chan, _, _, CS|_Rest] ->
@@ -454,7 +454,7 @@ decode_payload(Payload, _FillBits) ->
         base_station_report ->
             decode_bsr(TrimPayBin);
         static_and_voyage_data ->
-            io:format("decode svd: ~p~n", [TrimPayBin]),
+            %io:format("decode svd: ~p~n", [TrimPayBin]),
             decode_static_and_voyage_data(TrimPayBin);
         aid_to_navigation_report ->
             %io:format("Aid to Nav bits ~p size ~p ~p~n", [bit_size(TrimPayBin), byte_size(TrimPayBin), TrimPayBin]),
@@ -1086,7 +1086,7 @@ decode_static_and_voyage_data(<<MT:6,RI:2,MMSI:30,Vsn:2,IMO:30,CS:42/bitstring,
         dte = decode_dte(DTE)
     }};
 decode_static_and_voyage_data(_Arg) ->
-    io:format("svd decode error clause, arg: ~p~n", [_Arg]),
+    %io:format("svd decode error clause, arg: ~p~n", [_Arg]),
     {error, failed_to_decode_svd}.
 
 decode_call_sign(Bin) ->
