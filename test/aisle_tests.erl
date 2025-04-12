@@ -23,7 +23,8 @@ aisle_test_() ->
     [decode_sample1(), decode_bad_id(), decode_base_station_report1(),
      decode_base_station_report2(), decode_aid_to_nav_report1(),
      decode_aid_to_nav_report2(), %decode_static_voyage_pair1(),
-     decode_static_voyage_pair2(), decode_class_a_res_to_interrogation(),
+     decode_static_voyage_pair2(), decode_static_voyage_pair3(),
+     decode_class_a_res_to_interrogation(),
      decode_aid_to_nav_short_payload(), decode_bsr_short_payload(),
      decode_no_star(), acc_frags_check(), decode_frag_message_check()].
 
@@ -238,6 +239,19 @@ decode_static_voyage_pair2() ->
      ?_assertEqual(235007548, MMSI)
     ].
 
+decode_static_voyage_pair3() ->
+    Sentences = static_and_voyage_data_sentence_pair3(),
+    {Code, AisRec} = aisle:decode_msgs(Sentences),
+    SVDR = aisle:get_data(AisRec),
+    MT = aisle:get_svd_message_type(SVDR),
+    RI = aisle:get_svd_repeat_indicator(SVDR),
+    MMSI = aisle:get_svd_mmsi(SVDR),
+    [?_assertEqual(ok, Code),
+     ?_assertEqual(static_and_voyage_data, MT),
+     ?_assertEqual(no_repeats, RI),
+     ?_assertEqual(232002720, MMSI)
+    ].
+
 decode_class_a_res_to_interrogation() ->
     Sentence = response_to_interrogation1(),
     {Code, AisRec} = aisle:decode(Sentence),
@@ -346,6 +360,10 @@ frags_sample() ->
 static_and_voyage_data_sentence_pair2() ->
     ["!AIVDM,2,1,4,A,53P7f?000001I49G>20h5E860n2222222222220l1H8176o:044SlnE28888,0*31",
      "!AIVDM,2,2,4,A,88888888880,2*20"].
+
+static_and_voyage_data_sentence_pair3() ->
+    ["!AIVDM,2,1,2,A,53M@D`42;N`4mMISH00Pu0E@uDp000000000000l2PG684n60@B3mCQ8,0*51",
+     "!AIVDM,2,2,2,A,43jCU0000000000,2*6D"].
 
 response_to_interrogation1() ->
     "!AIVDM,1,1,,B,33P;vahOh`OhFc<P3AMmI5E@010i,0*6B".

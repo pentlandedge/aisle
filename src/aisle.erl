@@ -273,11 +273,11 @@
     Reason :: atom(),
     Opt :: any().
 decode(Sentence) when is_list(Sentence) ->
-    % io:format("~p~n", [Sentence]),
+    io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     case Tokens of
         [Id, FragCount, FragNum, MsgID, Chan, Payload,Fill, CS|_Rest] ->
-            %io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
+            io:format("FC ~p FN ~p, MID ~p, Chan ~p, Fill ~p~n", [FragCount, FragNum, MsgID, Chan, Fill]),
             FillBits = decode_fill_bits(Fill),
             case Id of 
                 "!AIVDM" -> 
