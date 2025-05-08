@@ -23,6 +23,7 @@
     decode/1, 
     display/1, 
     parse_file/1,
+    parse_file2/1,
     accum_msgs/1,
     decode_msgs/1,
     acc_frag/2,
@@ -345,6 +346,18 @@ parse_lines(S, ProcFn, Acc) ->
         Line -> 
             NewRec = ProcFn(Line),
             parse_lines(S, ProcFn, [NewRec|Acc])
+    end.
+
+%% @doc Parse a log file constructed of AIS sentences, one per line.
+-spec parse_file2(string()) -> [{ok, ais()} | {error, atom()}] | {error, atom()}. 
+parse_file2(Filename) when is_list(Filename) ->
+    case file:read_file(Filename) of
+        {ok, Binary} -> 
+            Lines = [binary_to_list(Bin) || Bin <- binary:split(Binary,<<"\n">>,[global])],
+            {_, _, GroupedSentences} = accum_msgs(Lines),
+            lists:map(fun decode_msgs/1, GroupedSentences);
+        {error, Reason} ->
+            {error, Reason}
     end.
 
 %% @doc Accumulate sentence fragments into complete messages.
