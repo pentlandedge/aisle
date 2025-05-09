@@ -331,8 +331,8 @@ decode_batch_error() ->
 
 decode_batch() ->
     Batch = [sample_sentence1(), base_station_report1()],
-    aisle:decode2(Batch),
-    [].
+    {ok, Msgs, []} = aisle:decode2(Batch),
+    [?_assertEqual(2, length(Msgs))].
 
 sample_sentence1() -> 
     "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C".
