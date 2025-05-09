@@ -27,7 +27,7 @@ aisle_test_() ->
      decode_class_a_res_to_interrogation(),
      decode_aid_to_nav_short_payload(), decode_bsr_short_payload(),
      decode_no_star(), acc_frags_check(), decode_frag_message_check(),
-     decode_batch()].
+     decode_batch_error(), decode_batch()].
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
@@ -321,6 +321,12 @@ decode_frag_message_check() ->
 
     % Decode the grouped messages.
     % aisle:decode_msgs(Msgs),
+    [].
+
+decode_batch_error() ->
+    Batch = ["qwerty1234"],
+    {ok, Ret, _} = aisle:decode2(Batch),
+    [] = Ret,
     [].
 
 decode_batch() ->

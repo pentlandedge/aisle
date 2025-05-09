@@ -307,7 +307,12 @@ decode(Sentence) when is_list(Sentence) ->
             {error, insufficient_elements, Sentence}
     end.
 
-decode2(_Batch) -> ok.
+decode2(Lines) -> 
+    % {_, _, GroupedSentences} = accum_msgs(Lines),
+    Ret = accum_msgs(Lines),
+    {_, Frags, GroupedSentences} = Ret,
+    Recs = lists:map(fun decode_msgs/1, GroupedSentences),
+    {ok, Recs, Frags}. 
 
 %% @doc Trim the fill bits from the end of the payload.
 -spec trim_payload(bitstring(), fill_bits()) -> bitstring().
@@ -318,7 +323,7 @@ trim_payload(Payload, FillBits) when is_bitstring(Payload) ->
     TrimPayload.
 
 extract_payload(Sentence) when is_list(Sentence) ->
-    %io:format("~p~n", [Sentence]),
+    io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
     case Tokens of
         [_, _, _, _, _, Payload, Fill, _|_Rest] ->
