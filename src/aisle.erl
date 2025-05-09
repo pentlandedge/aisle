@@ -25,7 +25,7 @@
     display/1, 
     parse_file/1,
     parse_file2/1,
-    accum_msgs/1,
+    accum_msgs/2,
     decode_msgs/1,
     acc_frag/2,
     extract_payload/1,
@@ -308,8 +308,7 @@ decode(Sentence) when is_list(Sentence) ->
     end.
 
 decode2(Lines) -> 
-    % {_, _, GroupedSentences} = accum_msgs(Lines),
-    Ret = accum_msgs(Lines),
+    Ret = accum_msgs(Lines, []),
     {Frags, GroupedSentences} = Ret,
     Recs = lists:map(fun decode_msgs/1, GroupedSentences),
     {ok, Recs, Frags}. 
@@ -362,16 +361,16 @@ parse_file2(Filename) when is_list(Filename) ->
     case file:read_file(Filename) of
         {ok, Binary} -> 
             Lines = [binary_to_list(Bin) || Bin <- binary:split(Binary,<<"\n">>,[global])],
-            {_, GroupedSentences} = accum_msgs(Lines),
+            {_, GroupedSentences} = accum_msgs(Lines, []),
             lists:map(fun decode_msgs/1, GroupedSentences);
         {error, Reason} ->
             {error, Reason}
     end.
 
 %% @doc Accumulate sentence fragments into complete messages.
-accum_msgs(Sentences) -> 
-    {Frags, Msgs} = lists:foldl(fun acc_frag/2, {[], []}, Sentences),
-    {Frags, lists:reverse(Msgs)}.
+accum_msgs(Sentences, InitFrags) -> 
+    {RemFrags, Msgs} = lists:foldl(fun acc_frag/2, {InitFrags, []}, Sentences),
+    {RemFrags, lists:reverse(Msgs)}.
 
 %% @doc Accumulate the sentence fragments into a list of complete messages.
 -spec acc_frag(Sentence::string(), Acc::{Frags, Msgs}) -> NewAcc 
