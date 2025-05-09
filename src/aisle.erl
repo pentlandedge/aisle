@@ -21,7 +21,7 @@
 
 -export([
     decode/1, 
-    decode2/1, 
+    decode2/2, 
     display/1, 
     parse_file/1,
     parse_file2/1,
@@ -307,8 +307,8 @@ decode(Sentence) when is_list(Sentence) ->
             {error, insufficient_elements, Sentence}
     end.
 
-decode2(Lines) -> 
-    Ret = accum_msgs(Lines, []),
+decode2(Lines, InitFrags) -> 
+    Ret = accum_msgs(Lines, InitFrags),
     {Frags, GroupedSentences} = Ret,
     Recs = lists:map(fun decode_msgs/1, GroupedSentences),
     {ok, Recs, Frags}. 

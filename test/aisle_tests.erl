@@ -325,19 +325,20 @@ decode_frag_message_check() ->
 
 decode_batch_error() ->
     Batch = ["qwerty1234"],
-    {ok, Ret, _} = aisle:decode2(Batch),
+    {ok, Ret, _} = aisle:decode2(Batch, []),
     [] = Ret,
     [].
 
 decode_batch() ->
     Batch = [sample_sentence1(), base_station_report1()],
-    {ok, Msgs, []} = aisle:decode2(Batch),
+    {ok, Msgs, RemFrags} = aisle:decode2(Batch, []),
     [{Code1, AisRec1}, {Code2, AisRec2}] = Msgs,
     CNB = aisle:get_data(AisRec1),
     BSR = aisle:get_data(AisRec2),
     MT1 = aisle:get_message_type(CNB),
     MT2 = aisle:get_bsr_message_type(BSR),
     [?_assertEqual(2, length(Msgs)),
+     ?_assertEqual(0, length(RemFrags)),
      ?_assertEqual(ok, Code1),
      ?_assertEqual(ok, Code2),
      ?_assertEqual(pos_report_class_a, MT1),
