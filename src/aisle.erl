@@ -370,7 +370,8 @@ parse_file2(Filename) when is_list(Filename) ->
 
 %% @doc Accumulate sentence fragments into complete messages.
 accum_msgs(Sentences) -> 
-    lists:foldl(fun acc_frag/2, {0, [], []}, Sentences).
+    {FragsRxd, Frags, Msgs} = lists:foldl(fun acc_frag/2, {0, [], []}, Sentences),
+    {FragsRxd, Frags, lists:reverse(Msgs)}.
 
 %% @doc Accumulate the sentence fragments into a list of complete messages.
 -spec acc_frag(Sentence::string(), Acc::{FragsRxd, Frags, Msgs}) -> NewAcc 
@@ -378,7 +379,7 @@ accum_msgs(Sentences) ->
          Frags::[string()],
          Msgs::[string()],
          NewAcc::{FragsRxd, Frags, Msgs}.
-acc_frag(Sentence, {FragsRxd, Frags, Msgs}) -> 
+acc_frag(Sentence, {FragsRxd, Frags, Msgs} = Acc) ->
     Tokens = to_tokens(Sentence, ",*"),
     case Tokens of
         [_, FragCount, FragNum, _, _, _, _, _|_Rest] ->
@@ -393,7 +394,7 @@ acc_frag(Sentence, {FragsRxd, Frags, Msgs}) ->
                     {0, [], Msgs}
             end;
         _ ->
-            {0, [], Msgs}
+            Acc
     end.
 
 %% @doc Decode a list of sentences comprising a message. A message in this 
