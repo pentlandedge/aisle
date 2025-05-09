@@ -310,7 +310,7 @@ decode(Sentence) when is_list(Sentence) ->
 decode2(Lines) -> 
     % {_, _, GroupedSentences} = accum_msgs(Lines),
     Ret = accum_msgs(Lines),
-    {_, Frags, GroupedSentences} = Ret,
+    {Frags, GroupedSentences} = Ret,
     Recs = lists:map(fun decode_msgs/1, GroupedSentences),
     {ok, Recs, Frags}. 
 
@@ -362,7 +362,7 @@ parse_file2(Filename) when is_list(Filename) ->
     case file:read_file(Filename) of
         {ok, Binary} -> 
             Lines = [binary_to_list(Bin) || Bin <- binary:split(Binary,<<"\n">>,[global])],
-            {_, _, GroupedSentences} = accum_msgs(Lines),
+            {_, GroupedSentences} = accum_msgs(Lines),
             lists:map(fun decode_msgs/1, GroupedSentences);
         {error, Reason} ->
             {error, Reason}
@@ -370,28 +370,27 @@ parse_file2(Filename) when is_list(Filename) ->
 
 %% @doc Accumulate sentence fragments into complete messages.
 accum_msgs(Sentences) -> 
-    {FragsRxd, Frags, Msgs} = lists:foldl(fun acc_frag/2, {0, [], []}, Sentences),
-    {FragsRxd, Frags, lists:reverse(Msgs)}.
+    {Frags, Msgs} = lists:foldl(fun acc_frag/2, {[], []}, Sentences),
+    {Frags, lists:reverse(Msgs)}.
 
 %% @doc Accumulate the sentence fragments into a list of complete messages.
--spec acc_frag(Sentence::string(), Acc::{FragsRxd, Frags, Msgs}) -> NewAcc 
-    when FragsRxd::non_neg_integer(),
-         Frags::[string()],
+-spec acc_frag(Sentence::string(), Acc::{Frags, Msgs}) -> NewAcc 
+    when Frags::[string()],
          Msgs::[string()],
-         NewAcc::{FragsRxd, Frags, Msgs}.
-acc_frag(Sentence, {FragsRxd, Frags, Msgs} = Acc) ->
+         NewAcc::{Frags, Msgs}.
+acc_frag(Sentence, {Frags, Msgs} = Acc) ->
     Tokens = to_tokens(Sentence, ",*"),
     case Tokens of
         [_, FragCount, FragNum, _, _, _, _, _|_Rest] ->
             case {FragCount, FragNum} of
                 {FragCount, FragCount} -> 
                     NewMsgs = [lists:reverse([Sentence|Frags])|Msgs],
-                    {0, [], NewMsgs};
+                    {[], NewMsgs};
                 {FragCount, FragNum} when FragCount > FragNum ->
-                    {FragsRxd+1, [Sentence|Frags], Msgs};
+                    {[Sentence|Frags], Msgs};
                 _ ->
                     % Error, reset the fragments.
-                    {0, [], Msgs}
+                    {[], Msgs}
             end;
         _ ->
             Acc

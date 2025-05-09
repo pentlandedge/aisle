@@ -309,7 +309,7 @@ acc_frags_check() ->
     S1 = frags_sample(),
 
     % The sentences should be grouped into 3 messages.
-    {_, _, Msgs} = aisle:accum_msgs(S1),
+    {_, Msgs} = aisle:accum_msgs(S1),
 
     [?_assertEqual(3, length(Msgs))].
 
@@ -317,7 +317,7 @@ decode_frag_message_check() ->
     S1 = frags_sample(),
 
     % The sentences should be grouped into 3 messages.
-    {_, _, _Msgs} = aisle:accum_msgs(S1),
+    {_, _Msgs} = aisle:accum_msgs(S1),
 
     % Decode the grouped messages.
     % aisle:decode_msgs(Msgs),
