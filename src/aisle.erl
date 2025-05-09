@@ -21,6 +21,7 @@
 
 -export([
     decode/1, 
+    decode2/1, 
     display/1, 
     parse_file/1,
     parse_file2/1,
@@ -305,6 +306,8 @@ decode(Sentence) when is_list(Sentence) ->
         _ ->
             {error, insufficient_elements, Sentence}
     end.
+
+decode2(_Batch) -> ok.
 
 %% @doc Trim the fill bits from the end of the payload.
 -spec trim_payload(bitstring(), fill_bits()) -> bitstring().

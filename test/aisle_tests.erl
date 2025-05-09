@@ -26,7 +26,8 @@ aisle_test_() ->
      decode_static_voyage_pair2(), decode_static_voyage_pair3(),
      decode_class_a_res_to_interrogation(),
      decode_aid_to_nav_short_payload(), decode_bsr_short_payload(),
-     decode_no_star(), acc_frags_check(), decode_frag_message_check()].
+     decode_no_star(), acc_frags_check(), decode_frag_message_check(),
+     decode_batch()].
 
 decode_sample1() ->
     Sentence = sample_sentence1(),
@@ -320,6 +321,11 @@ decode_frag_message_check() ->
 
     % Decode the grouped messages.
     % aisle:decode_msgs(Msgs),
+    [].
+
+decode_batch() ->
+    Batch = [sample_sentence1(), base_station_report1()],
+    aisle:decode2(Batch),
     [].
 
 sample_sentence1() -> 
