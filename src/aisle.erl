@@ -918,6 +918,8 @@ get_atnr_assigned_mode(#atnr{assigned_mode = X}) -> X.
 
 %% @doc Utility function to work like string:tokens/1, but not skip over 
 %% multiple occurrences of the separator.
+to_tokens(Bin, SepList) when is_binary(Bin), is_list(SepList) ->
+    to_tokens(binary_to_list(Bin), SepList);
 to_tokens(String, SepList) when is_list(String), is_list(SepList) ->
     toks(String, SepList, [], last_sep).
 
