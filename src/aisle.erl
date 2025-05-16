@@ -270,10 +270,13 @@
 
 %% @doc Decode an AIS sentence.
 -spec decode(Sentence::string()) -> Ret when
+    Sentence :: string() | binary(),
     Ret :: {ok, ais()} | {error, Reason, Sentence} |
            {error, Reason, Opt, Sentence},
     Reason :: atom(),
     Opt :: any().
+decode(Sentence) when is_binary(Sentence) ->
+    decode(binary_to_list(Sentence));
 decode(Sentence) when is_list(Sentence) ->
     %io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
