@@ -324,6 +324,8 @@ trim_payload(Payload, FillBits) when is_bitstring(Payload) ->
     <<TrimPayload:TrimSize/bitstring,_/bitstring>> = Payload,
     TrimPayload.
 
+extract_payload(Sentence) when is_binary(Sentence) ->
+    extract_payload(binary_to_list(Sentence));
 extract_payload(Sentence) when is_list(Sentence) ->
     io:format("~p~n", [Sentence]),
     Tokens = to_tokens(Sentence, ",*"),
