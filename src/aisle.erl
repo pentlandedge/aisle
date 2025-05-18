@@ -124,6 +124,8 @@
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
+-export([is_ais_rec/1]).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Record definitions.
 
@@ -1150,3 +1152,6 @@ get_unsupported_message_types(DecodeList) ->
     Ts = [T || {_, _, T, _} <- Unsupported],
     Set = sets:from_list(Ts),
     sets:to_list(Set).
+
+is_ais_rec(#ais{}) -> true;
+is_ais_rec(_)      -> false.
