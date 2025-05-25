@@ -122,6 +122,9 @@
     get_svd_mmsi/1
         ]).
 
+%% String output routines.
+-export([repeat_indicator_to_list/1]).
+
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
 -export([is_ais_rec/1]).
@@ -571,6 +574,11 @@ decode_repeat_indicator(0) -> no_repeats;
 decode_repeat_indicator(1) -> one_repeat;
 decode_repeat_indicator(2) -> two_repeats;
 decode_repeat_indicator(3) -> do_not_repeat.
+
+repeat_indicator_to_list(no_repeats) -> "no repeats";
+repeat_indicator_to_list(one_repeat) -> "one_repeat";
+repeat_indicator_to_list(two_repeats) -> "two_repeats";
+repeat_indicator_to_list(do_not_repeat) -> "do_not_repeat".
 
 %% @doc Decode the 168-bit Common Navigation Block (CNB).
 -spec decode_cnb(binary()) -> {ok, cnb()} | {error, Reason::atom()}.
