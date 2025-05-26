@@ -123,7 +123,7 @@
         ]).
 
 %% String output routines.
--export([repeat_indicator_to_list/1]).
+-export([repeat_indicator_to_list/1, position_accuracy_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -646,6 +646,9 @@ decode_sog(X)    -> 0.1 * X.
 -spec decode_position_accuracy(0 | 1) -> pos_acc().
 decode_position_accuracy(1) -> dgps_less_than_10m;
 decode_position_accuracy(0) -> unaugmented_gnss_greater_than_10m. 
+
+position_accuracy_to_list(dgps_less_than_10m) -> "DGPS < 10m";
+position_accuracy_to_list(unaugmented_gnss_greater_than_10m) -> "Unaugmented GNSS > 10m".
 
 %% @doc Decode the Longitude parameter.
 -spec decode_longitude(integer()) -> optional_float(). 
