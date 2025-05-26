@@ -575,6 +575,8 @@ decode_repeat_indicator(1) -> one_repeat;
 decode_repeat_indicator(2) -> two_repeats;
 decode_repeat_indicator(3) -> do_not_repeat.
 
+%% @doc Convert the repeat indicator to list.
+-spec repeat_indicator_to_list(atom()) -> string().
 repeat_indicator_to_list(no_repeats) -> "no repeats";
 repeat_indicator_to_list(one_repeat) -> "one_repeat";
 repeat_indicator_to_list(two_repeats) -> "two_repeats";
@@ -647,6 +649,8 @@ decode_sog(X)    -> 0.1 * X.
 decode_position_accuracy(1) -> dgps_less_than_10m;
 decode_position_accuracy(0) -> unaugmented_gnss_greater_than_10m. 
 
+%% @doc Convert position accuracy to list.
+-spec position_accuracy_to_list(pos_acc()) -> string().
 position_accuracy_to_list(dgps_less_than_10m) -> "DGPS < 10m";
 position_accuracy_to_list(unaugmented_gnss_greater_than_10m) -> "Unaugmented GNSS > 10m".
 
