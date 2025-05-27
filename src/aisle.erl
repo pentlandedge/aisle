@@ -568,6 +568,8 @@ decode_message_type(26) -> multiple_slot_binary_message_with_comms_state;
 decode_message_type(27) -> pos_report_for_long_range_applications;
 decode_message_type(_) -> unknown_message_type.
 
+%% @doc Convert the message type to string.
+-spec message_type_to_list(atom()) -> string().
 message_type_to_list(pos_report_class_a) -> "Position Report Class A";
 message_type_to_list(pos_report_class_a_assigned_schedule) -> "Position Report Class A Assigned Schedule";
 message_type_to_list(pos_report_class_a_response_to_interrogation) -> "Position Report Class A Respond To Interrogation";
