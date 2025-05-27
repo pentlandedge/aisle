@@ -123,7 +123,11 @@
         ]).
 
 %% String output routines.
--export([message_type_to_list/1, repeat_indicator_to_list/1, position_accuracy_to_list/1]).
+-export([
+    message_type_to_list/1,
+    repeat_indicator_to_list/1,
+    nav_status_to_list/1,
+    position_accuracy_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -650,11 +654,30 @@ decode_nav_status(7) -> engaged_in_fishing;
 decode_nav_status(8) -> under_way_sailing;
 decode_nav_status(9) -> reserved_for_hsg;
 decode_nav_status(10) -> reserved_for_wig;
-decode_nav_status(11) -> reserved;
-decode_nav_status(12) -> reserved;
+decode_nav_status(11) -> power_driven_vessel_towing_astern;
+decode_nav_status(12) -> power_driven_vessel_pushing_ahead_or_towing_alongside;
 decode_nav_status(13) -> reserved;
 decode_nav_status(14) -> ais_sart_is_active;
-decode_nav_status(15) -> not_defined. 
+decode_nav_status(15) -> undefined. 
+
+%% @doc Convert the NAV status indication to string.
+-spec nav_status_to_list(atom()) -> string().
+nav_status_to_list(under_way_using_engine) -> "under way using engine";
+nav_status_to_list(at_anchor) -> "at anchor";
+nav_status_to_list(not_under_command) -> "not under command";
+nav_status_to_list(restricted_manoeuverability) -> "restricted manoeuverability";
+nav_status_to_list(constrained_by_her_draught) -> "constrained by her draught";
+nav_status_to_list(moored) -> "moored";
+nav_status_to_list(aground) -> "aground";
+nav_status_to_list(engaged_in_fishing) -> "engaged in fishing";
+nav_status_to_list(under_way_sailing) -> "under way sailing";
+nav_status_to_list(reserved_for_hsg) -> "reserved for HSG";
+nav_status_to_list(reserved_for_wig) -> "reserved for WIG";
+nav_status_to_list(power_driven_vessel_towing_astern) -> "power driven vessel towing astern";
+nav_status_to_list(power_driven_vessel_pushing_ahead_or_towing_alongside) -> "power driven vessel pushing ahead or towing alongside";
+nav_status_to_list(reserved) -> "reserved";
+nav_status_to_list(ais_sart_is_active) -> "AIS-SART is active";
+nav_status_to_list(undefined) -> "undefined". 
 
 %% @doc Decode the rate of turn field.
 -spec decode_rate_of_turn(-128..127) -> atom().
