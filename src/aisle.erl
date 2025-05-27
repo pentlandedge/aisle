@@ -123,7 +123,7 @@
         ]).
 
 %% String output routines.
--export([repeat_indicator_to_list/1, position_accuracy_to_list/1]).
+-export([message_type_to_list/1, repeat_indicator_to_list/1, position_accuracy_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -567,6 +567,35 @@ decode_message_type(25) -> single_slot_binary_message;
 decode_message_type(26) -> multiple_slot_binary_message_with_comms_state;
 decode_message_type(27) -> pos_report_for_long_range_applications;
 decode_message_type(_) -> unknown_message_type.
+
+message_type_to_list(pos_report_class_a) -> "Position Report Class A";
+message_type_to_list(pos_report_class_a_assigned_schedule) -> "Position Report Class A Assigned Schedule";
+message_type_to_list(pos_report_class_a_response_to_interrogation) -> "Position Report Class A Respond To Interrogation";
+message_type_to_list(base_station_report) -> "Base Station Report";
+message_type_to_list(static_and_voyage_data) -> "Static and Voyage Data";
+message_type_to_list(binary_addressed_message) -> "Binary Addressed Message";
+message_type_to_list(binary_acknowledge) -> "Binary Acknowledge";
+message_type_to_list(binary_broadcast_message) -> "Binary Broadcast Message";
+message_type_to_list(standard_sar_aircraft_pos_report) -> "Standard SAR Aircraft Position Report";
+message_type_to_list(utc_and_date_inquiry) -> "UTC and Date Enquiry";
+message_type_to_list(utc_and_date_response) -> "UTC and Date Response";
+message_type_to_list(addressed_safety_related_message) -> "Addressed Safety Related Message";
+message_type_to_list(safety_related_ack) -> "Safety Related Acknowledge";
+message_type_to_list(safety_related_broadcast) -> "Safety Related Broadcast";
+message_type_to_list(interrogation) -> "Interrogation";
+message_type_to_list(assignment_mode_command) -> "Assignment Mode Command";
+message_type_to_list(dgnss_binary_broadcast_message) -> "DGNSS Binary Broadcast Message";
+message_type_to_list(standard_class_b_cs_pos_report) -> "Standard Class B CS Position Report";
+message_type_to_list(extended_class_b_equipment_pos_report) -> "Standard Class B Equipment Position Report";
+message_type_to_list(data_link_management) -> "Data Link Management";
+message_type_to_list(aid_to_navigation_report) -> "Aid to Navigation Report";
+message_type_to_list(channel_management) -> "Channel Management";
+message_type_to_list(group_assignment_command) -> "Group Assignment Command";
+message_type_to_list(static_data_report) -> "Static Data Report";
+message_type_to_list(single_slot_binary_message) -> "Single Slot Binary Message";
+message_type_to_list(multiple_slot_binary_message_with_comms_state) -> "Multiple Slot Binary Message with Comms State";
+message_type_to_list(pos_report_for_long_range_applications) -> "Position Report for Long Range Applications";
+message_type_to_list(unknown_message_type) -> "Unknown Message Type".
 
 %% @doc Decode the repeat indicator.
 -spec decode_repeat_indicator(non_neg_integer()) -> atom().
