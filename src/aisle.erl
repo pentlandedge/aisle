@@ -718,7 +718,7 @@ decode_longitude(X) -> X / 600000.0.
 %% @doc Convert Longitude to string.
 -spec longitude_to_list(optional_float()) -> string().
 longitude_to_list(not_available) -> "not available";
-longitude_to_list(X) -> io_lib:format("~p", [X]).
+longitude_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
 
 %% @doc Decode the Longitude parameter.
 -spec decode_latitude(integer()) -> optional_float(). 
@@ -728,7 +728,7 @@ decode_latitude(X) -> X / 600000.0.
 %% @doc Convert Latitude to string.
 -spec latitude_to_list(optional_float()) -> string().
 latitude_to_list(not_available) -> "not available";
-latitude_to_list(X) -> io_lib:format("~p", [X]).
+latitude_to_list(X)  when is_number(X) -> io_lib:format("~p", [X]).
 
 %% @doc Decod the course over ground field.
 -spec decode_cog(non_neg_integer()) -> optional_float().
