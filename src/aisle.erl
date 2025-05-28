@@ -127,7 +127,8 @@
     message_type_to_list/1,
     repeat_indicator_to_list/1,
     nav_status_to_list/1,
-    position_accuracy_to_list/1]).
+    position_accuracy_to_list/1,
+    longitude_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -712,6 +713,11 @@ position_accuracy_to_list(unaugmented_gnss_greater_than_10m) -> "Unaugmented GNS
 -spec decode_longitude(integer()) -> optional_float(). 
 decode_longitude(16#6791AC0) -> not_available;
 decode_longitude(X) -> X / 600000.0.
+
+%% @doc Convert Longitude to string.
+-spec longitude_to_list(optional_float()) -> string().
+longitude_to_list(not_available) -> "not available";
+longitude_to_list(X) -> io_lib:format("~p", [X]).
 
 %% @doc Decode the Longitude parameter.
 -spec decode_latitude(integer()) -> optional_float(). 
