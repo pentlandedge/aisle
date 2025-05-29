@@ -130,7 +130,8 @@
     position_accuracy_to_list/1,
     longitude_to_list/1,
     latitude_to_list/1,
-    cog_to_list/1]).
+    cog_to_list/1,
+    true_heading_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -718,8 +719,7 @@ decode_longitude(X) -> X / 600000.0.
 
 %% @doc Convert Longitude to string.
 -spec longitude_to_list(optional_float()) -> string().
-longitude_to_list(not_available) -> "not available";
-longitude_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
+longitude_to_list(X) -> optional_float_to_list(X).
 
 %% @doc Decode the Longitude parameter.
 -spec decode_latitude(integer()) -> optional_float(). 
@@ -728,8 +728,7 @@ decode_latitude(X) -> X / 600000.0.
 
 %% @doc Convert Latitude to string.
 -spec latitude_to_list(optional_float()) -> string().
-latitude_to_list(not_available) -> "not available";
-latitude_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
+latitude_to_list(X) -> optional_float_to_list(X).
 
 %% @doc Decod the course over ground field.
 -spec decode_cog(non_neg_integer()) -> optional_float().
@@ -746,6 +745,11 @@ cog_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
     not_available | non_neg_integer().
 decode_true_heading(511) -> not_available;
 decode_true_heading(X)   -> X.
+
+%% @doc Convert the true heading to list.
+-spec true_heading_to_list(not_available | non_neg_integer()) -> string().
+true_heading_to_list(not_available) -> "not available";
+true_heading_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
 
 %% @doc Decode the maneuver indicator field.
 -spec decode_maneuver_indicator(0..2) -> maneuver_indicator().
@@ -1242,3 +1246,9 @@ get_unsupported_message_types(DecodeList) ->
 
 is_ais_rec(#ais{}) -> true;
 is_ais_rec(_)      -> false.
+
+%% @doc Convert an optional float to string.
+-spec optional_float_to_list(optional_float()) -> string().
+optional_float_to_list(not_available) -> "not available";
+optional_float_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
+
