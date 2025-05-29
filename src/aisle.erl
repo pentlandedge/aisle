@@ -131,7 +131,9 @@
     longitude_to_list/1,
     latitude_to_list/1,
     cog_to_list/1,
-    true_heading_to_list/1]).
+    true_heading_to_list/1,
+    maneuver_indicator_to_list/1,
+    raim_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -757,10 +759,23 @@ decode_maneuver_indicator(0) -> not_available;
 decode_maneuver_indicator(1) -> no_special_maneuver;
 decode_maneuver_indicator(2) -> special_maneuver.
 
+%% @doc Convert the maneuver indicator to list.
+-spec maneuver_indicator_to_list(maneuver_indicator()) -> string().
+maneuver_indicator_to_list(not_available) -> "not_available";
+maneuver_indicator_to_list(no_special_maneuver) -> "not_available";
+maneuver_indicator_to_list(special_maneuver) -> "not_available".
+
 %% @doc RAIM (Receiver Autonomous Integrity Monitoring) flag mapping.
 -spec decode_raim(0 | 1) -> raim().
 decode_raim(0) -> raim_not_in_use; 
 decode_raim(1) -> raim_in_use. 
+
+%% @doc Convert the RAIM (Receiver Autonomous Integrity Monitoring) flag to
+%% list.
+-spec raim_to_list(raim()) -> string().
+raim_to_list(raim_not_in_use) -> "RAIM not in use";
+raim_to_list(raim_in_use) -> "RAIM in use".
+
 
 %% Accessor functions for the AIS records.
 get_id(#ais{id = X}) -> X. 
