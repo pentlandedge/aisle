@@ -129,7 +129,8 @@
     nav_status_to_list/1,
     position_accuracy_to_list/1,
     longitude_to_list/1,
-    latitude_to_list/1]).
+    latitude_to_list/1,
+    cog_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -728,12 +729,17 @@ decode_latitude(X) -> X / 600000.0.
 %% @doc Convert Latitude to string.
 -spec latitude_to_list(optional_float()) -> string().
 latitude_to_list(not_available) -> "not available";
-latitude_to_list(X)  when is_number(X) -> io_lib:format("~p", [X]).
+latitude_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
 
 %% @doc Decod the course over ground field.
 -spec decode_cog(non_neg_integer()) -> optional_float().
 decode_cog(3600) -> not_available;
 decode_cog(COG) -> 0.1 * COG.
+
+%% @doc Convert COG to string.
+-spec cog_to_list(optional_float()) -> string().
+cog_to_list(not_available) -> "not available";
+cog_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
 
 %% @doc Decode the true heading field.
 -spec decode_true_heading(non_neg_integer()) -> 
