@@ -127,6 +127,7 @@
     message_type_to_list/1,
     repeat_indicator_to_list/1,
     nav_status_to_list/1,
+rate_of_turn_to_list/1,
     sog_to_list/1,
     position_accuracy_to_list/1,
     longitude_to_list/1,
@@ -698,6 +699,14 @@ decode_rate_of_turn(R) when R >= 1, R =< 126 ->
 decode_rate_of_turn(R) when R >= -126, R =< -1 -> 
     V = R / 4.733,
     -(V * V).
+
+%% @doc Convert rate of turn to list.
+-spec rate_of_turn_to_list(atom() | float()) -> string().
+rate_of_turn_to_list(not_turning) -> "not turning";
+rate_of_turn_to_list(turning_right_more_than_5deg_30sec) -> "turning right more than 5deg/30sec";
+rate_of_turn_to_list(turning_left_more_than_5deg_30sec) -> "turning left more than 5deg/30sec";
+rate_of_turn_to_list(no_turn_information_available) -> "no turn information available";
+rate_of_turn_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
 
 %% @doc Decode the speed over ground field.
 -spec decode_sog(0..1023) -> atom() | float().
