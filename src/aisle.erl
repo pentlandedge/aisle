@@ -127,6 +127,7 @@
     message_type_to_list/1,
     repeat_indicator_to_list/1,
     nav_status_to_list/1,
+    sog_to_list/1,
     position_accuracy_to_list/1,
     longitude_to_list/1,
     latitude_to_list/1,
@@ -703,6 +704,12 @@ decode_rate_of_turn(R) when R >= -126, R =< -1 ->
 decode_sog(1023) -> speed_not_available;
 decode_sog(1022) -> more_than_102p2_knots;
 decode_sog(X)    -> 0.1 * X.
+
+%% @doc Convert speed over ground to list.
+-spec sog_to_list(atom() | float()) -> string().
+sog_to_list(speed_not_available) -> "speed not available";
+sog_to_list(more_than_102p2_knots) -> "more than 102.2 knots";
+sog_to_list(X) when is_number(X) -> io_lib:format("~p", [X]).
 
 %% @doc Decode the position accuracy field.
 -spec decode_position_accuracy(0 | 1) -> pos_acc().
