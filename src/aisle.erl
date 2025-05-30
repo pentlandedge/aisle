@@ -124,10 +124,11 @@
 
 %% String output routines.
 -export([
+    radio_chan_to_list/1,
     message_type_to_list/1,
     repeat_indicator_to_list/1,
     nav_status_to_list/1,
-rate_of_turn_to_list/1,
+    rate_of_turn_to_list/1,
     sog_to_list/1,
     position_accuracy_to_list/1,
     longitude_to_list/1,
@@ -514,6 +515,11 @@ decode_radio_chan("A") -> radio_chan_a;
 decode_radio_chan("B") -> radio_chan_b;
 decode_radio_chan("1") -> radio_chan_a;
 decode_radio_chan("2") -> radio_chan_b.
+
+%% @doc Convert the radio channel to string.
+-spec radio_chan_to_list(radio_chan()) -> string().
+radio_chan_to_list(radio_chan_a) -> "radio channel A 161.975 MHz";
+radio_chan_to_list(radio_chan_b) -> "radio channel B 162.025 MHz".
 
 %% @doc Simple mapping of the fill bits string to the corresponding integer.
 -spec decode_fill_bits(FillTok::[fill_bits_char()]) -> fill_bits().
