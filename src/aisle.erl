@@ -136,7 +136,8 @@
     cog_to_list/1,
     true_heading_to_list/1,
     maneuver_indicator_to_list/1,
-    raim_to_list/1]).
+    raim_to_list/1,
+    epfd_fix_type_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -857,8 +858,20 @@ decode_epfd_fix_type(5) -> chayka;
 decode_epfd_fix_type(6) -> integrated_navigation_system;
 decode_epfd_fix_type(7) -> surveyed;
 decode_epfd_fix_type(8) -> galileo;
-decode_epfd_fix_type(15) -> unofficial_undefined;
-decode_epfd_fix_type(_) -> not_used.
+decode_epfd_fix_type(15) -> internal_gnss;
+decode_epfd_fix_type(_) -> reserved.
+
+epfd_fix_type_to_list(undefined) -> "undefined (default)"; 
+epfd_fix_type_to_list(gps) -> "GPS";
+epfd_fix_type_to_list(glonass) -> "GLONASS";
+epfd_fix_type_to_list(combined_gps_glonass) -> "combined GPS/GLONASS";
+epfd_fix_type_to_list(loran_c) -> "Loran-C";
+epfd_fix_type_to_list(chayka) -> "Chayka";
+epfd_fix_type_to_list(integrated_navigation_system) -> "integrated navigation system";
+epfd_fix_type_to_list(surveyed) -> "surveyed";
+epfd_fix_type_to_list(galileo) -> "Galileo";
+epfd_fix_type_to_list(internal_gnss) -> "internal GNSS";
+epfd_fix_type_to_list(reserved) -> "reserved".
 
 decode_sotdma_state(<<Sync:2,SlotTimeOut:3,SubMsg:14/bitstring>>) ->
     DecSync = decode_sync_state(Sync),
