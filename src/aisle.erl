@@ -137,7 +137,8 @@
     true_heading_to_list/1,
     maneuver_indicator_to_list/1,
     raim_to_list/1,
-    epfd_fix_type_to_list/1]).
+    epfd_fix_type_to_list/1,
+    aid_type_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -1037,6 +1038,41 @@ decode_aid_type(28) -> isolated_danger;
 decode_aid_type(29) -> safe_water;
 decode_aid_type(30) -> special_mark;
 decode_aid_type(31) -> light_vessel.
+
+%% @doc Convert the aid type to string.
+-spec aid_type_to_list(aid_type()) -> string().
+aid_type_to_list(default_not_specified) -> "aid type not specified";
+aid_type_to_list(reference_point) -> "reference point";
+aid_type_to_list(racon_radar_transponder) -> "RACON (radar transponder marking a navigation hazard)";
+aid_type_to_list(fixed_structure_off_shore) -> "fixed structure off shore";
+aid_type_to_list(reserved) -> "reserved";
+aid_type_to_list(light_without_sectors) -> "light, without sectors";
+aid_type_to_list(light_with_sectors) -> "light, with sectors";
+aid_type_to_list(leading_light_front) -> "leading light front";
+aid_type_to_list(leading_light_rear) -> "leading light rear";
+aid_type_to_list(beacon_cardinal_north) -> "beacon, cardinal N";
+aid_type_to_list(beacon_cardinal_east) -> "beacon, cardinal E";
+aid_type_to_list(beacon_cardinal_south) -> "beacon, cardinal S";
+aid_type_to_list(beacon_cardinal_west) -> "beacon, cardinal W";
+aid_type_to_list(beacon_port_hand) -> "beacon, port hand";
+aid_type_to_list(beacon_starboard_hand) -> "beacon, starboard hand";
+aid_type_to_list(beacon_preferred_channel_port_hand) -> "beacon, preferred channel port hand";
+aid_type_to_list(beacon_preferred_channel_starboard_hand) -> "beacon, preferred channel starboard hand";
+aid_type_to_list(beacon_isolated_danger) -> "beacon, isolated danger";
+aid_type_to_list(beacon_safe_water) -> "beacon, safe water";
+aid_type_to_list(beacon_special_mark) -> "beacon, special mark";
+aid_type_to_list(cardinal_mark_north) -> "cardinal mark N";
+aid_type_to_list(cardinal_mark_east) -> "cardinal mark E";
+aid_type_to_list(cardinal_mark_south) -> "cardinal mark S";
+aid_type_to_list(cardinal_mark_west) -> "cardinal mark W";
+aid_type_to_list(port_hand_mark) -> "port hand mark";
+aid_type_to_list(starboard_hand_mark) -> "starboard hand mark";
+aid_type_to_list(preferred_channel_port_hand) -> "preferred channel port hand";
+aid_type_to_list(preferred_channel_starboard_hand) -> "preferred channel starboard hand";
+aid_type_to_list(isolated_danger) -> "isolated danger";
+aid_type_to_list(safe_water) -> "safe water";
+aid_type_to_list(special_mark) -> "special mark";
+aid_type_to_list(light_vessel) -> "light vessel".
 
 %% @doc Decode the fixed name field. Returns an indication of whether the
 %% name field is full and the extra field needs to be decoded.
