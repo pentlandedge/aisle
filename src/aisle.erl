@@ -138,7 +138,8 @@
     maneuver_indicator_to_list/1,
     raim_to_list/1,
     epfd_fix_type_to_list/1,
-    aid_type_to_list/1]).
+    aid_type_to_list/1,
+    position_status_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -318,6 +319,8 @@
     safe_water |
     special_mark |
     light_vessel.
+
+-type position_status() :: on_position | off_position.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function definitions.
@@ -1101,8 +1104,14 @@ decode_name(Name, Rem) when is_binary(Name), is_bitstring(Rem) ->
 
 %% @doc Decode the off position indicator, used for floating 
 %% aids-to-navigation. Only valid if UTC second is less than or equal to 59.
+-spec decode_off_position(pos_integer()) -> position_status().
 decode_off_position(0) -> on_position;
 decode_off_position(1) -> off_position.
+
+%% @doc Convert the position status to list.
+-spec position_status_to_list(position_status()) -> string().
+position_status_to_list(on_position) -> "on position";
+position_status_to_list(off_position) -> "off position".
 
 %% @doc Decode the virtual aid to nav flag. Indicates whether the aid is real
 %% and located at the specified position or if it is a virtual indication 
