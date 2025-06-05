@@ -284,6 +284,40 @@
 
 -type raim() :: raim_not_in_use | raim_in_use.
 
+-type aid_type() :: 
+    default_not_specified |
+    reference_point | 
+    racon_radar_transponder | 
+    fixed_structure_off_shore |
+    reserved |
+    light_without_sectors |
+    light_with_sectors |
+    leading_light_front |
+    leading_light_rear |
+    beacon_cardinal_north |
+    beacon_cardinal_east |
+    beacon_cardinal_south |
+    beacon_cardinal_west |
+    beacon_port_hand |
+    beacon_starboard_hand |
+    beacon_preferred_channel_port_hand |
+    beacon_preferred_channel_starboard_hand |
+    beacon_isolated_danger |
+    beacon_safe_water |
+    beacon_special_mark |
+    cardinal_mark_north |
+    cardinal_mark_east |
+    cardinal_mark_south |
+    cardinal_mark_west |
+    port_hand_mark |
+    starboard_hand_mark |
+    preferred_channel_port_hand |
+    preferred_channel_starboard_hand |
+    isolated_danger |
+    safe_water |
+    special_mark |
+    light_vessel.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function definitions.
 
@@ -970,6 +1004,7 @@ decode_aid_to_navigation_report(_) ->
     {error, payload_error}.
 
 %% @doc Decode the aid type parameter.
+-spec decode_aid_type(pos_integer()) -> aid_type().
 decode_aid_type(0) -> default_not_specified;
 decode_aid_type(1) -> reference_point;
 decode_aid_type(2) -> racon_radar_transponder;
