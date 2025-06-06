@@ -139,7 +139,9 @@
     raim_to_list/1,
     epfd_fix_type_to_list/1,
     aid_type_to_list/1,
-    position_status_to_list/1]).
+    position_status_to_list/1,
+    virtual_aid_to_list/1,
+    assigned_mode_to_list/1]).
 
 -export([get_unsupported_messages/1, get_unsupported_message_types/1]).
 
@@ -1124,11 +1126,21 @@ position_status_to_list(off_position) -> "off position".
 decode_virtual_aid_flag(0) -> real_aid_to_nav;
 decode_virtual_aid_flag(1) -> virtual_aid_to_nav.
 
+%% @doc Convert the virtual aid flag to string.
+-spec virtual_aid_to_list(virtual_aid()) -> string().
+virtual_aid_to_list(real_aid_to_nav) -> "real aid to navigation";
+virtual_aid_to_list(virtual_aid_to_nav) -> "virtual aid to navigation".
+
 %% @doc Decode the assigned mode flag. Indicates whether a station is 
 %% operating autonomously or is in assigned mode.
 -spec decode_assigned_mode_flag(0..1) -> assigned_mode().
 decode_assigned_mode_flag(0) -> autonomous_mode;
 decode_assigned_mode_flag(1) -> assigned_mode.
+
+%% @doc Convert the assigned mode to string.
+-spec assigned_mode_to_list(assigned_mode()) -> string().
+assigned_mode_to_list(autonomous_mode) -> "autonomous mode";
+assigned_mode_to_list(assigned_mode) -> "assigned mode".
 
 get_atnr_message_type(#atnr{message_type = X}) -> X.
 get_atnr_repeat_indicator(#atnr{repeat_indicator = X}) -> X.
