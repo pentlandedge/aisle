@@ -322,6 +322,10 @@
 
 -type position_status() :: on_position | off_position.
 
+-type virtual_aid() :: real_aid_to_nav | virtual_aid_to_nav.
+
+-type assigned_mode() :: autonomous_mode | assigned_mode.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function definitions.
 
@@ -1104,7 +1108,7 @@ decode_name(Name, Rem) when is_binary(Name), is_bitstring(Rem) ->
 
 %% @doc Decode the off position indicator, used for floating 
 %% aids-to-navigation. Only valid if UTC second is less than or equal to 59.
--spec decode_off_position(pos_integer()) -> position_status().
+-spec decode_off_position(0..1) -> position_status().
 decode_off_position(0) -> on_position;
 decode_off_position(1) -> off_position.
 
@@ -1116,11 +1120,13 @@ position_status_to_list(off_position) -> "off position".
 %% @doc Decode the virtual aid to nav flag. Indicates whether the aid is real
 %% and located at the specified position or if it is a virtual indication 
 %% simulated by another station.
+-spec decode_virtual_aid_flag(0..1) -> virtual_aid().
 decode_virtual_aid_flag(0) -> real_aid_to_nav;
 decode_virtual_aid_flag(1) -> virtual_aid_to_nav.
 
 %% @doc Decode the assigned mode flag. Indicates whether a station is 
 %% operating autonomously or is in assigned mode.
+-spec decode_assigned_mode_flag(0..1) -> assigned_mode().
 decode_assigned_mode_flag(0) -> autonomous_mode;
 decode_assigned_mode_flag(1) -> assigned_mode.
 
