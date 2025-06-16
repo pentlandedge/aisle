@@ -829,8 +829,8 @@ decode_maneuver_indicator(2) -> special_maneuver.
 %% @doc Convert the maneuver indicator to list.
 -spec maneuver_indicator_to_list(maneuver_indicator()) -> string().
 maneuver_indicator_to_list(not_available) -> "not_available";
-maneuver_indicator_to_list(no_special_maneuver) -> "not_available";
-maneuver_indicator_to_list(special_maneuver) -> "not_available".
+maneuver_indicator_to_list(no_special_maneuver) -> "no special maneuver";
+maneuver_indicator_to_list(special_maneuver) -> "special maneuver".
 
 %% @doc RAIM (Receiver Autonomous Integrity Monitoring) flag mapping.
 -spec decode_raim(0 | 1) -> raim().
